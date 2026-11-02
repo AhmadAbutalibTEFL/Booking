@@ -228,7 +228,7 @@ const T = {
   calViewDay:'يوم',calViewWeek:'أسبوع',calViewAgenda:'قائمة المواعيد',
   prevDay:'اليوم السابق',nextDay:'اليوم التالي',previousWeek:'الأسبوع السابق',nextWeek:'الأسبوع التالي',todayBtn:'اليوم',
   calendarHint:'الأوقات معروضة حسب المنطقة الزمنية للمعلم. الأخضر يوضح أوقات البداية المتاحة، والبنفسجي يوضح الحصص المحجوزة.',
-  available:'متاح',unavailable:'غير متاح',weeklyBadge:'أسبوعي',removeBooking:'إلغاء الحصة',noBookingsDay:'لا توجد حصص محجوزة',noFreeSlots:'لا توجد أوقات بداية متاحة',
+  available:'متاح',unavailable:'غير متاح',weeklyBadge:'أسبوعي',removeBooking:'إلغاء الحصة',noBookingsDay:'لا توجد حصص محجوزة',noFreeSlots:'No free start times',
   cancelModalTitle:'إلغاء الحصة',cancelModalSub:'اختر نطاق الإلغاء:',
   cancelOne:'إلغاء هذه الحصة فقط',cancelFuture:'إلغاء هذه الحصة وجميع الحصص القادمة',cancelAll:'إلغاء السلسلة الأسبوعية بالكامل',
   reschedModalTitle:'تغيير موعد الحصة',reschedModalSub:'اختر نطاق تعديل الموعد لهذه السلسلة الأسبوعية:',
@@ -313,7 +313,6 @@ async function loadBook(keep){
   if(!S.user||!S.t) return;
   const id=S.t.id, ty=keep&&S.ty&&S.ty.id, err=keep?S.err:'';
   S.ty=null;S.day=null;S.slot=null;S.slots={};S.done=null;S.err=err;
-  // Load 84 days (12 weeks) of busy times so rescheduling any occurrence in the 12-week window is accurate
   const [a,b,c,r] = await Promise.all([
     sb.from('session_types').select('*').eq('teacher_id',id).eq('is_active',true).order('duration_min'),
     sb.from('availability_rules').select('*').eq('teacher_id',id),
@@ -330,7 +329,6 @@ function build(){
   const isTeacherOverride = S.rsAsTeacher && S.me?.teacher?.id === S.t.id;
   const min=Date.now()+(isTeacherOverride || S.t.on_the_spot_booking ? 0 : 8)*36e5;
   const td=new Date().toLocaleDateString('en-CA',{timeZone:tz}).split('-').map(Number);
-  // Allow 28 days window when rescheduling, 14 days for initial booking
   const horizonDays = S.rs ? 28 : 14;
   for(let i=0;i<horizonDays;i++){
     const dt=new Date(Date.UTC(td[0],td[1]-1,td[2]+i)), ds=dt.toISOString().slice(0,10), ex=S.exc.filter(x=>x.on_date===ds);
@@ -402,7 +400,6 @@ async function book(){
   }
 }
 
-// Prompt user with a clean modal for recurring series or single cancellation
 function promptCancel(id){
   const b=S.mine.find(x=>x.id===id)||S.dBk.find(x=>x.id===id);
   if(!b) return;
@@ -421,7 +418,6 @@ async function executeCancel(id,scope){
   if(error) flash(tr('late'),true); else flash(tr('saved'),false);
 }
 
-// Start rescheduling for either a student or a teacher
 function promptResched(id, asTeacher){
   const b = asTeacher ? S.dBk.find(x=>x.id===id) : S.mine.find(x=>x.id===id);
   if(!b) return;
@@ -588,7 +584,6 @@ function doneCard(){
     +'<br><button class="btn g" onclick="nav(S.slug)">'+tr('again')+'</button></div>';
 }
 
-// Public homepage with full BookMyClass branding and explanation for Google Verification
 function viewLanding(){
   return '<div class="card ok" style="padding:26px 20px">'
     +'<div class="big">📚</div>'
@@ -706,7 +701,6 @@ function tabTypes(){
     +'<div class="card"><h2>'+tr('addType')+'</h2>'+typeFields('new',{buffer_min:5})+'<button class="btn" onclick="addType()">'+tr('add')+'</button></div>';
 }
 
-// Helper to render a single day column/card in Day or Week view
 function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
   const wd=new Date(day.key+'T12:00:00Z').getUTCDay(), ex=S.dExc.filter(x=>x.on_date===day.key);
   const windows=ex.some(x=>!x.is_available)?[]:ex.length?ex.filter(x=>x.is_available).map(x=>[(x.start_time||'').slice(0,5),(x.end_time||'').slice(0,5)]):S.wk[wd]||[];
@@ -774,13 +768,12 @@ function teacherCalendar(){
       +'<div class="row"><button class="chip" onclick="S.calendarOffset--;render()">‹ '+tr('previousWeek')+'</button>'
       +'<button class="chip" onclick="S.calendarOffset=0;render()">'+tr('todayBtn')+'</button>'
       +'<button class="chip" onclick="S.calendarOffset++;render()">'+tr('nextWeek')+' ›</button></div>'
-      +'<b>'+days[0].date.toLocaleDateString(loc(),{timeZone:tz,month:'short',day:'numeric'})+' – '+days[6].date.toLocaleDateString(loc(),{timeZone:tz,month:'short',day:'numeric'})+'</b>'
+      +'<b>'+days[0].date.toLocaleDateString(loc(),{month:'short',day:'numeric'})+' – '+days[6].date.toLocaleDateString(loc(),{month:'short',day:'numeric'})+'</b>'
       +'</div>';
     h+='<div class="calwrap"><div class="calgrid">';
     for(const day of days){ h+=renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, false); }
     h+='</div></div>';
   } else {
-    // Agenda view: chronological list grouped by date
     if(!S.dBk.length){
       h+='<p class="mut">'+tr('noBk')+'</p>';
     } else {
