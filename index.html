@@ -139,7 +139,7 @@ const T = {
 let lang = 'en';
 try { lang = localStorage.getItem('lang') || ((navigator.language||'').startsWith('ar') ? 'ar' : 'en'); } catch(e){}
 const S = {ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
-  mine:[],rs:null,rsFrom:null,loaded:null,loading:false,reg:false,tab:'link',invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[]};
+  mine:[],rs:null,rsFrom:null,loaded:null,loading:false,booking:false,reg:false,tab:'link',invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[]};
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
 const su = u => /^https:\/\//i.test(u||'') ? u : '';   // only allow https links
@@ -259,16 +259,35 @@ async function contactFor(id){
   return (c.data && c.data[0]) || {};
 }
 async function book(){
+  // Prevent duplicate submissions while the first booking request is processing.
+  if(S.booking) return;
   const n=$('#sn').value.trim(); if(!n){S.err=tr('needName');render();return}
   const ph=$('#ph').value.trim();
-  const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:''});
-  if(error){
-    const lim=(error.message||'').includes('booking limit');
-    S.err=''; await loadBook(true); S.err=tr(lim?'limit':'taken'); render(); return;
+  S.booking=true;
+  const submit=$('#app .card:last-child .btn');
+  if(submit){submit.disabled=true;submit.textContent=lang==='ar'?'جارٍ تأكيد الحجز…':'Booking…';}
+  try{
+    const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:''});
+    if(error){
+      const lim=(error.message||'').includes('booking limit');
+      S.booking=false; S.err=''; await loadBook(true); S.err=tr(lim?'limit':'taken'); render(); return;
+    }
+    // The booking is confirmed at this point. Later contact/list refreshes
+    // must never turn a successful booking into a misleading availability error.
+    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:''};
+    S.err=''; S.booking=false; render();
+    try{
+      const ct=await contactFor(data);
+      S.done.meeting=ct.meeting_url||''; S.done.whatsapp=ct.whatsapp||'';
+      await loadMine();
+    }catch(refreshError){
+      console.warn('Booking succeeded; optional post-booking refresh failed:',refreshError);
+    }
+    render();
+  }catch(requestError){
+    console.error('Booking request failed:',requestError);
+    S.booking=false; S.err=tr('taken'); render();
   }
-  const ct=await contactFor(data);
-  S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:ct.meeting_url||'',whatsapp:ct.whatsapp||''};
-  S.err=''; await loadMine(); render();
 }
 async function cancelBooking(id){
   if(!confirm(tr('confirmCancel'))) return;
