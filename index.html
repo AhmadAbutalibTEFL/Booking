@@ -261,8 +261,16 @@ const fD = k => new Date(k+'T12:00').toLocaleDateString(loc(),{weekday:'short',d
 const fF = ms => new Date(ms).toLocaleString(loc(),{weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
 const tn = x => (lang==='ar' && x.name_ar) ? x.name_ar : x.name;
 const wdName = i => new Date(2024,0,7+i).toLocaleDateString(loc(),{weekday:'long'});
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]))}
-const slugify = n => n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[c]));
+}
+  const slugify = n => n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
 const myLink = () => location.origin + '/?t=' + S.me.teacher.slug;
 const hasInvite = () => !!ls.get('invite');
 
