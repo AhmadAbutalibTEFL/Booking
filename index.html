@@ -33,7 +33,7 @@ select,input{width:100%;padding:12px;border:1.5px solid var(--line);border-radiu
 </head>
 <body>
 <div class="hero">
-  <div class="bar"><span id="who" class="mut" style="color:#fff"></span><span><button onclick="setLang(lang=='ar'?'en':'ar')" id="lg"></button> <button id="auth" onclick="signOut()" style="display:none"></button></span></div>
+  <div class="bar"><span id="who" class="mut" style="color:#fff"></span><span><button onclick="setLang(lang=='ar'?'en':'ar')" id="lg"></button> <button id="auth" onclick="S.user?signOut():signIn()"></button></span></div>
   <h1 id="h1"></h1><p id="sub"></p>
 </div>
 <main id="app"></main>
@@ -42,17 +42,17 @@ select,input{width:100%;padding:12px;border:1.5px solid var(--line);border-radiu
 <script>
 // ====== CONFIG: paste your Supabase publishable (anon) key here ======
 const SB_URL = 'https://crtxvqamgksiigfpmxvg.supabase.co';
-const SB_KEY = 'sb_publishable_yzbx9HqvX-fodzJYbVZLnQ_sx8MS_lf';
+const SB_KEY = 'PASTE_YOUR_PUBLISHABLE_KEY_HERE';
 // =====================================================================
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
 const T = {
  en:{title:'Book your session',sub:'Pick a time that suits you in three easy steps.',teacher:'Choose your teacher',pick:'Select…',len:'Session length',min:'min',day:'Choose a day',time:'Choose a time',tz:'Times shown in your time zone',none:'No free times in the next 2 weeks.',
   details:'Your details',name:'Student’s full name',phone:'WhatsApp number (optional)',google:'Continue with Google to book',book:'Confirm booking',needName:'Please enter the student’s name.',taken:'Sorry, that time was just taken or is no longer available. Please pick another.',
-  done:'You’re booked!',link:'Join link',wa:'Send details on WhatsApp',out:'Sign out',lang:'العربية',again:'Book another session',cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a session:'},
+  done:'You’re booked!',link:'Join link',wa:'Send details on WhatsApp',out:'Sign out',in:'Sign in',lang:'العربية',again:'Book another session',cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a session:'},
  ar:{title:'احجز جلستك',sub:'اختر الوقت المناسب لك في ثلاث خطوات سهلة.',teacher:'اختر المعلم',pick:'اختر…',len:'مدة الجلسة',min:'دقيقة',day:'اختر اليوم',time:'اختر الوقت',tz:'الأوقات حسب منطقتك الزمنية',none:'لا توجد أوقات متاحة خلال أسبوعين.',
   details:'بياناتك',name:'الاسم الكامل للطالب',phone:'رقم واتساب (اختياري)',google:'تابع باستخدام Google للحجز',book:'تأكيد الحجز',needName:'يرجى إدخال اسم الطالب.',taken:'عذرًا، هذا الوقت لم يعد متاحًا. يرجى اختيار وقت آخر.',
-  done:'تم الحجز!',link:'رابط الجلسة',wa:'أرسل التفاصيل عبر واتساب',out:'تسجيل الخروج',lang:'English',again:'احجز جلسة أخرى',cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت جلسة:'}
+  done:'تم الحجز!',link:'رابط الجلسة',wa:'أرسل التفاصيل عبر واتساب',out:'تسجيل الخروج',in:'تسجيل الدخول',lang:'English',again:'احجز جلسة أخرى',cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت جلسة:'}
 };
 let lang = 'en';
 try { lang = localStorage.getItem('lang') || (navigator.language||'').startsWith('ar') ? 'ar' : 'en'; if(localStorage.getItem('lang')) lang = localStorage.getItem('lang'); } catch(e){}
@@ -118,7 +118,7 @@ function pickDay(k){S.day=k;S.slot=null;render()}
 function pickSlot(ms){S.slot=ms;render()}
 
 async function signIn(){
-  try{localStorage.setItem('pend',JSON.stringify({t:S.t.id,ty:S.ty.id,day:S.day,slot:S.slot}))}catch(e){}
+  try{if(S.t&&S.ty)localStorage.setItem('pend',JSON.stringify({t:S.t.id,ty:S.ty.id,day:S.day,slot:S.slot}))}catch(e){}
   await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
 }
 async function signOut(){await sb.auth.signOut();S.user=null;render()}
@@ -135,7 +135,7 @@ async function book(){
 function render(){
   document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   $('#h1').textContent=tr('title'); $('#sub').textContent=tr('sub'); $('#lg').textContent=tr('lang');
-  $('#auth').style.display=S.user?'':'none'; $('#auth').textContent=tr('out');
+  $('#auth').textContent=tr(S.user?'out':'in');
   $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
   const A=$('#app');
   if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
