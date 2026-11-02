@@ -24,11 +24,14 @@ select,input{width:100%;padding:12px;border:1.5px solid var(--line);border-radiu
 .chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
 .chip small{display:block;opacity:.75}
 .btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:600;color:#fff;background:var(--pri);cursor:pointer}
-.btn.g{background:#fff;color:#333;border:1.5px solid var(--line)}
+.btn.g{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
 .btn.w{background:#25d366;display:block;text-align:center;text-decoration:none;margin-top:10px}
 .mut{color:var(--mut);font-size:14px}
 .err{background:#ffe9e9;color:#b00020;padding:10px;border-radius:10px;margin-bottom:10px}
 .ok{text-align:center}.ok .big{font-size:46px}
+.bk{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.bk:first-of-type{border-top:0;padding-top:0}
+.bk a{color:var(--pri);font-size:14px}
 </style>
 </head>
 <body>
@@ -45,20 +48,27 @@ const SB_URL = 'https://crtxvqamgksiigfpmxvg.supabase.co';
 const SB_KEY = 'sb_publishable_yzbx9HqvX-fodzJYbVZLnQ_sx8MS_lf';
 // =====================================================================
 const sb = supabase.createClient(SB_URL, SB_KEY);
+// Only these teacher columns are public (meeting link + WhatsApp are released after booking)
+const TCOLS = 'id,slug,display_name,bio,photo_url,timezone,min_notice_hours,is_active';
 
 const T = {
  en:{title:'Book your session',sub:'Pick a time that suits you in three easy steps.',teacher:'Choose your teacher',pick:'Select…',len:'Session length',min:'min',day:'Choose a day',time:'Choose a time',tz:'Times shown in your time zone',none:'No free times in the next 2 weeks.',
   details:'Your details',name:'Student’s full name',phone:'WhatsApp number (optional)',google:'Continue with Google to book',book:'Confirm booking',needName:'Please enter the student’s name.',taken:'Sorry, that time was just taken or is no longer available. Please pick another.',
-  done:'You’re booked!',link:'Join link',wa:'Send details on WhatsApp',out:'Sign out',in:'Sign in',lang:'العربية',again:'Book another session',cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a session:'},
- ar:{title:'احجز جلستك',sub:'اختر الوقت المناسب لك في ثلاث خطوات سهلة.',teacher:'اختر المعلم',pick:'اختر…',len:'مدة الجلسة',min:'دقيقة',day:'اختر اليوم',time:'اختر الوقت',tz:'الأوقات حسب منطقتك الزمنية',none:'لا توجد أوقات متاحة خلال أسبوعين.',
+  done:'You’re booked!',link:'Join link',wa:'Send details on WhatsApp',out:'Sign out',in:'Sign in',lang:'العربية',again:'Book another session',cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a session:',
+  mine:'Your upcoming sessions',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this session?',late:'It’s too late to change this session online. Please message the teacher.',
+  limit:'You’ve reached the limit of 5 upcoming sessions.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind'},
+ ar:{title:'احجز حصتك',sub:'اختر الوقت المناسب لك في ثلاث خطوات سهلة.',teacher:'اختر المعلم',pick:'اختر…',len:'مدة الجلسة',min:'دقيقة',day:'اختر اليوم',time:'اختر الوقت',tz:'الأوقات حسب منطقتك الزمنية',none:'لا توجد أوقات متاحة خلال أسبوعين.',
   details:'بياناتك',name:'الاسم الكامل للطالب',phone:'رقم واتساب (اختياري)',google:'تابع باستخدام Google للحجز',book:'تأكيد الحجز',needName:'يرجى إدخال اسم الطالب.',taken:'عذرًا، هذا الوقت لم يعد متاحًا. يرجى اختيار وقت آخر.',
-  done:'تم الحجز!',link:'رابط الجلسة',wa:'أرسل التفاصيل عبر واتساب',out:'تسجيل الخروج',in:'تسجيل الدخول',lang:'English',again:'احجز جلسة أخرى',cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت جلسة:'}
+  done:'تم الحجز!',link:'رابط الجلسة',wa:'أرسل التفاصيل عبر واتساب',out:'تسجيل الخروج',in:'تسجيل الدخول',lang:'English',again:'احجز جلسة أخرى',cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت جلسة:',
+  mine:'جلساتك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الجلسة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
+  limit:'وصلت للحد الأقصى: 5 جلسات قادمة.',changing:'تغيير موعد',confirmNew:'تأكيد الموعد الجديد',back:'تراجع'}
 };
 let lang = 'en';
-try { lang = localStorage.getItem('lang') || (navigator.language||'').startsWith('ar') ? 'ar' : 'en'; if(localStorage.getItem('lang')) lang = localStorage.getItem('lang'); } catch(e){}
-const S = {teachers:[],t:null,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,user:null,done:null,err:''};
+try { lang = localStorage.getItem('lang') || ((navigator.language||'').startsWith('ar') ? 'ar' : 'en'); } catch(e){}
+const S = {teachers:[],t:null,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,user:null,done:null,err:'',mine:[],rs:null};
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
+const su = u => /^https:\/\//i.test(u||'') ? u : '';   // only allow https links
 
 function setLang(l){lang=l;try{localStorage.setItem('lang',l)}catch(e){}render()}
 
@@ -71,10 +81,26 @@ const fF = ms => new Date(ms).toLocaleString(loc(),{weekday:'long',day:'numeric'
 const tn = x => (lang==='ar' && x.name_ar) ? x.name_ar : x.name;
 
 // ---- data ----
+async function loadMine(){
+  if(!S.user){S.mine=[];return}
+  const r = await sb.from('bookings')
+    .select('id,student_name,starts_at,teacher_id,session_type_id,session_types(duration_min,name,name_ar),teachers(display_name)')
+    .eq('booker_id',S.user.id).eq('status','confirmed').gte('starts_at',new Date().toISOString()).order('starts_at');
+  S.mine = r.data || [];
+  await Promise.all(S.mine.map(async b=>{
+    const c = await sb.rpc('get_booking_contact',{p_booking:b.id});
+    b.ct = (c.data && c.data[0]) || {};
+  }));
+}
 async function init(){
   const {data:{session}} = await sb.auth.getSession(); S.user = session?.user || null;
-  sb.auth.onAuthStateChange((_e,s)=>{S.user=s?.user||null;render()});
-  const r = await sb.from('teachers').select('*').eq('is_active',true).order('display_name');
+  sb.auth.onAuthStateChange((_e,s)=>{
+    const u = s?.user || null;
+    // only react to real login/logout, not silent token refreshes (they would wipe the form)
+    if((u?.id||null) !== (S.user?.id||null)){S.user=u; loadMine().then(render)}
+  });
+  await loadMine();
+  const r = await sb.from('teachers').select(TCOLS).eq('is_active',true).order('display_name');
   S.teachers = r.data || [];
   const q = new URLSearchParams(location.search).get('t');
   let pend = null; try{pend = JSON.parse(localStorage.getItem('pend')||'null')}catch(e){}
@@ -95,6 +121,12 @@ async function pick(id){
   S.busy=(r.data||[]).map(x=>[Date.parse(x.starts_at),Date.parse(x.blocked_until)]);
   if(S.types.length===1) S.ty=S.types[0];
   build(); render();
+}
+// reload teacher data (fresh busy times) but keep the chosen session length
+async function reloadKeep(){
+  const id=S.t.id, ty=S.ty&&S.ty.id;
+  await pick(id);
+  if(ty){S.ty=S.types.find(x=>x.id===ty)||S.ty; build()}
 }
 function build(){
   S.slots={}; S.day=null; S.slot=null; if(!S.t||!S.ty) return;
@@ -121,15 +153,51 @@ async function signIn(){
   try{if(S.t&&S.ty)localStorage.setItem('pend',JSON.stringify({t:S.t.id,ty:S.ty.id,day:S.day,slot:S.slot}))}catch(e){}
   await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
 }
-async function signOut(){await sb.auth.signOut();S.user=null;render()}
+async function signOut(){await sb.auth.signOut();S.user=null;S.mine=[];S.rs=null;render()}
 
+async function contactFor(id){
+  const c = await sb.rpc('get_booking_contact',{p_booking:id});
+  return (c.data && c.data[0]) || {};
+}
 async function book(){
   const n=$('#sn').value.trim(); if(!n){S.err=tr('needName');render();return}
   const ph=$('#ph').value.trim();
-  const {error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:''});
-  if(error){S.err=tr('taken');await pick(S.t.id);return}
-  S.done={start:S.slot,name:n,type:S.ty,t:S.t}; S.err=''; render();
+  const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:''});
+  if(error){
+    const lim=(error.message||'').includes('booking limit');
+    await reloadKeep(); S.err=tr(lim?'limit':'taken'); render(); return;
+  }
+  const ct=await contactFor(data);
+  S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:ct.meeting_url||'',whatsapp:ct.whatsapp||''};
+  S.err=''; await loadMine(); render();
 }
+
+// ---- cancel / reschedule ----
+async function cancelBooking(id){
+  if(!confirm(tr('confirmCancel'))) return;
+  const {error}=await sb.rpc('cancel_booking',{p_booking:id});
+  await loadMine();
+  if(S.t) await reloadKeep();
+  S.err = error ? tr('late') : ''; render();
+}
+async function startResched(id){
+  const b=S.mine.find(x=>x.id===id); if(!b) return;
+  S.rs=b; await pick(b.teacher_id);
+  S.ty=S.types.find(x=>x.id===b.session_type_id)||null; build(); render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function stopResched(){S.rs=null; if(S.t) await pick(S.t.id); else render()}
+async function doResched(){
+  const {data,error}=await sb.rpc('reschedule_booking',{p_booking:S.rs.id,p_starts:new Date(S.slot).toISOString()});
+  if(error){
+    const late=(error.message||'').includes('too late');
+    await reloadKeep(); S.err=tr(late?'late':'taken'); render(); return;
+  }
+  const ct=await contactFor(data);
+  S.done={start:S.slot,name:S.rs.student_name,type:S.ty,t:S.t,meeting:ct.meeting_url||'',whatsapp:ct.whatsapp||''};
+  S.rs=null; S.err=''; await loadMine(); render();
+}
+function again(){S.rs=null; S.done=null; if(S.t) pick(S.t.id); else render()}
 
 // ---- view ----
 function render(){
@@ -139,16 +207,30 @@ function render(){
   $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
   const A=$('#app');
   if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
-  if(S.done){const d=S.done,m=(S.done.t.meeting_url||'');
-    const wa=(d.t.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+d.type.duration_min+' '+tr('min')+')');
+  if(S.done){const d=S.done,m=su(d.meeting);
+    const wa=(d.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+d.type.duration_min+' '+tr('min')+')');
     A.innerHTML='<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+d.type.duration_min+' '+tr('min')+'</span></p>'
-      +(m?'<p><a href="'+esc(m)+'">'+tr('link')+'</a></p>':'')
+      +(m?'<p><a href="'+esc(m)+'" target="_blank" rel="noopener">'+tr('link')+'</a></p>':'')
       +(wa?'<a class="btn w" href="https://wa.me/'+wa+'?text='+txt+'">'+tr('wa')+'</a>':'')
-      +'<br><button class="btn g" onclick="pick(S.t.id)">'+tr('again')+'</button></div>';return}
-  let h='<div class="card"><h2><span class="n">1</span>'+tr('teacher')+'</h2><select onchange="pick(this.value)"><option value="">'+tr('pick')+'</option>'
-    +S.teachers.map(x=>'<option value="'+x.id+'"'+(S.t&&S.t.id===x.id?' selected':'')+'>'+esc(x.display_name)+'</option>').join('')+'</select>';
-  if(S.t){h+='<h2 style="margin-top:6px">'+tr('len')+'</h2><div class="row">'+S.types.map(x=>'<button class="chip'+(S.ty&&S.ty.id===x.id?' on':'')+'" onclick="pickType(\''+x.id+'\')">'+x.duration_min+' '+tr('min')+'<small>'+esc(tn(x))+'</small></button>').join('')+'</div>'}
-  h+='</div>';
+      +'<br><button class="btn g" onclick="again()">'+tr('again')+'</button></div>';return}
+  let h='';
+  // upcoming sessions (hidden while changing a time)
+  if(S.user && S.mine.length && !S.rs){
+    h+='<div class="card"><h2>'+tr('mine')+'</h2>'+S.mine.map(b=>{
+      const st=b.session_types||{}, link=su(b.ct&&b.ct.meeting_url);
+      return '<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(b.teachers?.display_name)+'</span>'
+        +(link?'<br><a href="'+esc(link)+'" target="_blank" rel="noopener">'+tr('link')+'</a>':'')+'</div>'
+        +'<div class="row"><button class="chip" onclick="startResched(\''+b.id+'\')">'+tr('resched')+'</button><button class="chip" onclick="cancelBooking(\''+b.id+'\')">'+tr('cancel')+'</button></div></div>';
+    }).join('')+'</div>';
+  }
+  if(S.rs){
+    h+='<div class="card"><h2>'+tr('changing')+' '+esc(S.rs.student_name)+'</h2><p class="mut">'+fF(Date.parse(S.rs.starts_at))+'</p><button class="chip" onclick="stopResched()">'+tr('back')+'</button></div>';
+  } else {
+    h+='<div class="card"><h2><span class="n">1</span>'+tr('teacher')+'</h2><select onchange="pick(this.value)"><option value="">'+tr('pick')+'</option>'
+      +S.teachers.map(x=>'<option value="'+x.id+'"'+(S.t&&S.t.id===x.id?' selected':'')+'>'+esc(x.display_name)+'</option>').join('')+'</select>';
+    if(S.t){h+='<h2 style="margin-top:6px">'+tr('len')+'</h2><div class="row">'+S.types.map(x=>'<button class="chip'+(S.ty&&S.ty.id===x.id?' on':'')+'" onclick="pickType(\''+x.id+'\')">'+x.duration_min+' '+tr('min')+'<small>'+esc(tn(x))+'</small></button>').join('')+'</div>'}
+    h+='</div>';
+  }
   if(S.t&&S.ty){
     const days=Object.keys(S.slots).sort();
     h+='<div class="card"><h2><span class="n">2</span>'+tr('day')+'</h2>'+(days.length?'<div class="row">'+days.map(k=>'<button class="chip'+(S.day===k?' on':'')+'" onclick="pickDay(\''+k+'\')">'+fD(k)+'</button>').join('')+'</div>':'<p class="mut">'+tr('none')+'</p>');
@@ -157,7 +239,8 @@ function render(){
   }
   if(S.slot){
     h+='<div class="card"><h2>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+S.err+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
-    h+=S.user?'<input id="sn" placeholder="'+tr('name')+'"><input id="ph" type="tel" placeholder="'+tr('phone')+'"><button class="btn" onclick="book()">'+tr('book')+'</button>':'<button class="btn" onclick="signIn()">'+tr('google')+'</button>';
+    if(S.rs) h+='<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>';
+    else h+=S.user?'<input id="sn" placeholder="'+tr('name')+'"><input id="ph" type="tel" placeholder="'+tr('phone')+'"><button class="btn" onclick="book()">'+tr('book')+'</button>':'<button class="btn" onclick="signIn()">'+tr('google')+'</button>';
     h+='</div>';
   } else if(S.err){h+='<div class="card err">'+S.err+'</div>'}
   A.innerHTML=h;
