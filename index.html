@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--ink)}
 .hero{background:linear-gradient(135deg,#5b5bf0,#2fc4b2);color:#fff;padding:22px 18px 54px}
-.bar{display:flex;justify-content:space-between;align-items:center;max-width:640px;margin:0 auto 14px}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;max-width:640px;margin:0 auto 14px}
 .bar button{background:rgba(255,255,255,.22);color:#fff;border:0;border-radius:20px;padding:7px 14px;font-size:14px;cursor:pointer}
 .hero h1{max-width:640px;margin:0 auto;font-size:26px}
 .hero p{max-width:640px;margin:6px auto 0;opacity:.9}
@@ -18,59 +18,134 @@ main{max-width:640px;margin:-34px auto 40px;padding:0 14px}
 .card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 18px rgba(60,60,140,.1)}
 .card h2{margin:0 0 12px;font-size:16px;display:flex;gap:8px;align-items:center}
 .n{background:var(--pri);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
-select,input{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;background:var(--card);color:var(--ink);margin-bottom:10px}
-.row{display:flex;flex-wrap:wrap;gap:8px}
+select,input,textarea{width:100%;padding:12px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;background:var(--card);color:var(--ink);margin-bottom:10px;font-family:inherit}
+input[type=checkbox]{width:auto;margin:0}
+input.t{width:auto;margin:0;padding:8px}
+textarea{min-height:80px;resize:vertical}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:10px 14px;font-size:15px;cursor:pointer}
 .chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
 .chip small{display:block;opacity:.75}
 .btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:17px;font-weight:600;color:#fff;background:var(--pri);cursor:pointer}
 .btn.g{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
 .btn.w{background:#25d366;display:block;text-align:center;text-decoration:none;margin-top:10px}
+a.btn{display:block;text-align:center;text-decoration:none;margin-top:10px}
 .mut{color:var(--mut);font-size:14px}
 .err{background:#ffe9e9;color:#b00020;padding:10px;border-radius:10px;margin-bottom:10px}
+.okb{background:#e3f8ef;color:#0b6b47;padding:10px;border-radius:10px;margin-bottom:10px}
 .ok{text-align:center}.ok .big{font-size:46px}
 .bk{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
 .bk:first-of-type{border-top:0;padding-top:0}
 .bk a{color:var(--pri);font-size:14px}
+.tc{display:flex;gap:14px;align-items:center}
+.tc h2{margin:0 0 4px;font-size:19px}.tc p{margin:0}
+.av{flex:none;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#5b5bf0,#2fc4b2);color:#fff;font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.fl{font-size:13px;color:var(--mut);margin:0 0 4px;display:block}
+.day{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line);align-items:flex-start}
+.day:first-of-type{border-top:0}
+.day b{width:90px;flex:none;padding-top:8px}
+.day .rs{display:flex;flex-direction:column;gap:8px;flex:1}
+.lk{display:flex;gap:8px;align-items:stretch}.lk input{margin:0;direction:ltr}
+.ck{display:flex;gap:8px;padding:6px 0;font-size:15px}
+.ck a{color:var(--pri);cursor:pointer;text-decoration:underline}
+.sub{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.day{flex-direction:column;gap:4px}.day b{width:auto;padding:0}.g2{grid-template-columns:1fr}}
+code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direction:ltr;display:inline-block}
 </style>
 </head>
 <body>
 <div class="hero">
-  <div class="bar"><span id="who" class="mut" style="color:#fff"></span><span><button onclick="setLang(lang=='ar'?'en':'ar')" id="lg"></button> <button id="auth" onclick="S.user?signOut():signIn()"></button></span></div>
+  <div class="bar"><span id="who" style="font-size:14px"></span><span id="btns"></span></div>
   <h1 id="h1"></h1><p id="sub"></p>
 </div>
 <main id="app"></main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-// ====== CONFIG: paste your Supabase publishable (anon) key here ======
+// ====== CONFIG: your Supabase URL + publishable (anon) key ======
 const SB_URL = 'https://crtxvqamgksiigfpmxvg.supabase.co';
 const SB_KEY = 'sb_publishable_yzbx9HqvX-fodzJYbVZLnQ_sx8MS_lf';
-// =====================================================================
+// ================================================================
 const sb = supabase.createClient(SB_URL, SB_KEY);
 // Only these teacher columns are public (meeting link + WhatsApp are released after booking)
 const TCOLS = 'id,slug,display_name,bio,photo_url,timezone,min_notice_hours,is_active';
 
 const T = {
- en:{title:'Book your session',sub:'Pick a time that suits you in three easy steps.',teacher:'Choose your teacher',pick:'Select…',len:'Session length',min:'min',day:'Choose a day',time:'Choose a time',tz:'Times shown in your time zone',none:'No free times in the next 2 weeks.',
-  details:'Your details',name:'Student’s full name',phone:'WhatsApp number (optional)',google:'Continue with Google to book',book:'Confirm booking',needName:'Please enter the student’s name.',taken:'Sorry, that time was just taken or is no longer available. Please pick another.',
-  done:'You’re booked!',link:'Join link',wa:'Send details on WhatsApp',out:'Sign out',in:'Sign in',lang:'العربية',again:'Book another session',cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a session:',
+ en:{
+  title:'Book your session',sub:'Sign in, pick a time, done.',welcome:'Welcome',
+  welSub:'Students and parents: open the booking link your teacher shared with you. Teachers: sign in to manage your schedule.',
+  invited:'You’ve been invited to join as a teacher. Sign in with Google to set up your account.',
+  login:'Continue with Google',signToBook:'Sign in with Google to see the available times.',
+  bookWith:'Book a session with',badLink:'This booking link isn’t valid, or the teacher isn’t available right now.',
+  len:'Session length',min:'min',day:'Choose a day',time:'Choose a time',pickDay:'Select a day…',pickTime:'Select a time…',
+  tz:'Times shown in your time zone',none:'No free times in the next 2 weeks.',noTypes:'This teacher hasn’t set up sessions yet.',
+  details:'Your details',name:'Student’s full name',phone:'WhatsApp number (optional)',book:'Confirm booking',needName:'Please enter the student’s name.',
+  taken:'Sorry, that time was just taken or is no longer available. Please pick another.',
+  done:'You’re booked!',link:'Join link',wa:'Send details on WhatsApp',gcal:'Add to Google Calendar',out:'Sign out',in:'Sign in',lang:'العربية',again:'Book another session',
+  cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a session:',
   mine:'Your upcoming sessions',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this session?',late:'It’s too late to change this session online. Please message the teacher.',
-  limit:'You’ve reached the limit of 5 upcoming sessions.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind'},
- ar:{title:'احجز حصتك',sub:'اختر الوقت المناسب لك في ثلاث خطوات سهلة.',teacher:'اختر المعلم',pick:'اختر…',len:'مدة الجلسة',min:'دقيقة',day:'اختر اليوم',time:'اختر الوقت',tz:'الأوقات حسب منطقتك الزمنية',none:'لا توجد أوقات متاحة خلال أسبوعين.',
-  details:'بياناتك',name:'الاسم الكامل للطالب',phone:'رقم واتساب (اختياري)',google:'تابع باستخدام Google للحجز',book:'تأكيد الحجز',needName:'يرجى إدخال اسم الطالب.',taken:'عذرًا، هذا الوقت لم يعد متاحًا. يرجى اختيار وقت آخر.',
-  done:'تم الحجز!',link:'رابط الجلسة',wa:'أرسل التفاصيل عبر واتساب',out:'تسجيل الخروج',in:'تسجيل الدخول',lang:'English',again:'احجز جلسة أخرى',cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت جلسة:',
+  limit:'You’ve reached the limit of 5 upcoming sessions.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
+  homeTitle:'Book a new session',homeHint:'Open the booking link your teacher shared with you.',noSessions:'You have no upcoming sessions.',
+  imTeacher:'I’m a teacher — set up my account',goHome:'My sessions',goDash:'Dashboard',
+  regTitle:'Create your teacher account',code:'Invite code',dname:'Your display name',slugL:'Link name (letters, numbers, dashes)',tzl:'Time zone',create:'Create account',
+  errCode:'That invite code is invalid or already used.',errSlug:'That link name is taken or not valid (3–30 letters, numbers or dashes).',errGen:'Something went wrong. Please try again.',
+  adminNote:'You’re the admin, so no invite code is needed.',
+  dashTitle:'Teacher dashboard',
+  tLink:'Booking link',tHours:'Weekly hours',tTypes:'Sessions',tBook:'Bookings',tProf:'Profile',tInv:'Invites',
+  linkTitle:'Your booking link',linkHint:'Share this link with students and parents. They sign in with Google, then pick a time.',
+  copy:'Copy link',copied:'Copied ✓',shareWa:'Share on WhatsApp',preview:'Preview as a student',shareMsg:'Book a session with me here:',
+  check:'Setup checklist',ckHours:'Weekly hours are set',ckMeet:'Meeting link added',ckTypes:'At least one session length is visible',ckWa:'WhatsApp number added',fix:'Fix',
+  hoursTitle:'Weekly hours',hoursHint:'Times are in your time zone:',addR:'+ Add hours',closed:'Not available',save:'Save',saved:'Saved ✓',badHours:'Check your hours: each end time must be after its start time, and ranges can’t overlap.',
+  offTitle:'Days off and special days',offHint:'A day off blocks the date. Custom hours replace your weekly hours on that date.',dayOff:'Day off',custom:'Custom hours',remove:'Remove',noExc:'Nothing scheduled.',needDate:'Choose a date first.',needTimes:'Enter a start and end time.',
+  typesTitle:'Session lengths',typesHint:'Students choose one of these. The buffer is kept free after each session.',nameEn:'Name (English)',nameAr:'Name (Arabic)',dur:'Length (min)',buf:'Buffer (min)',vis:'Visible to students',addType:'Add a session length',add:'Add',badType:'Enter a name and a length above 0.',
+  upcoming:'Upcoming bookings',noBk:'No upcoming bookings yet.',
+  bioL:'About you (shown to students)',photoL:'Photo link (optional, https://)',meetL:'Meeting link (Google Meet, Zoom…)',meetH:'Must start with https://. You can change it any time.',waL:'WhatsApp number (digits only, with country code)',noticeL:'Minimum notice (hours)',
+  badProf:'Please check: name, link name, https:// links, WhatsApp digits (6–15) and notice (0–168).',slugWarn:'If you change the link name, the old link stops working.',
+  invTitle:'Invite a teacher',invHint:'Generate a one-time invite and send the link. The teacher signs in with Google and sets up their own account.',gen:'Generate invite',inviteMsg:'You’re invited to join as a teacher. Open this link:'},
+ ar:{
+  title:'احجز حصتك',sub:'سجّل الدخول، اختر الوقت، وتم.',welcome:'أهلًا بك',
+  welSub:'للطلاب وأولياء الأمور: افتح رابط الحجز الذي أرسله لك المعلم. للمعلمين: سجّل الدخول لإدارة جدولك.',
+  invited:'تمت دعوتك للانضمام كمعلم. سجّل الدخول عبر Google لإعداد حسابك.',
+  login:'المتابعة باستخدام Google',signToBook:'سجّل الدخول عبر Google لعرض الأوقات المتاحة.',
+  bookWith:'احجز جلسة مع',badLink:'رابط الحجز هذا غير صالح، أو أن المعلم غير متاح حاليًا.',
+  len:'مدة الجلسة',min:'دقيقة',day:'اختر اليوم',time:'اختر الوقت',pickDay:'اختر يومًا…',pickTime:'اختر وقتًا…',
+  tz:'الأوقات حسب منطقتك الزمنية',none:'لا توجد أوقات متاحة خلال أسبوعين.',noTypes:'لم يُعدّ المعلم جلساته بعد.',
+  details:'بياناتك',name:'الاسم الكامل للطالب',phone:'رقم واتساب (اختياري)',book:'تأكيد الحجز',needName:'يرجى إدخال اسم الطالب.',
+  taken:'عذرًا، هذا الوقت لم يعد متاحًا. يرجى اختيار وقت آخر.',
+  done:'تم الحجز!',link:'رابط الجلسة',wa:'أرسل التفاصيل عبر واتساب',gcal:'أضف إلى تقويم Google',out:'تسجيل الخروج',in:'تسجيل الدخول',lang:'English',again:'احجز جلسة أخرى',
+  cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت جلسة:',
   mine:'جلساتك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الجلسة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
-  limit:'وصلت للحد الأقصى: 5 جلسات قادمة.',changing:'تغيير موعد',confirmNew:'تأكيد الموعد الجديد',back:'تراجع'}
+  limit:'وصلت للحد الأقصى: 5 جلسات قادمة.',changing:'تغيير موعد',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
+  homeTitle:'احجز جلسة جديدة',homeHint:'افتح رابط الحجز الذي شاركه معك المعلم.',noSessions:'ليس لديك جلسات قادمة.',
+  imTeacher:'أنا معلم — إعداد حسابي',goHome:'جلساتي',goDash:'لوحة التحكم',
+  regTitle:'أنشئ حساب المعلم',code:'رمز الدعوة',dname:'الاسم الظاهر',slugL:'اسم الرابط (حروف إنجليزية وأرقام وشرطات)',tzl:'المنطقة الزمنية',create:'إنشاء الحساب',
+  errCode:'رمز الدعوة غير صالح أو مستخدم مسبقًا.',errSlug:'اسم الرابط مستخدم أو غير صالح (من 3 إلى 30 حرفًا إنجليزيًا أو رقمًا أو شرطة).',errGen:'حدث خطأ. حاول مرة أخرى.',
+  adminNote:'أنت المشرف، لذلك لا تحتاج إلى رمز دعوة.',
+  dashTitle:'لوحة المعلم',
+  tLink:'رابط الحجز',tHours:'ساعات العمل',tTypes:'الجلسات',tBook:'الحجوزات',tProf:'الملف الشخصي',tInv:'الدعوات',
+  linkTitle:'رابط الحجز الخاص بك',linkHint:'شارك هذا الرابط مع الطلاب وأولياء الأمور. يسجّلون الدخول عبر Google ثم يختارون الموعد.',
+  copy:'نسخ الرابط',copied:'تم النسخ ✓',shareWa:'مشاركة عبر واتساب',preview:'معاينة كطالب',shareMsg:'احجز جلسة معي من هنا:',
+  check:'قائمة الإعداد',ckHours:'ساعات العمل محددة',ckMeet:'رابط الاجتماع مضاف',ckTypes:'مدة جلسة واحدة على الأقل ظاهرة',ckWa:'رقم واتساب مضاف',fix:'إصلاح',
+  hoursTitle:'ساعات العمل الأسبوعية',hoursHint:'الأوقات حسب منطقتك الزمنية:',addR:'+ إضافة ساعات',closed:'غير متاح',save:'حفظ',saved:'تم الحفظ ✓',badHours:'تحقق من الساعات: يجب أن يكون وقت النهاية بعد البداية، ولا يجوز أن تتداخل الفترات.',
+  offTitle:'أيام الإجازة والأيام الخاصة',offHint:'يوم الإجازة يغلق التاريخ. الساعات الخاصة تحل محل ساعاتك الأسبوعية في ذلك التاريخ.',dayOff:'يوم إجازة',custom:'ساعات خاصة',remove:'حذف',noExc:'لا يوجد شيء مجدول.',needDate:'اختر التاريخ أولًا.',needTimes:'أدخل وقت البداية والنهاية.',
+  typesTitle:'مدد الجلسات',typesHint:'يختار الطالب إحدى هذه المدد. تبقى فترة الراحة فارغة بعد كل جلسة.',nameEn:'الاسم (إنجليزي)',nameAr:'الاسم (عربي)',dur:'المدة (دقيقة)',buf:'فترة الراحة (دقيقة)',vis:'ظاهرة للطلاب',addType:'إضافة مدة جلسة',add:'إضافة',badType:'أدخل اسمًا ومدة أكبر من 0.',
+  upcoming:'الحجوزات القادمة',noBk:'لا توجد حجوزات قادمة بعد.',
+  bioL:'نبذة عنك (تظهر للطلاب)',photoL:'رابط الصورة (اختياري، https://)',meetL:'رابط الاجتماع (Google Meet أو Zoom…)',meetH:'يجب أن يبدأ بـ https:// ويمكنك تغييره في أي وقت.',waL:'رقم واتساب (أرقام فقط مع رمز الدولة)',noticeL:'الحد الأدنى للإشعار المسبق (بالساعات)',
+  badProf:'يرجى التحقق من: الاسم، اسم الرابط، روابط https://‏، أرقام واتساب (6–15) والإشعار المسبق (0–168).',slugWarn:'إذا غيّرت اسم الرابط فسيتوقف الرابط القديم عن العمل.',
+  invTitle:'دعوة معلم',invHint:'أنشئ دعوة لمرة واحدة وأرسل الرابط. يسجّل المعلم الدخول عبر Google ويُعدّ حسابه بنفسه.',gen:'إنشاء دعوة',inviteMsg:'تمت دعوتك للانضمام كمعلم. افتح هذا الرابط:'}
 };
 let lang = 'en';
 try { lang = localStorage.getItem('lang') || ((navigator.language||'').startsWith('ar') ? 'ar' : 'en'); } catch(e){}
-const S = {teachers:[],t:null,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,user:null,done:null,err:'',mine:[],rs:null};
+const S = {ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
+  mine:[],rs:null,rsFrom:null,loaded:null,loading:false,reg:false,tab:'link',invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[]};
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
 const su = u => /^https:\/\//i.test(u||'') ? u : '';   // only allow https links
+const ls = {get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 
-function setLang(l){lang=l;try{localStorage.setItem('lang',l)}catch(e){}render()}
+function setLang(l){lang=l;ls.set('lang',l);render()}
 
 // ---- time zone helpers (no libraries) ----
 function off(ms,tz){const o={};new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(ms)).forEach(p=>o[p.type]=p.value);return Date.UTC(o.year,o.month-1,o.day,o.hour,o.minute,o.second)-ms}
@@ -79,12 +154,17 @@ const fT = ms => new Date(ms).toLocaleTimeString(loc(),{hour:'numeric',minute:'2
 const fD = k => new Date(k+'T12:00').toLocaleDateString(loc(),{weekday:'short',day:'numeric',month:'short'});
 const fF = ms => new Date(ms).toLocaleString(loc(),{weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
 const tn = x => (lang==='ar' && x.name_ar) ? x.name_ar : x.name;
+const wdName = i => new Date(2024,0,7+i).toLocaleDateString(loc(),{weekday:'long'});   // 7 Jan 2024 = Sunday
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const slugify = n => n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
+const myLink = () => location.origin + '/?t=' + S.me.teacher.slug;
+const hasInvite = () => !!ls.get('invite');
 
-// ---- data ----
+// ---- data loading ----
 async function loadMine(){
   if(!S.user){S.mine=[];return}
   const r = await sb.from('bookings')
-    .select('id,student_name,starts_at,teacher_id,session_type_id,session_types(duration_min,name,name_ar),teachers(display_name)')
+    .select('id,student_name,starts_at,teacher_id,session_type_id,session_types(duration_min,name,name_ar),teachers(display_name,slug)')
     .eq('booker_id',S.user.id).eq('status','confirmed').gte('starts_at',new Date().toISOString()).order('starts_at');
   S.mine = r.data || [];
   await Promise.all(S.mine.map(async b=>{
@@ -92,41 +172,49 @@ async function loadMine(){
     b.ct = (c.data && c.data[0]) || {};
   }));
 }
-async function init(){
-  const {data:{session}} = await sb.auth.getSession(); S.user = session?.user || null;
-  sb.auth.onAuthStateChange((_e,s)=>{
-    const u = s?.user || null;
-    // only react to real login/logout, not silent token refreshes (they would wipe the form)
-    if((u?.id||null) !== (S.user?.id||null)){S.user=u; loadMine().then(render)}
-  });
-  await loadMine();
-  const r = await sb.from('teachers').select(TCOLS).eq('is_active',true).order('display_name');
-  S.teachers = r.data || [];
-  const q = new URLSearchParams(location.search).get('t');
-  let pend = null; try{pend = JSON.parse(localStorage.getItem('pend')||'null')}catch(e){}
-  const first = S.teachers.find(x=>x.slug===q) || (pend && S.teachers.find(x=>x.id===pend.t)) || (S.teachers.length===1 && S.teachers[0]);
-  if(first){await pick(first.id); if(pend && pend.ty){S.ty=S.types.find(x=>x.id===pend.ty)||S.ty; build(); if(S.user && S.slots[pend.day]?.includes(pend.slot)){S.day=pend.day;S.slot=pend.slot}} }
-  try{localStorage.removeItem('pend')}catch(e){}
-  render();
+async function loadMe(){
+  if(!S.user){S.me=null;return}
+  const [p,t] = await Promise.all([
+    sb.from('profiles').select('role,full_name').eq('id',S.user.id).maybeSingle(),
+    sb.rpc('get_my_teacher')]);
+  S.me = {role:(p.data&&p.data.role)||'student', teacher:(t.data&&t.data[0])||null};
+  if(S.me.teacher) await loadDash();
 }
-async function pick(id){
-  S.t = S.teachers.find(x=>x.id===id)||null; S.ty=null; S.day=null; S.slot=null; S.slots={}; S.done=null; S.err='';
-  if(!S.t){render();return}
-  const [a,b,c] = await Promise.all([
+async function loadDash(){
+  const id=S.me.teacher.id, today=new Date().toISOString().slice(0,10), now=new Date().toISOString();
+  const bq = cols => sb.from('bookings').select(cols).eq('teacher_id',id).eq('status','confirmed').gte('starts_at',now).order('starts_at');
+  const [a,b,c,d] = await Promise.all([
+    sb.from('session_types').select('*').eq('teacher_id',id).order('duration_min'),
+    sb.from('availability_rules').select('*').eq('teacher_id',id).order('start_time'),
+    sb.from('availability_exceptions').select('*').eq('teacher_id',id).gte('on_date',today).order('on_date'),
+    bq('id,student_name,contact_phone,notes,starts_at,session_types(name,name_ar,duration_min)')]);
+  S.dTypes=a.data||[]; S.dRules=b.data||[]; S.dExc=c.data||[];
+  S.wk={}; for(let i=0;i<7;i++) S.wk[i]=[];
+  S.dRules.forEach(r=>S.wk[r.weekday].push([r.start_time.slice(0,5),r.end_time.slice(0,5)]));
+  let bk=d;
+  if(bk.error) bk=await bq('id,student_name,starts_at,session_types(name,name_ar,duration_min)');
+  S.dBk=bk.data||[];
+}
+async function loadTeacher(){
+  S.t=null; S.bad=false; S.loaded=null;
+  if(!S.slug) return;
+  const r = await sb.from('teachers').select(TCOLS).eq('slug',S.slug).eq('is_active',true).maybeSingle();
+  S.t = r.data || null; S.bad = !S.t;
+}
+// loads the booking data for the current teacher link (needs login)
+async function loadBook(keep){
+  if(!S.user||!S.t) return;
+  const id=S.t.id, ty=keep&&S.ty&&S.ty.id, err=keep?S.err:'';
+  S.ty=null;S.day=null;S.slot=null;S.slots={};S.done=null;S.err=err;
+  const [a,b,c,r] = await Promise.all([
     sb.from('session_types').select('*').eq('teacher_id',id).eq('is_active',true).order('duration_min'),
     sb.from('availability_rules').select('*').eq('teacher_id',id),
-    sb.from('availability_exceptions').select('*').eq('teacher_id',id)]);
+    sb.from('availability_exceptions').select('*').eq('teacher_id',id),
+    sb.rpc('get_busy_times',{p_teacher:id,p_from:new Date().toISOString(),p_to:new Date(Date.now()+15*864e5).toISOString()})]);
   S.types=a.data||[]; S.rules=b.data||[]; S.exc=c.data||[];
-  const r = await sb.rpc('get_busy_times',{p_teacher:id,p_from:new Date().toISOString(),p_to:new Date(Date.now()+15*864e5).toISOString()});
   S.busy=(r.data||[]).map(x=>[Date.parse(x.starts_at),Date.parse(x.blocked_until)]);
-  if(S.types.length===1) S.ty=S.types[0];
-  build(); render();
-}
-// reload teacher data (fresh busy times) but keep the chosen session length
-async function reloadKeep(){
-  const id=S.t.id, ty=S.ty&&S.ty.id;
-  await pick(id);
-  if(ty){S.ty=S.types.find(x=>x.id===ty)||S.ty; build()}
+  S.ty=(ty&&S.types.find(x=>x.id===ty)) || (S.types.length===1?S.types[0]:null);
+  S.loaded=id; build();
 }
 function build(){
   S.slots={}; S.day=null; S.slot=null; if(!S.t||!S.ty) return;
@@ -139,22 +227,33 @@ function build(){
       const a=toUtc(ds,r.start_time.slice(0,5),tz), b=toUtc(ds,r.end_time.slice(0,5),tz);
       for(let s=a;s+dur<=b;s+=18e5){
         if(s<min||S.busy.some(([x,y])=>s<y&&s+dur+buf>x)) continue;
-        const k=new Date(s).toLocaleDateString('en-CA'); (S.slots[k]=S.slots[k]||[]).push(s);
+        const k=new Date(s).toLocaleDateString('en-CA'); const arr=(S.slots[k]=S.slots[k]||[]); if(!arr.includes(s)) arr.push(s);
       }
     });
   }
   Object.values(S.slots).forEach(a=>a.sort((x,y)=>x-y));
 }
-function pickType(id){S.ty=S.types.find(x=>x.id===id);build();render()}
-function pickDay(k){S.day=k;S.slot=null;render()}
-function pickSlot(ms){S.slot=ms;render()}
 
-async function signIn(){
-  try{if(S.t&&S.ty)localStorage.setItem('pend',JSON.stringify({t:S.t.id,ty:S.ty.id,day:S.day,slot:S.slot}))}catch(e){}
-  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname}});
+// ---- navigation ----
+// slug = open that teacher's booking page; null = home / dashboard
+async function nav(slug){
+  S.slug=slug||null; S.done=null; S.err=''; S.msg=''; S.reg=false; S.rs=null;
+  try{history.replaceState(null,'',slug?'?t='+encodeURIComponent(slug):location.pathname)}catch(e){}
+  await loadTeacher(); if(S.t&&S.user) await loadBook(); render();
 }
-async function signOut(){await sb.auth.signOut();S.user=null;S.mine=[];S.rs=null;render()}
+function setTab(t){S.tab=t;S.err='';S.msg='';render()}
+function pickType(id){S.ty=S.types.find(x=>x.id===id);build();render()}
+function pickDay(k){S.day=k||null;S.slot=null;render()}
+function pickSlot(v){S.slot=v?+v:null;render()}
 
+// ---- auth ----
+async function signIn(){
+  if(S.slug) ls.set('next',S.slug);
+  await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/'}});
+}
+async function signOut(){await sb.auth.signOut();S.user=null;S.me=null;S.mine=[];S.rs=null;S.loaded=null;S.reg=false;render()}
+
+// ---- booking actions ----
 async function contactFor(id){
   const c = await sb.rpc('get_booking_contact',{p_booking:id});
   return (c.data && c.data[0]) || {};
@@ -165,87 +264,332 @@ async function book(){
   const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:''});
   if(error){
     const lim=(error.message||'').includes('booking limit');
-    await reloadKeep(); S.err=tr(lim?'limit':'taken'); render(); return;
+    S.err=''; await loadBook(true); S.err=tr(lim?'limit':'taken'); render(); return;
   }
   const ct=await contactFor(data);
   S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:ct.meeting_url||'',whatsapp:ct.whatsapp||''};
   S.err=''; await loadMine(); render();
 }
-
-// ---- cancel / reschedule ----
 async function cancelBooking(id){
   if(!confirm(tr('confirmCancel'))) return;
   const {error}=await sb.rpc('cancel_booking',{p_booking:id});
   await loadMine();
-  if(S.t) await reloadKeep();
+  if(S.t&&S.user) await loadBook(true);
   S.err = error ? tr('late') : ''; render();
 }
 async function startResched(id){
-  const b=S.mine.find(x=>x.id===id); if(!b) return;
-  S.rs=b; await pick(b.teacher_id);
+  const b=S.mine.find(x=>x.id===id); if(!b||!b.teachers) return;
+  S.rs=b; S.rsFrom=S.slug; S.slug=b.teachers.slug; S.done=null; S.err='';
+  await loadTeacher(); await loadBook();
   S.ty=S.types.find(x=>x.id===b.session_type_id)||null; build(); render();
   window.scrollTo({top:0,behavior:'smooth'});
 }
-async function stopResched(){S.rs=null; if(S.t) await pick(S.t.id); else render()}
+async function stopResched(){const f=S.rsFrom; S.rs=null; await nav(f)}
 async function doResched(){
   const {data,error}=await sb.rpc('reschedule_booking',{p_booking:S.rs.id,p_starts:new Date(S.slot).toISOString()});
   if(error){
     const late=(error.message||'').includes('too late');
-    await reloadKeep(); S.err=tr(late?'late':'taken'); render(); return;
+    S.err=''; await loadBook(true); S.ty=S.types.find(x=>x.id===S.rs.session_type_id)||S.ty; build(); S.err=tr(late?'late':'taken'); render(); return;
   }
   const ct=await contactFor(data);
   S.done={start:S.slot,name:S.rs.student_name,type:S.ty,t:S.t,meeting:ct.meeting_url||'',whatsapp:ct.whatsapp||''};
   S.rs=null; S.err=''; await loadMine(); render();
 }
-function again(){S.rs=null; S.done=null; if(S.t) pick(S.t.id); else render()}
 
-// ---- view ----
-function render(){
-  document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
-  $('#h1').textContent=tr('title'); $('#sub').textContent=tr('sub'); $('#lg').textContent=tr('lang');
-  $('#auth').textContent=tr(S.user?'out':'in');
-  $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
-  const A=$('#app');
-  if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
-  if(S.done){const d=S.done,m=su(d.meeting);
-    const wa=(d.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+d.type.duration_min+' '+tr('min')+')');
-    A.innerHTML='<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+d.type.duration_min+' '+tr('min')+'</span></p>'
-      +(m?'<p><a href="'+esc(m)+'" target="_blank" rel="noopener">'+tr('link')+'</a></p>':'')
-      +(wa?'<a class="btn w" href="https://wa.me/'+wa+'?text='+txt+'">'+tr('wa')+'</a>':'')
-      +'<br><button class="btn g" onclick="again()">'+tr('again')+'</button></div>';return}
-  let h='';
-  // upcoming sessions (hidden while changing a time)
-  if(S.user && S.mine.length && !S.rs){
-    h+='<div class="card"><h2>'+tr('mine')+'</h2>'+S.mine.map(b=>{
-      const st=b.session_types||{}, link=su(b.ct&&b.ct.meeting_url);
-      return '<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(b.teachers?.display_name)+'</span>'
-        +(link?'<br><a href="'+esc(link)+'" target="_blank" rel="noopener">'+tr('link')+'</a>':'')+'</div>'
-        +'<div class="row"><button class="chip" onclick="startResched(\''+b.id+'\')">'+tr('resched')+'</button><button class="chip" onclick="cancelBooking(\''+b.id+'\')">'+tr('cancel')+'</button></div></div>';
-    }).join('')+'</div>';
+// ---- teacher registration ----
+function onNameInput(el){const s=$('#rs'); if(s&&!s.dataset.m) s.value=slugify(el.value)}
+async function registerTeacher(){
+  const admin=S.me.role==='admin';
+  const code=admin?'':$('#rc').value.trim(), name=$('#rn').value.trim(), slug=$('#rs').value.trim().toLowerCase(), tz=$('#rt').value;
+  if(!name||!/^[a-z0-9-]{3,30}$/.test(slug)){S.err=tr('errSlug');render();return}
+  if(!admin&&!code){S.err=tr('errCode');render();return}
+  const {error}=await sb.rpc('register_teacher',{p_code:code,p_name:name,p_slug:slug,p_tz:tz});
+  if(error){
+    const m=(error.message||'').toLowerCase();
+    S.err = m.includes('code')?tr('errCode') : (m.includes('slug')||m.includes('duplicate')||m.includes('unique'))?tr('errSlug') : tr('errGen');
+    render(); return;
   }
-  if(S.rs){
-    h+='<div class="card"><h2>'+tr('changing')+' '+esc(S.rs.student_name)+'</h2><p class="mut">'+fF(Date.parse(S.rs.starts_at))+'</p><button class="chip" onclick="stopResched()">'+tr('back')+'</button></div>';
-  } else {
-    h+='<div class="card"><h2><span class="n">1</span>'+tr('teacher')+'</h2><select onchange="pick(this.value)"><option value="">'+tr('pick')+'</option>'
-      +S.teachers.map(x=>'<option value="'+x.id+'"'+(S.t&&S.t.id===x.id?' selected':'')+'>'+esc(x.display_name)+'</option>').join('')+'</select>';
-    if(S.t){h+='<h2 style="margin-top:6px">'+tr('len')+'</h2><div class="row">'+S.types.map(x=>'<button class="chip'+(S.ty&&S.ty.id===x.id?' on':'')+'" onclick="pickType(\''+x.id+'\')">'+x.duration_min+' '+tr('min')+'<small>'+esc(tn(x))+'</small></button>').join('')+'</div>'}
-    h+='</div>';
+  ls.del('invite'); S.reg=false; S.err=''; S.tab='link';
+  await loadMe(); S.msg=tr('saved'); render();
+}
+
+// ---- teacher dashboard actions ----
+const flash = (m,isErr)=>{S.msg=isErr?'':m;S.err=isErr?m:'';render()};
+const flashHtml = () => (S.err?'<div class="err">'+esc(S.err)+'</div>':'')+(S.msg?'<div class="okb">'+esc(S.msg)+'</div>':'');
+async function copyLink(){
+  const el=$('#lk');
+  try{await navigator.clipboard.writeText(el.value)}catch(e){el.select();document.execCommand('copy')}
+  $('#cp').textContent=tr('copied'); setTimeout(()=>{const b=$('#cp'); if(b) b.textContent=tr('copy')},1600);
+}
+function addR(d){const a=S.wk[d],l=a[a.length-1]; a.push(l?[l[1],l[1]]:['16:00','20:00']); render()}
+function delR(d,j){S.wk[d].splice(j,1); render()}
+function setR(d,j,k,v){S.wk[d][j][k]=v}
+async function saveHours(){
+  const id=S.me.teacher.id, rows=[];
+  for(let d=0;d<7;d++){
+    const a=S.wk[d].filter(r=>r[0]&&r[1]).slice().sort((x,y)=>x[0]<y[0]?-1:1);
+    for(let i=0;i<a.length;i++){
+      if(a[i][1]<=a[i][0]||(i&&a[i][0]<a[i-1][1])){flash(tr('badHours'),true);return}
+      rows.push({teacher_id:id,weekday:d,start_time:a[i][0],end_time:a[i][1]});
+    }
   }
-  if(S.t&&S.ty){
-    const days=Object.keys(S.slots).sort();
-    h+='<div class="card"><h2><span class="n">2</span>'+tr('day')+'</h2>'+(days.length?'<div class="row">'+days.map(k=>'<button class="chip'+(S.day===k?' on':'')+'" onclick="pickDay(\''+k+'\')">'+fD(k)+'</button>').join('')+'</div>':'<p class="mut">'+tr('none')+'</p>');
-    if(S.day) h+='<h2 style="margin-top:14px"><span class="n">3</span>'+tr('time')+'</h2><div class="row">'+S.slots[S.day].map(s=>'<button class="chip'+(S.slot===s?' on':'')+'" onclick="pickSlot('+s+')">'+fT(s)+'</button>').join('')+'</div><p class="mut">'+tr('tz')+': '+Intl.DateTimeFormat().resolvedOptions().timeZone+'</p>';
+  const del=await sb.from('availability_rules').delete().eq('teacher_id',id);
+  if(del.error){flash(tr('errGen'),true);return}
+  if(rows.length){const ins=await sb.from('availability_rules').insert(rows); if(ins.error){await loadDash();flash(tr('errGen'),true);return}}
+  await loadDash(); flash(tr('saved'));
+}
+async function addExc(off){
+  const d=$('#xd').value, a=$('#xa').value, b=$('#xb').value;
+  if(!d){flash(tr('needDate'),true);return}
+  const row={teacher_id:S.me.teacher.id,on_date:d,is_available:!off};
+  if(!off){if(!a||!b||b<=a){flash(tr('needTimes'),true);return} row.start_time=a;row.end_time=b}
+  const r=await sb.from('availability_exceptions').insert(row);
+  if(r.error){flash(tr('errGen'),true);return}
+  await loadDash(); flash(tr('saved'));
+}
+async function delExc(id){await sb.from('availability_exceptions').delete().eq('id',id); await loadDash(); flash(tr('saved'))}
+async function saveType(id){
+  const g=k=>$('#ty-'+k+'-'+id);
+  const row={name:g('n').value.trim(),name_ar:g('a').value.trim()||null,duration_min:parseInt(g('d').value,10),buffer_min:parseInt(g('b').value,10)||0,is_active:g('v').checked};
+  if(!row.name||!(row.duration_min>0)||row.buffer_min<0){flash(tr('badType'),true);return}
+  const r=await sb.from('session_types').update(row).eq('id',id);
+  if(r.error){flash(tr('errGen'),true);return}
+  await loadDash(); flash(tr('saved'));
+}
+async function addType(){
+  const g=k=>$('#ty-'+k+'-new');
+  const row={teacher_id:S.me.teacher.id,name:g('n').value.trim(),name_ar:g('a').value.trim()||null,duration_min:parseInt(g('d').value,10),buffer_min:parseInt(g('b').value,10)||0,is_active:true};
+  if(!row.name||!(row.duration_min>0)||row.buffer_min<0){flash(tr('badType'),true);return}
+  const r=await sb.from('session_types').insert(row);
+  if(r.error){flash(tr('errGen'),true);return}
+  await loadDash(); flash(tr('saved'));
+}
+async function saveProfile(){
+  const v=i=>$('#'+i).value.trim();
+  const slug=v('ps').toLowerCase(), name=v('pn'), meet=v('pm'), photo=v('pp'), wa=v('pw').replace(/\D/g,''), nh=parseInt(v('pnh'),10);
+  if(!name||!/^[a-z0-9-]{3,30}$/.test(slug)||(meet&&!su(meet))||(photo&&!su(photo))||(wa&&!/^[0-9]{6,15}$/.test(wa))||!(nh>=0&&nh<=168)){flash(tr('badProf'),true);return}
+  const r=await sb.from('teachers').update({slug,display_name:name,bio:v('pb')||null,photo_url:photo||null,timezone:$('#pt').value,meeting_url:meet||null,whatsapp:wa||null,min_notice_hours:nh}).eq('id',S.me.teacher.id);
+  if(r.error){flash((r.error.message||'').toLowerCase().includes('slug')||r.error.code==='23505'?tr('errSlug'):tr('errGen'),true);return}
+  await loadMe(); flash(tr('saved'));
+}
+async function genInvite(){
+  const r=await sb.rpc('create_teacher_invite');
+  if(r.error||!r.data){flash(tr('errGen'),true);return}
+  S.invites.unshift(r.data); render();
+}
+async function copyText(t,btn){
+  try{await navigator.clipboard.writeText(t)}catch(e){prompt('',t)}
+  const o=btn.textContent; btn.textContent=tr('copied'); setTimeout(()=>btn.textContent=o,1500);
+}
+
+// ---- view pieces ----
+function tzSel(id,sel){
+  let l=[]; try{l=Intl.supportedValuesOf('timeZone')}catch(e){}
+  if(!l.length) l=['Asia/Riyadh','Asia/Dubai','Africa/Cairo','Europe/London','America/New_York'];
+  if(!l.includes('UTC')) l=l.concat('UTC');
+  if(!l.includes(sel)) l=[sel].concat(l);
+  return '<select id="'+id+'">'+l.map(z=>'<option'+(z===sel?' selected':'')+'>'+esc(z)+'</option>').join('')+'</select>';
+}
+const fld = (label,inner) => '<label class="fl">'+label+'</label>'+inner;
+
+function teacherCard(t){
+  const p=su(t.photo_url);
+  return '<div class="card tc"><div class="av">'+(p?'<img src="'+esc(p)+'" alt="">':esc((t.display_name||'?').trim().charAt(0).toUpperCase()))+'</div><div><h2>'+esc(t.display_name)+'</h2>'+(t.bio?'<p class="mut">'+esc(t.bio)+'</p>':'')+'</div></div>';
+}
+function minesCard(){
+  if(!S.user||!S.mine.length) return '';
+  return '<div class="card"><h2>'+tr('mine')+'</h2>'+S.mine.map(b=>{
+    const st=b.session_types||{}, link=su(b.ct&&b.ct.meeting_url);
+    return '<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(b.teachers?.display_name)+'</span>'
+      +(link?'<br><a href="'+esc(link)+'" target="_blank" rel="noopener">'+tr('link')+'</a>':'')+'</div>'
+      +'<div class="row"><button class="chip" onclick="startResched(\''+b.id+'\')">'+tr('resched')+'</button><button class="chip" onclick="cancelBooking(\''+b.id+'\')">'+tr('cancel')+'</button></div></div>';
+  }).join('')+'</div>';
+}
+function doneCard(){
+  const d=S.done, m=su(d.meeting), dur=d.type.duration_min;
+  const wa=(d.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+dur+' '+tr('min')+')');
+  const gc=ms=>new Date(ms).toISOString().replace(/[-:]|\.\d{3}/g,'');
+  const cal='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(d.t.display_name+' – '+d.name)+'&dates='+gc(d.start)+'/'+gc(d.start+dur*6e4)+'&details='+encodeURIComponent(m||'');
+  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span></p>'
+    +(m?'<p><a href="'+esc(m)+'" target="_blank" rel="noopener">'+tr('link')+'</a></p>':'')
+    +(wa?'<a class="btn w" href="https://wa.me/'+wa+'?text='+txt+'" target="_blank" rel="noopener">'+tr('wa')+'</a>':'')
+    +'<a class="btn g" href="'+esc(cal)+'" target="_blank" rel="noopener">'+tr('gcal')+'</a>'
+    +'<br><button class="btn g" onclick="nav(S.slug)">'+tr('again')+'</button></div>';
+}
+
+function viewLanding(){
+  return '<div class="card ok"><div class="big">👋</div><h2 style="justify-content:center">'+tr('welcome')+'</h2><p class="mut">'+tr(hasInvite()?'invited':'welSub')+'</p><button class="btn" onclick="signIn()">'+tr('login')+'</button></div>';
+}
+
+function viewBook(){
+  if(S.bad) return '<div class="card err">'+tr('badLink')+'</div>';
+  if(!S.t) return '';
+  if(S.done) return doneCard();
+  let h=teacherCard(S.t);
+  if(!S.user) return h+'<div class="card ok"><p>'+tr('signToBook')+'</p><button class="btn" onclick="signIn()">'+tr('login')+'</button></div>';
+  if(S.loaded!==S.t.id) return h+'<div class="card mut">…</div>';
+  if(S.rs) h+='<div class="card"><h2>'+tr('changing')+' '+esc(S.rs.student_name)+'</h2><p class="mut">'+fF(Date.parse(S.rs.starts_at))+'</p><button class="chip" onclick="stopResched()">'+tr('back')+'</button></div>';
+  else h+='<div class="card"><h2><span class="n">1</span>'+tr('len')+'</h2>'+(S.types.length
+    ? '<div class="row">'+S.types.map(x=>'<button class="chip'+(S.ty&&S.ty.id===x.id?' on':'')+'" onclick="pickType(\''+x.id+'\')">'+x.duration_min+' '+tr('min')+'<small>'+esc(tn(x))+'</small></button>').join('')+'</div>'
+    : '<p class="mut">'+tr('noTypes')+'</p>')+'</div>';
+  if(S.ty){
+    const days=Object.keys(S.slots).sort(), dur=S.ty.duration_min*6e4;
+    h+='<div class="card"><h2><span class="n">2</span>'+tr('day')+'</h2>';
+    if(days.length){
+      h+='<select onchange="pickDay(this.value)"><option value="">'+tr('pickDay')+'</option>'+days.map(k=>'<option value="'+k+'"'+(S.day===k?' selected':'')+'>'+fD(k)+'</option>').join('')+'</select>';
+      if(S.day) h+='<h2 style="margin-top:6px">'+tr('time')+'</h2><select onchange="pickSlot(this.value)"><option value="">'+tr('pickTime')+'</option>'+S.slots[S.day].map(s=>'<option value="'+s+'"'+(S.slot===s?' selected':'')+'>'+fT(s)+' – '+fT(s+dur)+'</option>').join('')+'</select>';
+      h+='<p class="mut" style="margin:0">'+tr('tz')+': '+esc(Intl.DateTimeFormat().resolvedOptions().timeZone)+'</p>';
+    } else h+='<p class="mut">'+tr('none')+'</p>';
     h+='</div>';
   }
   if(S.slot){
-    h+='<div class="card"><h2>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+S.err+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
-    if(S.rs) h+='<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>';
-    else h+=S.user?'<input id="sn" placeholder="'+tr('name')+'"><input id="ph" type="tel" placeholder="'+tr('phone')+'"><button class="btn" onclick="book()">'+tr('book')+'</button>':'<button class="btn" onclick="signIn()">'+tr('google')+'</button>';
+    h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
+    h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
+      :'<input id="sn" placeholder="'+tr('name')+'"><input id="ph" type="tel" placeholder="'+tr('phone')+'"><button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
-  } else if(S.err){h+='<div class="card err">'+S.err+'</div>'}
-  A.innerHTML=h;
+  } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
+  if(!S.rs) h+=minesCard();
+  return h;
 }
-function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function invitesCard(){
+  return '<div class="card"><h2>'+tr('invTitle')+'</h2><p class="mut">'+tr('invHint')+'</p><button class="btn" onclick="genInvite()">'+tr('gen')+'</button>'
+    +S.invites.map(c=>{
+      const url=location.origin+'/?invite='+c, msg=tr('inviteMsg')+' '+url;
+      return '<div class="sub"><code>'+esc(c)+'</code><div class="row" style="margin-top:10px"><button class="chip" onclick="copyText(\''+esc(url)+'\',this)">'+tr('copy')+'</button><a class="chip" style="text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(msg)+'">'+tr('shareWa')+'</a></div></div>';
+    }).join('')+'</div>';
+}
+function regCard(){
+  const admin=S.me.role==='admin', tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'UTC';
+  const nm=S.user.user_metadata?.full_name||'';
+  return '<div class="card"><h2>'+tr('regTitle')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')
+    +(admin?'<p class="mut">'+tr('adminNote')+'</p>':fld(tr('code'),'<input id="rc" value="'+esc(ls.get('invite')||'')+'" autocapitalize="characters" style="direction:ltr">'))
+    +fld(tr('dname'),'<input id="rn" value="'+esc(nm)+'" oninput="onNameInput(this)">')
+    +fld(tr('slugL'),'<input id="rs" value="'+esc(slugify(nm))+'" oninput="this.dataset.m=1" style="direction:ltr" autocapitalize="none">')
+    +fld(tr('tzl'),tzSel('rt',tz))
+    +'<button class="btn" onclick="registerTeacher()">'+tr('create')+'</button>'
+    +(hasInvite()?'':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
+}
+function viewHome(){
+  if(S.reg) return regCard();
+  let h=minesCard();
+  h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'
+    +(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
+  h+='<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>';
+  if(S.me&&S.me.role==='admin') h+=invitesCard();
+  return h;
+}
+
+// ---- dashboard tabs ----
+function tabLink(){
+  const t=S.me.teacher, link=myLink();
+  const ok=[[S.dRules.length>0,'ckHours','hours'],[!!t.meeting_url,'ckMeet','prof'],[S.dTypes.some(x=>x.is_active),'ckTypes','types'],[!!t.whatsapp,'ckWa','prof']];
+  return '<div class="card"><h2>'+tr('linkTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('linkHint')+'</p>'
+    +'<div class="lk"><input id="lk" readonly value="'+esc(link)+'"><button class="chip" id="cp" onclick="copyLink()">'+tr('copy')+'</button></div>'
+    +'<a class="btn w" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(tr('shareMsg')+' '+link)+'">'+tr('shareWa')+'</a>'
+    +'<a class="btn g" href="javascript:nav(\''+esc(t.slug)+'\')">'+tr('preview')+'</a></div>'
+    +'<div class="card"><h2>'+tr('check')+'</h2>'+ok.map(([v,k,tab])=>'<div class="ck"><span>'+(v?'✅':'⚠️')+'</span><span>'+tr(k)+(v?'':' · <a onclick="setTab(\''+tab+'\')">'+tr('fix')+'</a>')+'</span></div>').join('')+'</div>';
+}
+function tabHours(){
+  const t=S.me.teacher, today=new Date().toISOString().slice(0,10);
+  let h='<div class="card"><h2>'+tr('hoursTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('hoursHint')+' <b dir="ltr">'+esc(t.timezone)+'</b></p>';
+  for(let d=0;d<7;d++){
+    h+='<div class="day"><b>'+wdName(d)+'</b><div class="rs">'
+      +(S.wk[d].length?S.wk[d].map((r,j)=>'<div class="row"><input class="t" type="time" value="'+r[0]+'" onchange="setR('+d+','+j+',0,this.value)"> – <input class="t" type="time" value="'+r[1]+'" onchange="setR('+d+','+j+',1,this.value)"><button class="chip" aria-label="'+tr('remove')+'" onclick="delR('+d+','+j+')">✕</button></div>').join(''):'<span class="mut" style="padding-top:8px">'+tr('closed')+'</span>')
+      +'<div><button class="chip" onclick="addR('+d+')">'+tr('addR')+'</button></div></div></div>';
+  }
+  h+='<br><button class="btn" onclick="saveHours()">'+tr('save')+'</button></div>';
+  h+='<div class="card"><h2>'+tr('offTitle')+'</h2><p class="mut">'+tr('offHint')+'</p>'
+    +(S.dExc.length?S.dExc.map(x=>'<div class="row" style="justify-content:space-between;padding:6px 0"><span>📅 '+fD(x.on_date)+' · '+(x.is_available?esc((x.start_time||'').slice(0,5)+' – '+(x.end_time||'').slice(0,5)):tr('dayOff'))+'</span><button class="chip" onclick="delExc(\''+x.id+'\')">'+tr('remove')+'</button></div>').join(''):'<p class="mut">'+tr('noExc')+'</p>')
+    +'<div class="sub"><input id="xd" type="date" min="'+today+'"><div class="row" style="margin-bottom:10px"><input class="t" id="xa" type="time"> – <input class="t" id="xb" type="time"></div>'
+    +'<div class="g2"><button class="btn g" onclick="addExc(true)">'+tr('dayOff')+'</button><button class="btn g" onclick="addExc(false)">'+tr('custom')+'</button></div></div></div>';
+  return h;
+}
+function typeFields(id,x){
+  x=x||{};
+  return '<div class="g2">'+fld(tr('nameEn'),'<input id="ty-n-'+id+'" value="'+esc(x.name||'')+'">')+fld(tr('nameAr'),'<input id="ty-a-'+id+'" dir="rtl" value="'+esc(x.name_ar||'')+'">')
+    +fld(tr('dur'),'<input id="ty-d-'+id+'" type="number" min="5" step="5" value="'+(x.duration_min||'')+'">')+fld(tr('buf'),'<input id="ty-b-'+id+'" type="number" min="0" step="5" value="'+(x.buffer_min??5)+'">')+'</div>';
+}
+function tabTypes(){
+  return '<div class="card"><h2>'+tr('typesTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('typesHint')+'</p>'
+    +S.dTypes.map(x=>'<div class="sub">'+typeFields(x.id,x)+'<div class="row" style="justify-content:space-between"><label class="row"><input type="checkbox" id="ty-v-'+x.id+'"'+(x.is_active?' checked':'')+'> '+tr('vis')+'</label><button class="chip" onclick="saveType(\''+x.id+'\')">'+tr('save')+'</button></div></div>').join('')+'</div>'
+    +'<div class="card"><h2>'+tr('addType')+'</h2>'+typeFields('new',{buffer_min:5})+'<button class="btn" onclick="addType()">'+tr('add')+'</button></div>';
+}
+function tabBookings(){
+  return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+(S.dBk.length?S.dBk.map(b=>{
+    const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
+    return '<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(b.contact_phone)+'</a>':'')+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div></div>';
+  }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
+}
+function tabProfile(){
+  const t=S.me.teacher;
+  return '<div class="card"><h2>'+tr('tProf')+'</h2>'+flashHtml()
+    +fld(tr('dname'),'<input id="pn" value="'+esc(t.display_name)+'">')
+    +fld(tr('bioL'),'<textarea id="pb">'+esc(t.bio||'')+'</textarea>')
+    +fld(tr('photoL'),'<input id="pp" style="direction:ltr" value="'+esc(t.photo_url||'')+'">')
+    +fld(tr('meetL'),'<input id="pm" style="direction:ltr" placeholder="https://meet.google.com/…" value="'+esc(t.meeting_url||'')+'"><p class="mut" style="margin:-4px 0 10px">'+tr('meetH')+'</p>')
+    +fld(tr('waL'),'<input id="pw" type="tel" style="direction:ltr" placeholder="9665XXXXXXXX" value="'+esc(t.whatsapp||'')+'">')
+    +fld(tr('tzl'),tzSel('pt',t.timezone))
+    +fld(tr('noticeL'),'<input id="pnh" type="number" min="0" max="168" value="'+t.min_notice_hours+'">')
+    +fld(tr('slugL'),'<input id="ps" style="direction:ltr" value="'+esc(t.slug)+'"><p class="mut" style="margin:-4px 0 10px">'+tr('slugWarn')+'</p>')
+    +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>';
+}
+function viewDash(){
+  const tabs=[['link','tLink'],['hours','tHours'],['types','tTypes'],['bk','tBook'],['prof','tProf']];
+  if(S.me.role==='admin') tabs.push(['inv','tInv']);
+  let h='<div class="card"><div class="row">'+tabs.map(([k,l])=>'<button class="chip'+(S.tab===k?' on':'')+'" onclick="setTab(\''+k+'\')">'+tr(l)+'</button>').join('')+'</div></div>';
+  h+=({link:tabLink,hours:tabHours,types:tabTypes,bk:tabBookings,prof:tabProfile,inv:()=>flashHtml()+invitesCard()}[S.tab]||tabLink)();
+  return h;
+}
+
+// ---- main render ----
+function render(){
+  document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  const A=$('#app');
+  $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
+  let b='<button onclick="setLang(lang==\'ar\'?\'en\':\'ar\')">'+tr('lang')+'</button> ';
+  if(S.user&&S.slug) b+='<button onclick="nav(null)">'+tr(S.me&&S.me.teacher?'goDash':'goHome')+'</button> ';
+  b+='<button onclick="S.user?signOut():signIn()">'+tr(S.user?'out':'in')+'</button>';
+  $('#btns').innerHTML=b;
+  const dash=!S.slug&&S.user&&S.me&&S.me.teacher&&!S.reg;
+  $('#h1').textContent = S.slug&&S.t ? tr('bookWith')+' '+S.t.display_name : dash ? tr('dashTitle') : tr('title');
+  $('#sub').textContent = S.slug ? '' : dash ? S.me.teacher.display_name : tr('sub');
+  if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
+  if(!S.ready){A.innerHTML='<div class="card mut">…</div>';return}
+  A.innerHTML = S.slug ? viewBook()
+    : !S.user ? viewLanding()
+    : !S.me ? '<div class="card mut">…</div>'
+    : dash ? viewDash()
+    : viewHome();
+}
+
+async function init(){
+  const q=new URLSearchParams(location.search), m=location.pathname.match(/^\/t\/([a-z0-9-]+)/i);
+  let slug=((q.get('t')||(m&&m[1])||'')+'').toLowerCase()||null;
+  const inv=q.get('invite'); if(inv) ls.set('invite',inv.toUpperCase().replace(/[^A-Z0-9]/g,''));
+  const {data:{session}}=await sb.auth.getSession(); S.user=session?.user||null;
+  const next=ls.get('next'); ls.del('next');
+  if(!slug&&S.user&&next) slug=next;          // returning from Google login: go back to the teacher's page
+  S.slug=slug;
+  if(slug||inv){try{history.replaceState(null,'',slug?'?t='+encodeURIComponent(slug):location.pathname)}catch(e){}}
+  sb.auth.onAuthStateChange((_e,s)=>{
+    const u=s?.user||null;
+    // only react to real login/logout, not silent token refreshes (they would wipe the form)
+    if((u?.id||null)!==(S.user?.id||null)) setTimeout(async()=>{
+      S.user=u; S.loaded=null; S.done=null;
+      if(u){await Promise.all([loadMe(),loadMine()])} else {S.me=null;S.mine=[]}
+      if(S.slug&&S.t&&u) await loadBook();
+      S.reg = !!(u&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
+      render();
+    },0);
+  });
+  if(S.user) await Promise.all([loadMe(),loadMine()]);
+  await loadTeacher();
+  if(S.slug&&S.user&&S.t) await loadBook();
+  S.reg = !!(S.user&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
+  S.ready=true; render();
+}
 render(); init();
 </script>
 </body>
