@@ -65,6 +65,7 @@ a.btn{display:block;text-align:center;text-decoration:none;margin-top:10px}
 .feat b{display:block;margin-bottom:4px;font-size:15px}
 .calwrap{overflow-x:auto;padding-bottom:8px}
 .calgrid{display:grid;grid-template-columns:repeat(7,minmax(148px,1fr));gap:8px;min-width:1040px}
+.timetable-wrap{overflow:auto;margin-top:12px}.timetable{display:grid;grid-template-columns:72px repeat(7,minmax(112px,1fr));min-width:930px;border-top:1px solid var(--line);border-left:1px solid var(--line);gap:0}.tt-head,.tt-time,.tt-cell{min-height:42px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}.tt-head{position:sticky;top:0;background:var(--card);font-weight:700;text-align:center;z-index:1}.tt-time{background:var(--bg);font-variant-numeric:tabular-nums;color:var(--muted);text-align:center}.tt-cell{background:var(--bg)}.tt-free{background:#eaf7ee}.tt-free button{border:0;border-radius:8px;background:#c9ebd3;color:#14532d;font-weight:800;width:28px;height:26px;cursor:pointer}.tt-booked{background:#eee9fb;color:#49317e}.tt-booked small{display:block;font-size:10px}.tt-occupied{background:#f2eff9}.tt-closed{background:var(--bg);opacity:.5}.tt-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
 .calday{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:220px}
 .calday.single{min-height:auto}
 .calday h3{font-size:14px;margin:0 0 8px}
@@ -155,7 +156,7 @@ const T = {
   errCode:'That invite code is invalid or already used.',errSlug:'That link name is taken or not valid (3–30 letters, numbers or dashes).',errGen:'Something went wrong. Please try again.',
   adminNote:'You’re the admin, so no invite code is needed.',
   dashTitle:'Teacher dashboard',
-  tLink:'Booking link',tHours:'Weekly hours',tTypes:'Lessons',tBook:'Bookings',tProf:'Profile',tInv:'Invites',
+  tLink:'Booking link',tHours:'Weekly hours',tTypes:'Lessons',tBook:'Bookings',tProf:'Profile',tInv:'Invites',tAdmin:'Platform admin',bookForStudent:'Book for a student',existingStudent:'Existing student (or type a new name)',adminTeachers:'Teacher directory',adminStats:'Platform overview',activeTeachers:'Active teachers',totalTeachers:'Registered teachers',totalBookings:'Total bookings',confirmedBookings:'Confirmed',cancelledBookings:'Cancelled',teacherCreated:'Teacher-created bookings',publicPreview:'Public page',createdAt:'Joined',noTeachers:'No teachers found',adminLoadError:'Could not load platform overview.',
   linkTitle:'Your BookMyClass link',linkHint:'Share this link with students and parents. They sign in with Google, then pick a time.',
   copy:'Copy link',copied:'Copied ✓',shareWa:'Share on WhatsApp',preview:'Preview as a student',shareMsg:'Book a lesson with me on BookMyClass:',
   check:'Setup checklist',ckHours:'Weekly hours are set',ckMeet:'Meeting link added',ckTypes:'At least one lesson length is visible',ckWa:'WhatsApp number added',fix:'Fix',
@@ -211,7 +212,7 @@ const T = {
   errCode:'رمز الدعوة غير صالح أو مستخدم مسبقًا.',errSlug:'اسم الرابط مستخدم أو غير صالح (من 3 إلى 30 حرفًا إنجليزيًا أو رقمًا أو شرطة).',errGen:'حدث خطأ. حاول مرة أخرى.',
   adminNote:'أنت المشرف، لذلك لا تحتاج إلى رمز دعوة.',
   dashTitle:'لوحة المعلم',
-  tLink:'رابط الحجز',tHours:'ساعات العمل',tTypes:'الحصص',tBook:'الحجوزات',tProf:'الملف الشخصي',tInv:'الدعوات',
+  tLink:'رابط الحجز',tHours:'ساعات العمل',tTypes:'الحصص',tBook:'الحجوزات',tProf:'الملف الشخصي',tInv:'الدعوات',tAdmin:'إدارة المنصة',bookForStudent:'احجز حصة لطالب',existingStudent:'طالب حالي (أو اكتب اسمًا جديدًا)',adminTeachers:'دليل المعلمين',adminStats:'نظرة عامة على المنصة',activeTeachers:'المعلمون النشطون',totalTeachers:'إجمالي المعلمين',totalBookings:'إجمالي الحجوزات',confirmedBookings:'مؤكدة',cancelledBookings:'ملغاة',teacherCreated:'حجوزات أنشأها المعلمون',publicPreview:'معاينة الصفحة',createdAt:'تاريخ الانضمام',noTeachers:'لا يوجد معلمون',adminLoadError:'تعذر تحميل بيانات المنصة.',
   linkTitle:'رابط BookMyClass الخاص بك',linkHint:'شارك هذا الرابط مع الطلاب وأولياء الأمور. يسجّلون الدخول عبر Google ثم يختارون الموعد.',
   copy:'نسخ الرابط',copied:'تم النسخ ✓',shareWa:'مشاركة عبر واتساب',preview:'معاينة كطالب',shareMsg:'احجز حصة معي عبر BookMyClass من هنا:',
   check:'قائمة الإعداد',ckHours:'ساعات العمل محددة',ckMeet:'رابط الحصة مضاف',ckTypes:'مدة حصة واحدة على الأقل ظاهرة',ckWa:'رقم واتساب مضاف',fix:'إصلاح',
@@ -243,7 +244,7 @@ const S = {
   ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
   mine:[],rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
   tab:'link',calMode:'week',calendarOffset:0,dayOffset:0,modal:null,
-  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[]
+  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false
 };
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
@@ -358,7 +359,19 @@ async function nav(slug){
   try{history.replaceState(null,'',slug?'?t='+encodeURIComponent(slug):location.pathname)}catch(e){}
   await loadTeacher(); if(S.t&&S.user) await loadBook(); render();
 }
-function setTab(t){S.tab=t;S.err='';S.msg='';render()}
+function setTab(t){S.tab=t;S.err='';S.msg='';if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
+async function startTeacherBooking(){
+  if(!S.me?.teacher) return;
+  S.teacherBooking=true; S.rs=null; S.rsAsTeacher=true; S.rsFrom=null; S.done=null; S.err='';
+  S.slug=S.me.teacher.slug; await loadTeacher(); await loadBook(); S.rsAsTeacher=true; S.teacherBooking=true; render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function stopTeacherBooking(){S.teacherBooking=false;S.rsAsTeacher=false;S.slug=null;S.done=null;S.err='';await loadDash();render()}
+async function loadAdminOverview(){
+  if(S.adminLoading||S.me?.role!=='admin') return; S.adminLoading=true; render();
+  const {data,error}=await sb.rpc('admin_platform_overview');
+  S.adminLoading=false; S.adminData=error?{error:true}:data; render();
+}
 function setCalMode(m){S.calMode=m;render()}
 function pickType(id){S.ty=S.types.find(x=>x.id===id);build();render()}
 function pickDay(k){S.day=k||null;S.slot=null;render()}
@@ -391,16 +404,19 @@ async function book(){
       const em=(error.message||'').toLowerCase(), lim=em.includes('booking limit'), soon=em.includes('too soon');
       S.booking=false; S.err=''; await loadBook(true); S.err=tr(lim?'limit':soon?'tooSoon':'taken'); render(); return;
     }
-    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:'',recurring:isRec};
-    S.err=''; S.booking=false; render();
+    const createdForTeacher=!!S.teacherBooking;
+    S.err=''; S.booking=false;
+    if(createdForTeacher){
+      S.teacherBooking=false; S.rsAsTeacher=false; S.slug=null; S.done=null;
+      await loadDash(); S.tab='calendar'; S.msg=lang==='ar'?'تم حجز الحصة للطالب بنجاح.':'Lesson booked for the student.'; render(); return;
+    }
+    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:'',recurring:isRec}; render();
     try{
       const ct=await contactFor(data);
       S.done.meeting=ct.meeting_url||''; S.done.whatsapp=ct.whatsapp||'';
       await loadMine();
       if(S.me?.teacher) await loadDash();
-    }catch(refreshError){
-      console.warn('Booking succeeded; optional post-booking refresh failed:',refreshError);
-    }
+    }catch(refreshError){ console.warn('Booking succeeded; optional post-booking refresh failed:',refreshError); }
     render();
   }catch(requestError){
     console.error('Booking request failed:',requestError);
@@ -619,6 +635,7 @@ function viewBook(){
   if(!S.t) return '';
   if(S.done) return doneCard();
   let h=teacherCard(S.t);
+  if(S.teacherBooking) h+='<div class="card"><div class="row" style="justify-content:space-between"><b>'+(lang==='ar'?'حجز حصة لطالب من لوحة المعلم':'Teacher booking for a student')+'</b><button class="chip" onclick="stopTeacherBooking()">'+tr('back')+'</button></div></div>';
   if(!S.user) return h+'<div class="card ok"><p>'+tr('signToBook')+'</p><button class="btn" onclick="signIn()">'+tr('login')+'</button></div>';
   if(S.loaded!==S.t.id) return h+'<div class="card mut">…</div>';
   if(S.rs) h+='<div class="card"><h2>'+tr('changing')+': '+esc(S.rs.student_name)+(S.rsScope==='future'?' <span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</h2><p class="mut">'+fF(Date.parse(S.rs.starts_at))+'</p><button class="chip" onclick="stopResched()">'+tr('back')+'</button></div>';
@@ -638,7 +655,7 @@ function viewBook(){
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
     h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
-      :'<input id="sn" placeholder="'+tr('name')+'"><input id="ph" type="tel" placeholder="'+tr('phone')+'"><label class="ck"><input id="recurringBooking" type="checkbox" checked> '+tr('weeklyRecurring')+'</label><p class="mut">'+tr('recurringHint')+'</p><button class="btn" onclick="book()">'+tr('book')+'</button>';
+      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+(S.teacherBooking?'':'<label class="ck"><input id="recurringBooking" type="checkbox" checked> '+tr('weeklyRecurring')+'</label><p class="mut">'+tr('recurringHint')+'</p>')+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
   if(!S.rs) h+=minesCard();
@@ -745,6 +762,32 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
   return h;
 }
 
+function renderWeekTimetable(days,tz,dayKey,minBookAt){
+  const windowsFor=day=>{const ex=S.dExc.filter(x=>x.on_date===day.key);return ex.some(x=>!x.is_available)?[]:ex.length?ex.filter(x=>x.is_available).map(x=>[(x.start_time||'').slice(0,5),(x.end_time||'').slice(0,5)]):S.wk[new Date(day.key+'T12:00:00Z').getUTCDay()]||[]};
+  const windows=days.map(windowsFor); const all=windows.flat();
+  if(!all.length) return '<div class="calempty">'+tr('unavailable')+'</div>';
+  const mins=all.flatMap(w=>w.map(t=>{const [h,m]=t.split(':').map(Number);return h*60+m}));
+  const from=Math.floor(Math.min(...mins)/30)*30, to=Math.ceil(Math.max(...mins)/30)*30;
+  const times=[]; for(let m=from;m<to;m+=30) times.push(m);
+  const timeLabel=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  let h='<div class="timetable-wrap"><div class="timetable"><div class="tt-head tt-time">'+(lang==='ar'?'الوقت':'Time')+'</div>';
+  days.forEach(d=>h+='<div class="tt-head">'+d.date.toLocaleDateString(loc(),{timeZone:tz,weekday:'short',day:'numeric',month:'short'})+'</div>');
+  times.forEach(m=>{
+    h+='<div class="tt-time">'+timeLabel(m)+'</div>';
+    days.forEach((day,idx)=>{
+      const win=windows[idx].some(w=>{const [a,b]=w.map(t=>{const [hh,mm]=t.split(':').map(Number);return hh*60+mm});return m>=a&&m<b});
+      const at=toUtc(day.key,timeLabel(m),tz), bk=S.dBk.find(b=>dayKey(new Date(b.starts_at))===day.key&&at>=Date.parse(b.starts_at)&&at<Date.parse(b.blocked_until||b.ends_at));
+      const starts=S.dBk.find(b=>dayKey(new Date(b.starts_at))===day.key&&Math.abs(Date.parse(b.starts_at)-at)<60000);
+      if(starts){const st=starts.session_types||{};h+='<div class="tt-cell tt-booked"><b>'+esc(starts.student_name)+'</b><small>'+timeLabel(m)+' · '+(st.duration_min||'')+' '+tr('min')+'</small></div>';}
+      else if(bk) h+='<div class="tt-cell tt-occupied"></div>';
+      else if(win){const type=S.dTypes.filter(t=>t.is_active&&m+t.duration_min<=to&&at>=minBookAt).sort((a,b)=>a.duration_min-b.duration_min)[0];h+='<div class="tt-cell tt-free">'+(type?'<button title="'+tr('bookForStudent')+'" onclick="startTeacherBookingAt(\''+day.key+'\',\''+timeLabel(m)+'\')">＋</button>':'')+'</div>';}
+      else h+='<div class="tt-cell tt-closed"></div>';
+    });
+  });
+  return h+'</div></div><div class="tt-legend"><span>🟩 '+tr('available')+'</span><span>🟪 '+(lang==='ar'?'حصة محجوزة':'Booked lesson')+'</span><span>⬜ '+tr('unavailable')+'</span></div>';
+}
+async function startTeacherBookingAt(day,time){await startTeacherBooking();const types=S.types.filter(x=>x.is_active).sort((a,b)=>a.duration_min-b.duration_min);if(types[0]){S.ty=types[0];build();S.slot=Object.values(S.slots).flat().find(x=>Math.abs(x-toUtc(day,time,S.t.timezone))<60000)||null;S.day=S.slot?new Date(S.slot).toLocaleDateString('en-CA'):null;}render();}
+
 function teacherCalendar(){
   const tz=S.me.teacher.timezone;
   const dayKey=d=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});return p.year+'-'+p.month+'-'+p.day};
@@ -757,7 +800,7 @@ function teacherCalendar(){
     return '<button class="chip'+(S.calMode===m?' on':'')+'" onclick="setCalMode(\''+m+'\')">'+label+'</button>';
   }).join('');
 
-  let h='<div class="card"><div class="calnav"><h2>'+tr('calendarTitle')+'</h2><div class="row">'+modeBtns+'</div></div>'+flashHtml()+'<p class="mut" style="margin-top:0">'+tr('calendarHint')+' (<b dir="ltr">'+esc(tz)+'</b>)</p>';
+  let h='<div class="card"><div class="calnav"><h2>'+tr('calendarTitle')+'</h2><div class="row">'+modeBtns+'<button class="btn" style="width:auto" onclick="startTeacherBooking()">＋ '+tr('bookForStudent')+'</button></div></div>'+flashHtml()+'<p class="mut" style="margin-top:0">'+tr('calendarHint')+' (<b dir="ltr">'+esc(tz)+'</b>)</p>';
 
   if(S.calMode==='day'){
     const d=new Date(); d.setDate(d.getDate()+S.dayOffset);
@@ -778,9 +821,7 @@ function teacherCalendar(){
       +'<button class="chip" onclick="S.calendarOffset++;render()">'+tr('nextWeek')+' ›</button></div>'
       +'<b>'+days[0].date.toLocaleDateString(loc(),{month:'short',day:'numeric'})+' – '+days[6].date.toLocaleDateString(loc(),{month:'short',day:'numeric'})+'</b>'
       +'</div>';
-    h+='<div class="calwrap"><div class="calgrid">';
-    for(const day of days){ h+=renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, false); }
-    h+='</div></div>';
+    h+=renderWeekTimetable(days,tz,dayKey,minBookAt);
   } else {
     if(!S.dBk.length){
       h+='<p class="mut">'+tr('noBk')+'</p>';
@@ -827,11 +868,23 @@ function tabProfile(){
     +fld(tr('slugL'),'<input id="ps" style="direction:ltr" value="'+esc(t.slug)+'"><p class="mut" style="margin:-4px 0 10px">'+tr('slugWarn')+'</p>')
     +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>';
 }
+function adminDashboard(){
+  const d=S.adminData;
+  if(S.adminLoading&&!d) return '<div class="card mut">…</div>';
+  if(!d||d.error) return '<div class="card"><h2>'+tr('adminStats')+'</h2><p class="err">'+tr('adminLoadError')+'</p><button class="btn" onclick="loadAdminOverview()">'+tr('fix')+'</button></div>';
+  const st=d.stats||{};
+  let h='<div class="card"><h2>'+tr('adminStats')+'</h2><div class="g3">'+[[tr('totalTeachers'),st.total_teachers],[tr('activeTeachers'),st.active_teachers],[tr('totalBookings'),st.total_bookings],[tr('confirmedBookings'),st.confirmed_bookings],[tr('cancelledBookings'),st.cancelled_bookings],[tr('teacherCreated'),st.teacher_created_bookings]].map(([k,v])=>'<div class="feat"><b>'+esc(k)+'</b><strong style="font-size:25px">'+Number(v||0).toLocaleString()+'</strong></div>').join('')+'</div></div>';
+  h+='<div class="card"><h2>'+tr('adminTeachers')+'</h2>';
+  const ts=d.teachers||[];
+  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
+  return h+'</div>';
+}
+
 function viewDash(){
   const tabs=[['link','tLink'],['calendar','calendarTab'],['hours','tHours'],['types','tTypes'],['bk','tBook'],['prof','tProf']];
-  if(S.me.role==='admin') tabs.push(['inv','tInv']);
+  if(S.me.role==='admin') tabs.push(['inv','tInv'],['admin','tAdmin']);
   let h='<div class="card"><div class="row">'+tabs.map(([k,l])=>'<button class="chip'+(S.tab===k?' on':'')+'" onclick="setTab(\''+k+'\')">'+tr(l)+'</button>').join('')+'</div></div>';
-  h+=({link:tabLink,calendar:teacherCalendar,hours:tabHours,types:tabTypes,bk:tabBookings,prof:tabProfile,inv:()=>flashHtml()+invitesCard()}[S.tab]||tabLink)();
+  h+=({link:tabLink,calendar:teacherCalendar,hours:tabHours,types:tabTypes,bk:tabBookings,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   return h;
 }
 
