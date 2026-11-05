@@ -167,7 +167,7 @@ const T = {
   bioL:'About you (shown to students)',photoL:'Photo link (optional, https://)',meetL:'Meeting link (Google Meet, Zoom…)',meetH:'Must start with https://. You can change it any time.',waL:'WhatsApp number (digits only, with country code)',noticeL:'Minimum notice (hours)',
   badProf:'Please check: name, link name, https:// links, WhatsApp digits (6–15).',slugWarn:'If you change the link name, the old link stops working.',
   invTitle:'Invite a teacher',invHint:'Generate a one-time invite and send the link. The teacher signs in with Google and sets up their own account.',gen:'Generate invite',inviteMsg:'You’re invited to join BookMyClass as a teacher. Open this link:',
-  weeklyRecurring:'Make this a weekly recurring lesson',recurringHint:'The same day and time will be reserved every week (rolling 12-week schedule) until ended.',
+  weeklyRecurring:'Make this a weekly recurring lesson',recurringHint:'Choose how many weekly lessons to reserve.',recurrenceCount:'Number of weekly lessons',
   onSpot:'Allow on-the-spot bookings (no advance notice)',noticeEight:'When this is off, students must book at least 8 hours ahead.',
   calendarTitle:'Teaching Schedule',calendarTab:'Calendar',
   calViewDay:'Day',calViewWeek:'Week',calViewAgenda:'Agenda',
@@ -223,7 +223,7 @@ const T = {
   bioL:'نبذة عنك (تظهر للطلاب)',photoL:'رابط الصورة (اختياري، https://)',meetL:'رابط الحصة (Google Meet أو Zoom…)',meetH:'يجب أن يبدأ بـ https:// ويمكنك تغييره في أي وقت.',waL:'رقم واتساب (أرقام فقط مع رمز الدولة)',noticeL:'الحد الأدنى للإشعار المسبق (بالساعات)',
   badProf:'يرجى التحقق من: الاسم، اسم الرابط، روابط https://‏، أرقام واتساب (6–15).',slugWarn:'إذا غيّرت اسم الرابط فسيتوقف الرابط القديم عن العمل.',
   invTitle:'دعوة معلم',invHint:'أنشئ دعوة لمرة واحدة وأرسل الرابط. يسجّل المعلم الدخول عبر Google ويُعدّ حسابه بنفسه.',gen:'إنشاء دعوة',inviteMsg:'تمت دعوتك للانضمام إلى BookMyClass كمعلم. افتح هذا الرابط:',
-  weeklyRecurring:'اجعلها حصة أسبوعية متكررة',recurringHint:'سيتم حجز نفس اليوم والوقت أسبوعيًا (جدول متجدد لمدة 12 أسبوعًا) حتى إيقاف السلسلة.',
+  weeklyRecurring:'اجعلها حصصًا أسبوعية متكررة',recurringHint:'اختر عدد الحصص الأسبوعية التي تريد حجزها.',recurrenceCount:'عدد الحصص الأسبوعية',
   onSpot:'السماح بالحجز الفوري دون مهلة مسبقة',noticeEight:'عند إيقاف هذا الخيار، يجب الحجز قبل الموعد بثماني ساعات على الأقل.',
   calendarTitle:'جدول الحصص',calendarTab:'الجدول',
   calViewDay:'يوم',calViewWeek:'أسبوع',calViewAgenda:'قائمة المواعيد',
@@ -253,6 +253,13 @@ const ls = {get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},se
 
 function setLang(l){lang=l;ls.set('lang',l);render()}
 window.setLang=setLang; window.getLang=()=>lang;
+
+
+function phoneWithFlag(phone){
+  const p=String(phone||'').replace(/[\s().-]/g,'');
+  const prefixes=[['+20','🇪🇬'],['+966','🇸🇦'],['+971','🇦🇪'],['+965','🇰🇼'],['+974','🇶🇦'],['+973','🇧🇭'],['+968','🇴🇲'],['+44','🇬🇧'],['+1','🇺🇸'],['+48','🇵🇱'],['+49','🇩🇪'],['+33','🇫🇷'],['+90','🇹🇷'],['+91','🇮🇳']];
+  const hit=prefixes.find(x=>p.startsWith(x[0])); return (hit?hit[1]+' ':'🌐 ')+(phone||'');
+}
 
 // ---- time zone helpers (no libraries) ----
 function off(ms,tz){const o={};new Intl.DateTimeFormat('en-US',{timeZone:tz,hourCycle:'h23',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).formatToParts(new Date(ms)).forEach(p=>o[p.type]=p.value);return Date.UTC(o.year,o.month-1,o.day,o.hour,o.minute,o.second)-ms}
@@ -304,12 +311,12 @@ async function loadDash(){
     sb.from('session_types').select('*').eq('teacher_id',id).order('duration_min'),
     sb.from('availability_rules').select('*').eq('teacher_id',id).order('start_time'),
     sb.from('availability_exceptions').select('*').eq('teacher_id',id).gte('on_date',today).order('on_date'),
-    bq('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,session_types(name,name_ar,duration_min)')]);
+    bq('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)')]);
   S.dTypes=a.data||[]; S.dRules=b.data||[]; S.dExc=c.data||[];
   S.wk={}; for(let i=0;i<7;i++) S.wk[i]=[];
   S.dRules.forEach(r=>S.wk[r.weekday].push([r.start_time.slice(0,5),r.end_time.slice(0,5)]));
   let bk=d;
-  if(bk.error) bk=await bq('id,student_name,starts_at,ends_at,blocked_until,series_id,session_type_id,session_types(name,name_ar,duration_min)');
+  if(bk.error) bk=await bq('id,student_name,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)');
   S.dBk=bk.data||[];
 }
 async function loadTeacher(){
@@ -344,7 +351,7 @@ function build(){
     const w = ex.some(x=>!x.is_available) ? [] : ex.length ? ex.filter(x=>x.is_available) : S.rules.filter(r=>r.weekday===dt.getUTCDay());
     w.forEach(r=>{
       const a=toUtc(ds,r.start_time.slice(0,5),tz), b=toUtc(ds,r.end_time.slice(0,5),tz);
-      for(let s=a;s+dur<=b;s+=18e5){
+      for(let s=a;s+dur<=b;s+=Math.max(15*60000,dur+buf)){
         if(s<min||S.busy.some(([x,y])=>s<y&&s+dur+buf>x)) continue;
         const k=new Date(s).toLocaleDateString('en-CA'); const arr=(S.slots[k]=S.slots[k]||[]); if(!arr.includes(s)) arr.push(s);
       }
@@ -413,11 +420,12 @@ async function book(){
   const n=$('#sn').value.trim(); if(!n){S.err=tr('needName');render();return}
   const ph=$('#ph').value.trim();
   const isRec=!!$('#recurringBooking')?.checked;
+  const occurrences=isRec?Math.max(2,Math.min(52,parseInt($('#recurrenceCount')?.value||'12',10)||12)):1;
   S.booking=true;
   const submit=$('#app .card:last-child .btn');
   if(submit){submit.disabled=true;submit.textContent=lang==='ar'?'جارٍ تأكيد الحجز…':'Booking…';}
   try{
-    const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:'',p_recurring:isRec});
+    const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:'',p_recurring:isRec,p_occurrences:occurrences});
     if(error){
       const em=(error.message||'').toLowerCase(), lim=em.includes('booking limit'), soon=em.includes('too soon');
       S.booking=false; S.err=''; await loadBook(true); S.err=tr(lim?'limit':soon?'tooSoon':'taken'); render(); return;
@@ -452,6 +460,18 @@ function promptCancel(id){
     if(confirm(tr('confirmCancel'))) executeCancel(id,'single');
   }
 }
+
+async function editBookingDetails(id,asTeacher=true){
+  const b=(asTeacher?S.dBk:S.mine).find(x=>x.id===id); if(!b)return;
+  const name=prompt('Student name',b.student_name||''); if(name===null)return;
+  const phone=prompt('Phone number',b.contact_phone||''); if(phone===null)return;
+  const notes=prompt('Notes',b.notes||''); if(notes===null)return;
+  const scope=b.series_id?(confirm('Apply these details to this and all future lessons in the series? Choose Cancel for this lesson only.')?'future':'single'):'single';
+  const {error}=await sb.rpc('update_booking_details',{p_booking:id,p_student:name,p_phone:phone,p_notes:notes,p_scope:scope});
+  if(error){alert(error.message||'Could not update booking');return;}
+  await loadMine(); if(S.me?.teacher)await loadDash(); render();
+}
+
 async function executeCancel(id,scope){
   S.modal=null; render();
   const {error}=await sb.rpc('cancel_booking',{p_booking:id,p_scope:scope||'single'});
@@ -674,7 +694,7 @@ function viewBook(){
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
     h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
-      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="ck"><input id="recurringBooking" type="checkbox" checked> '+tr('weeklyRecurring')+'</label><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
+      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="ck"><input id="recurringBooking" type="checkbox" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=!this.checked"> '+tr('weeklyRecurring')+'</label><div id="recurrenceCountWrap"><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="2" max="52" value="12"></div><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
   if(!S.rs) h+=minesCard();
@@ -769,7 +789,9 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
       const st=b.session_types||{};
       h+='<div class="calbook"><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'
         +'<small>'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+(b.series_id?' · '+tr('weeklyBadge'):'')+'</small>'
+        +'<small>Booked by: '+esc(b.profiles?.full_name||b.profiles?.email||'Account holder')+'</small>'
         +'<div class="row" style="gap:6px;margin-top:6px">'
+        +'<button class="chip" style="padding:4px 8px;font-size:12px" onclick="editBookingDetails(\''+b.id+'\',true)">Edit details</button>'
         +'<button class="chip" style="padding:4px 8px;font-size:12px" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button>'
         +'<button class="chip danger" style="padding:4px 8px;font-size:12px" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button>'
         +'</div></div>';
@@ -870,7 +892,7 @@ function tabBookings(){
   return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+flashHtml()+(S.dBk.length?S.dBk.map(b=>{
     const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
     return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
-      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(b.contact_phone)+'</a>':'')+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'<br><span class="mut">Booked by: '+esc(b.profiles?.full_name||b.profiles?.email||'Account holder')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
       +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button></div></div>';
   }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
 }
