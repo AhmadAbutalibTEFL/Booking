@@ -354,19 +354,37 @@ function build(){
 }
 
 // ---- navigation ----
+function appRouteState(){
+  return {bmc:true,slug:S.slug||null,tab:S.tab||'link',teacherBooking:!!S.teacherBooking,reg:!!S.reg};
+}
+function writeAppHistory(mode='push'){
+  try{
+    const url=S.slug?'?t='+encodeURIComponent(S.slug):location.pathname;
+    history[mode+'State'](appRouteState(),'',url);
+  }catch(e){console.warn('Could not update in-app navigation history:',e);}
+}
+async function restoreAppRoute(st){
+  if(!st||!st.bmc) return;
+  S.slug=st.slug||null; S.tab=st.tab||'link'; S.teacherBooking=!!st.teacherBooking; S.reg=!!st.reg;
+  S.done=null; S.err=''; S.msg=''; S.modal=null; S.rs=null; S.rsAsTeacher=false;
+  await loadTeacher();
+  if(S.slug&&S.user&&S.t) await loadBook();
+  else if(S.user&&S.me?.teacher) await loadDash();
+  render();
+}
 async function nav(slug){
-  S.slug=slug||null; S.done=null; S.err=''; S.msg=''; S.reg=false; S.rs=null; S.rsAsTeacher=false; S.modal=null;
-  try{history.replaceState(null,'',slug?'?t='+encodeURIComponent(slug):location.pathname)}catch(e){}
+  S.slug=slug||null; S.done=null; S.err=''; S.msg=''; S.reg=false; S.rs=null; S.rsAsTeacher=false; S.teacherBooking=false; S.modal=null;
+  writeAppHistory('push');
   await loadTeacher(); if(S.t&&S.user) await loadBook(); render();
 }
-function setTab(t){S.tab=t;S.err='';S.msg='';if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
+function setTab(t){S.tab=t;S.err='';S.msg='';writeAppHistory('push');if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
 async function startTeacherBooking(){
   if(!S.me?.teacher) return;
   S.teacherBooking=true; S.rs=null; S.rsAsTeacher=true; S.rsFrom=null; S.done=null; S.err='';
-  S.slug=S.me.teacher.slug; await loadTeacher(); await loadBook(); S.rsAsTeacher=true; S.teacherBooking=true; render();
+  S.slug=S.me.teacher.slug; S.rsAsTeacher=true; S.teacherBooking=true; writeAppHistory('push'); await loadTeacher(); await loadBook(); S.rsAsTeacher=true; S.teacherBooking=true; render();
   window.scrollTo({top:0,behavior:'smooth'});
 }
-async function stopTeacherBooking(){S.teacherBooking=false;S.rsAsTeacher=false;S.slug=null;S.done=null;S.err='';await loadDash();render()}
+async function stopTeacherBooking(){if(history.state?.bmc&&history.state.teacherBooking){history.back();return;}S.teacherBooking=false;S.rsAsTeacher=false;S.slug=null;S.done=null;S.err='';writeAppHistory('push');await loadDash();render()}
 async function loadAdminOverview(){
   if(S.adminLoading||S.me?.role!=='admin') return; S.adminLoading=true; render();
   const {data,error}=await sb.rpc('admin_platform_overview');
@@ -459,6 +477,7 @@ async function startResched(id, scope, asTeacher){
   const targetSlug = asTeacher ? S.me.teacher.slug : b.teachers?.slug;
   if(!targetSlug) return;
   S.rs=b; S.rsScope=scope||'single'; S.rsAsTeacher=!!asTeacher; S.rsFrom=S.slug; S.slug=targetSlug; S.done=null; S.err='';
+  writeAppHistory('push');
   await loadTeacher(); await loadBook();
   S.ty=S.types.find(x=>x.id===b.session_type_id)||S.types[0]||null; build(); render();
   window.scrollTo({top:0,behavior:'smooth'});
@@ -655,7 +674,7 @@ function viewBook(){
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
     h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
-      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+(S.teacherBooking?'':'<label class="ck"><input id="recurringBooking" type="checkbox" checked> '+tr('weeklyRecurring')+'</label><p class="mut">'+tr('recurringHint')+'</p>')+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
+      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="ck"><input id="recurringBooking" type="checkbox" checked> '+tr('weeklyRecurring')+'</label><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
   if(!S.rs) h+=minesCard();
@@ -953,7 +972,16 @@ async function init(){
   const next=ls.get('next'); ls.del('next');
   if(!slug&&S.user&&next) slug=next;
   S.slug=slug;
-  if(slug||inv){try{history.replaceState(null,'',slug?'?t='+encodeURIComponent(slug):location.pathname)}catch(e){}}
+  writeAppHistory('replace');
+  window.addEventListener('popstate', async (event)=>{
+    if(event.state?.bmc){ await restoreAppRoute(event.state); }
+    else {
+      // Keep browser Back inside the app instead of leaving an authenticated page
+      // through a stale OAuth redirect/history entry. Never sign the user out here.
+      writeAppHistory('replace');
+      if(S.user&&S.me?.teacher){S.slug=null;S.teacherBooking=false;S.rs=null;S.rsAsTeacher=false;await loadDash();render();}
+    }
+  });
   sb.auth.onAuthStateChange((_e,s)=>{
     const u=s?.user||null;
     if((u?.id||null)!==(S.user?.id||null)) setTimeout(async()=>{
