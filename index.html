@@ -167,7 +167,7 @@ const T = {
   bioL:'About you (shown to students)',photoL:'Photo link (optional, https://)',meetL:'Meeting link (Google Meet, Zoom…)',meetH:'Must start with https://. You can change it any time.',waL:'WhatsApp number (digits only, with country code)',noticeL:'Minimum notice (hours)',
   badProf:'Please check: name, link name, https:// links, WhatsApp digits (6–15).',slugWarn:'If you change the link name, the old link stops working.',
   invTitle:'Invite a teacher',invHint:'Generate a one-time invite and send the link. The teacher signs in with Google and sets up their own account.',gen:'Generate invite',inviteMsg:'You’re invited to join BookMyClass as a teacher. Open this link:',
-  weeklyRecurring:'Make this a weekly recurring lesson',recurringHint:'Choose how many weekly lessons to reserve.',recurrenceCount:'Number of weekly lessons',
+  weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
   onSpot:'Allow on-the-spot bookings (no advance notice)',noticeEight:'When this is off, students must book at least 8 hours ahead.',
   calendarTitle:'Teaching Schedule',calendarTab:'Calendar',
   calViewDay:'Day',calViewWeek:'Week',calViewAgenda:'Agenda',
@@ -223,7 +223,7 @@ const T = {
   bioL:'نبذة عنك (تظهر للطلاب)',photoL:'رابط الصورة (اختياري، https://)',meetL:'رابط الحصة (Google Meet أو Zoom…)',meetH:'يجب أن يبدأ بـ https:// ويمكنك تغييره في أي وقت.',waL:'رقم واتساب (أرقام فقط مع رمز الدولة)',noticeL:'الحد الأدنى للإشعار المسبق (بالساعات)',
   badProf:'يرجى التحقق من: الاسم، اسم الرابط، روابط https://‏، أرقام واتساب (6–15).',slugWarn:'إذا غيّرت اسم الرابط فسيتوقف الرابط القديم عن العمل.',
   invTitle:'دعوة معلم',invHint:'أنشئ دعوة لمرة واحدة وأرسل الرابط. يسجّل المعلم الدخول عبر Google ويُعدّ حسابه بنفسه.',gen:'إنشاء دعوة',inviteMsg:'تمت دعوتك للانضمام إلى BookMyClass كمعلم. افتح هذا الرابط:',
-  weeklyRecurring:'اجعلها حصصًا أسبوعية متكررة',recurringHint:'اختر عدد الحصص الأسبوعية التي تريد حجزها.',recurrenceCount:'عدد الحصص الأسبوعية',
+  weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
   onSpot:'السماح بالحجز الفوري دون مهلة مسبقة',noticeEight:'عند إيقاف هذا الخيار، يجب الحجز قبل الموعد بثماني ساعات على الأقل.',
   calendarTitle:'جدول الحصص',calendarTab:'الجدول',
   calViewDay:'يوم',calViewWeek:'أسبوع',calViewAgenda:'قائمة المواعيد',
@@ -244,7 +244,7 @@ const S = {
   ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
   mine:[],rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
   tab:'link',calMode:'week',calendarOffset:0,dayOffset:0,modal:null,
-  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false
+  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{}
 };
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
@@ -318,6 +318,21 @@ async function loadDash(){
   let bk=d;
   if(bk.error) bk=await bq('id,student_name,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)');
   S.dBk=bk.data||[];
+  try {
+    const ids=S.dBk.map(x=>x.id);
+    if(ids.length){
+      const [who,ov]=await Promise.all([
+        sb.rpc('get_teacher_booking_bookers',{p_booking_ids:ids}),
+        sb.rpc('get_booking_slot_overrides',{p_teacher:id,p_from:new Date().toISOString(),p_to:new Date(Date.now()+60*864e5).toISOString()})
+      ]);
+      if(!who.error){
+        const map=new Map((who.data||[]).map(x=>[x.booking_id,x]));
+        S.dBk.forEach(x=>{const v=map.get(x.id);if(v)x.profiles={full_name:v.full_name,email:v.email};});
+      }
+      S.slotOverrides={};
+      (ov.data||[]).forEach(x=>S.slotOverrides[new Date(x.slot_start).toISOString()]=x.action);
+    }
+  } catch(e){ console.warn('Booking attribution/slot overrides unavailable',e); }
 }
 async function loadTeacher(){
   S.t=null; S.bad=false; S.loaded=null;
@@ -419,8 +434,9 @@ async function book(){
   if(S.booking) return;
   const n=$('#sn').value.trim(); if(!n){S.err=tr('needName');render();return}
   const ph=$('#ph').value.trim();
-  const isRec=!!$('#recurringBooking')?.checked;
-  const occurrences=isRec?Math.max(2,Math.min(52,parseInt($('#recurrenceCount')?.value||'12',10)||12)):1;
+  const fixed=!!$('#recurringFixed')?.checked;
+  const isRec=true;
+  const occurrences=fixed?Math.max(2,Math.min(52,parseInt($('#recurrenceCount')?.value||'8',10)||8)):52;
   S.booking=true;
   const submit=$('#app .card:last-child .btn');
   if(submit){submit.disabled=true;submit.textContent=lang==='ar'?'جارٍ تأكيد الحجز…':'Booking…';}
@@ -694,7 +710,7 @@ function viewBook(){
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
     h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
-      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="ck"><input id="recurringBooking" type="checkbox" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=!this.checked"> '+tr('weeklyRecurring')+'</label><div id="recurrenceCountWrap"><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="2" max="52" value="12"></div><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
+      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="mut">'+tr('recurringChoice')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"> '+tr('weeklyRecurring')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"> '+tr('fixedCount')+'</label><div id="recurrenceCountWrap" hidden><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="2" max="52" value="8"></div><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
   if(!S.rs) h+=minesCard();
@@ -789,7 +805,7 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
       const st=b.session_types||{};
       h+='<div class="calbook"><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'
         +'<small>'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+(b.series_id?' · '+tr('weeklyBadge'):'')+'</small>'
-        +'<small>Booked by: '+esc(b.profiles?.full_name||b.profiles?.email||'Account holder')+'</small>'
+        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>Booked by: '+esc(b.profiles?.full_name||b.profiles?.email||'Account holder')+'</small>'
         +'<div class="row" style="gap:6px;margin-top:6px">'
         +'<button class="chip" style="padding:4px 8px;font-size:12px" onclick="editBookingDetails(\''+b.id+'\',true)">Edit details</button>'
         +'<button class="chip" style="padding:4px 8px;font-size:12px" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button>'
@@ -821,11 +837,25 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
       const starts=S.dBk.find(b=>dayKey(new Date(b.starts_at))===day.key&&Math.abs(Date.parse(b.starts_at)-at)<60000);
       if(starts){const st=starts.session_types||{};h+='<div class="tt-cell tt-booked"><b>'+esc(starts.student_name)+'</b><small>'+timeLabel(m)+' · '+(st.duration_min||'')+' '+tr('min')+'</small></div>';}
       else if(bk) h+='<div class="tt-cell tt-occupied"></div>';
-      else if(win){const type=S.dTypes.filter(t=>t.is_active&&m+t.duration_min<=to&&at>=minBookAt).sort((a,b)=>a.duration_min-b.duration_min)[0];h+='<div class="tt-cell tt-free">'+(type?'<button title="'+tr('bookForStudent')+'" onclick="startTeacherBookingAt(\''+day.key+'\',\''+timeLabel(m)+'\')">＋</button>':'')+'</div>';}
+      else if(win){
+        const type=S.dTypes.filter(t=>t.is_active&&m+t.duration_min<=to).sort((a,b)=>a.duration_min-b.duration_min)[0];
+        const iso=new Date(at).toISOString(), override=S.slotOverrides[iso];
+        if(override==='closed') h+='<div class="tt-cell tt-closed"><small>'+tr('slotClosed')+'</small><button class="chip" onclick="manageSlotOverride(\''+day.key+'\',\''+timeLabel(m)+'\',\'clear\')">'+tr('clearOverride')+'</button></div>';
+        else h+='<div class="tt-cell tt-free">'+(override==='jit'?'<small>'+tr('slotJit')+'</small>':'')+(type?'<button title="'+tr('bookForStudent')+'" onclick="startTeacherBookingAt(\''+day.key+'\',\''+timeLabel(m)+'\')">＋</button>':'')+'<div class="row" style="gap:3px;margin-top:3px"><button class="chip" style="font-size:10px;padding:3px 5px" onclick="manageSlotOverride(\''+day.key+'\',\''+timeLabel(m)+'\',\'closed\')">'+tr('closeSlot')+'</button><button class="chip" style="font-size:10px;padding:3px 5px" onclick="manageSlotOverride(\''+day.key+'\',\''+timeLabel(m)+'\',\'jit\')">'+tr('enableJit')+'</button></div></div>';
+      }
       else h+='<div class="tt-cell tt-closed"></div>';
     });
   });
   return h+'</div></div><div class="tt-legend"><span>🟩 '+tr('available')+'</span><span>🟪 '+(lang==='ar'?'حصة محجوزة':'Booked lesson')+'</span><span>⬜ '+tr('unavailable')+'</span></div>';
+}
+async function manageSlotOverride(day,time,action){
+  const tz=S.me.teacher.timezone, at=toUtc(day,time,tz);
+  const {error}=await sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:new Date(at).toISOString(),p_action:action});
+  if(error){alert(error.message||'Could not update this slot');return;}
+  const key=new Date(at).toISOString();
+  if(action==='clear') delete S.slotOverrides[key]; else S.slotOverrides[key]=action;
+  flash(action==='closed'?tr('slotClosed'):action==='jit'?tr('slotJit'):tr('saved'),false);
+  render();
 }
 async function startTeacherBookingAt(day,time){await startTeacherBooking();const types=S.types.filter(x=>x.is_active).sort((a,b)=>a.duration_min-b.duration_min);if(types[0]){S.ty=types[0];build();S.slot=Object.values(S.slots).flat().find(x=>Math.abs(x-toUtc(day,time,S.t.timezone))<60000)||null;S.day=S.slot?new Date(S.slot).toLocaleDateString('en-CA'):null;}render();}
 
