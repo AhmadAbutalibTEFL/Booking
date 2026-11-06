@@ -21,7 +21,7 @@ body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;b
 .hero p{max-width:760px;margin:6px auto 0;opacity:.92;line-height:1.5}
 main{max-width:760px;width:100%;margin:-34px auto 32px;padding:0 14px;flex:1}
 main.wide{max-width:1120px}
-.card{min-width:0;overflow-wrap:anywhere;background:var(--card);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 18px rgba(60,60,140,.1)}
+.card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 18px rgba(60,60,140,.1)}
 .card h2{margin:0 0 12px;font-size:17px;display:flex;gap:8px;align-items:center}
 .card h3{margin:0 0 8px;font-size:15px}
 .n{background:var(--pri);color:#fff;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex:none}
@@ -43,9 +43,9 @@ a.btn{display:block;text-align:center;text-decoration:none;margin-top:10px}
 .err{background:var(--danger-bg);color:var(--danger);padding:10px 12px;border-radius:10px;margin-bottom:10px;font-size:14px}
 .okb{background:#e3f8ef;color:#0b6b47;padding:10px 12px;border-radius:10px;margin-bottom:10px;font-size:14px}
 .ok{text-align:center}.ok .big{font-size:44px}
-.bk{min-width:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.bk{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
 .bk:first-of-type{border-top:0;padding-top:0}
-.bk>div{min-width:0;overflow-wrap:anywhere}.bk a{color:var(--pri);font-size:14px}
+.bk a{color:var(--pri);font-size:14px}
 .tc{display:flex;gap:14px;align-items:center}
 .tc h2{margin:0 0 4px;font-size:19px}.tc p{margin:0}
 .av{flex:none;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#5b5bf0,#2fc4b2);color:#fff;font-size:24px;font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -65,36 +65,7 @@ a.btn{display:block;text-align:center;text-decoration:none;margin-top:10px}
 .feat b{display:block;margin-bottom:4px;font-size:15px}
 .calwrap{overflow-x:auto;padding-bottom:8px}
 .calgrid{display:grid;grid-template-columns:repeat(7,minmax(148px,1fr));gap:8px;min-width:1040px}
-.timetable-wrap{overflow:auto;max-width:100%;margin-top:14px;border:1px solid var(--line);border-radius:14px;background:var(--card);-webkit-overflow-scrolling:touch}
-.timetable{display:grid;grid-template-columns:66px repeat(7,minmax(126px,1fr));min-width:960px;gap:0}
-.tt-head,.tt-time,.tt-cell{min-width:0;min-height:54px;padding:7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;overflow-wrap:anywhere}
-.tt-head{position:sticky;top:0;background:var(--card);font-weight:750;text-align:center;z-index:2;min-height:48px;display:flex;align-items:center;justify-content:center;line-height:1.3}
-.tt-time{position:sticky;left:0;z-index:1;background:var(--bg);font-variant-numeric:tabular-nums;color:var(--mut);text-align:center;white-space:nowrap}
-.tt-head.tt-time{z-index:3}
-.tt-cell{background:var(--bg);vertical-align:top;line-height:1.35}
-.tt-free{background:#eaf7ee;color:#14532d}
-.tt-booked{background:#eee9fb;color:#49317e;border-inline-start:3px solid var(--pri);font-weight:650}
-.tt-booked b{display:block;line-height:1.35;overflow-wrap:anywhere}
-.tt-booked small{display:block;font-size:11px;line-height:1.35;margin-top:4px;color:inherit}
-.tt-occupied{background:color-mix(in srgb,var(--bg) 72%,var(--pri) 8%)}
-.tt-closed{background:var(--bg);color:var(--mut);opacity:.78}
-.tt-cell button:not(.chip){display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:8px;background:#c9ebd3;color:#14532d;font-weight:800;min-width:32px;height:30px;cursor:pointer}
-.tt-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
-.tt-cell .tt-actions .chip{font-size:11px;padding:5px 7px;line-height:1.2;white-space:normal;min-height:28px}
-.tt-cell .tt-actions .chip:focus-visible,.tt-cell button:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
-.tt-status{display:block;font-size:11px;font-weight:650;line-height:1.3;margin-bottom:5px}
-.tt-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mut);margin-top:10px}
-.time-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:8px 0 12px}
-.time-option{display:flex;align-items:center;justify-content:center;gap:7px;min-height:46px;padding:10px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:14px;cursor:pointer;text-align:center}
-.time-option.selected{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 13%,var(--card));box-shadow:inset 0 0 0 1px var(--pri)}
-.time-option:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
-.frequency-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 12px}
-.frequency-option{display:flex;align-items:flex-start;gap:9px;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--bg);line-height:1.4;min-width:0}
-.frequency-option:has(input:checked){border-color:var(--pri);background:color-mix(in srgb,var(--pri) 9%,var(--card))}
-.frequency-option input{width:auto;flex:none;margin:3px 0 0}
-#recurrenceCountWrap{padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);margin:8px 0}
-#recurrenceCount{max-width:220px;margin:8px 0 0}
-@media(max-width:640px){.timetable{grid-template-columns:54px repeat(7,minmax(112px,1fr));min-width:840px}.tt-head,.tt-time,.tt-cell{padding:6px;min-height:50px}.frequency-options{grid-template-columns:1fr}.time-options{grid-template-columns:repeat(2,minmax(0,1fr))}.time-option{font-size:13px;padding:9px 6px}.calnav .row{gap:6px}.calnav .chip{padding:8px 10px}}
+.timetable-wrap{overflow:auto;margin-top:12px}.timetable{display:grid;grid-template-columns:72px repeat(7,minmax(112px,1fr));min-width:930px;border-top:1px solid var(--line);border-left:1px solid var(--line);gap:0}.tt-head,.tt-time,.tt-cell{min-height:42px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px}.tt-head{position:sticky;top:0;background:var(--card);font-weight:700;text-align:center;z-index:1}.tt-time{background:var(--bg);font-variant-numeric:tabular-nums;color:var(--muted);text-align:center}.tt-cell{background:var(--bg)}.tt-free{background:#eaf7ee}.tt-free button{border:0;border-radius:8px;background:#c9ebd3;color:#14532d;font-weight:800;width:28px;height:26px;cursor:pointer}.tt-booked{background:#eee9fb;color:#49317e}.tt-booked small{display:block;font-size:10px}.tt-occupied{background:#f2eff9}.tt-closed{background:var(--bg);opacity:.5}.tt-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
 .calday{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:220px}
 .calday.single{min-height:auto}
 .calday h3{font-size:14px;margin:0 0 8px}
@@ -113,6 +84,30 @@ footer.site-footer a{color:var(--pri);text-decoration:none;font-weight:500}
 footer.site-footer a:hover{text-decoration:underline}
 @media(max-width:640px){.day{flex-direction:column;gap:4px}.day b{width:auto;padding:0}.g2,.g3{grid-template-columns:1fr}}
 code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direction:ltr;display:inline-block}
+.tt2-wrap{overflow:auto;margin-top:12px;border:1px solid var(--line);border-radius:12px;max-height:78vh;background:var(--card)}
+.tt2{display:grid;min-width:720px;position:relative}
+.tt2-h{position:sticky;top:0;z-index:3;background:var(--card);padding:8px 4px;text-align:center;font-size:12px;font-weight:700;border-bottom:1px solid var(--line);border-inline-start:1px solid var(--line);white-space:nowrap}
+.tt2-t{inset-inline-start:0;z-index:5;border-inline-start:0}
+.tt2-times{position:sticky;inset-inline-start:0;z-index:2;background:var(--card)}
+.tt2-times span{position:absolute;inset-inline:0;transform:translateY(-7px);text-align:center;font-size:11px;color:var(--mut);font-variant-numeric:tabular-nums;background:var(--card)}
+.tt2-col{position:relative;border-inline-start:1px solid var(--line);background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/100% 60px}
+.tt2-un{position:absolute;inset-inline:0;background:repeating-linear-gradient(45deg,transparent 0 6px,rgba(128,132,160,.16) 6px 12px)}
+.tt2 .tt2-s,.tt2 .tt2-b,.tt2 .tt2-x{position:absolute;inset-inline:3px;width:auto;margin:0;box-sizing:border-box;overflow:hidden;border-radius:8px;padding:2px 6px;text-align:start;font:inherit;font-size:11px;line-height:1.25;border:1px solid;cursor:pointer;color:var(--ink);white-space:nowrap;text-overflow:ellipsis}
+.tt2 .tt2-available{background:rgba(34,197,94,.2);border-color:#22c55e}
+.tt2 .tt2-jit{background:rgba(245,158,11,.3);border-color:#f59e0b}
+.tt2 .tt2-closed{background:rgba(128,132,160,.22);border:1px dashed #8a8fa8}
+.tt2 .tt2-b{background:#6d5bd0;border-color:#5946b8;color:#fff;z-index:1}
+.tt2 .tt2-b b,.tt2 .tt2-b small{display:block;overflow:hidden;text-overflow:ellipsis}
+.tt2 .tt2-b small{font-size:10px;opacity:.9}
+.tt2 .tt2-x{background:rgba(239,68,68,.12);border:1px dashed #ef4444;cursor:default;opacity:.85}
+.tt2 button:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+.tt2 .tt2-s:hover{filter:brightness(.95)}
+.tt2-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--mut)}
+.tt2-legend span{display:inline-flex;align-items:center;gap:6px}
+.tt2-legend i{display:inline-block;width:16px;height:12px;border-radius:4px;position:static!important;border:1px solid;padding:0!important}
+.tt2-legend .tt2-b{background:#6d5bd0;border-color:#5946b8}.tt2-legend .tt2-available{background:rgba(34,197,94,.2);border-color:#22c55e}.tt2-legend .tt2-jit{background:rgba(245,158,11,.3);border-color:#f59e0b}.tt2-legend .tt2-closed{background:rgba(128,132,160,.22);border-style:dashed;border-color:#8a8fa8}.tt2-legend .tt2-x{background:rgba(239,68,68,.12);border-style:dashed;border-color:#ef4444}.tt2-legend .tt2-un{background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(128,132,160,.3) 3px 6px);border-color:var(--line)}
+.modal{max-height:90vh;overflow:auto}.modal textarea,.modal select,.modal input{max-width:100%;box-sizing:border-box}
+@media(max-width:640px){.tt2{min-width:660px}.tt2-wrap{max-height:70vh}}
 </style>
 </head>
 <body>
@@ -196,7 +191,7 @@ const T = {
   bioL:'About you (shown to students)',photoL:'Photo link (optional, https://)',meetL:'Meeting link (Google Meet, Zoom…)',meetH:'Must start with https://. You can change it any time.',waL:'WhatsApp number (digits only, with country code)',noticeL:'Minimum notice (hours)',
   badProf:'Please check: name, link name, https:// links, WhatsApp digits (6–15).',slugWarn:'If you change the link name, the old link stops working.',
   invTitle:'Invite a teacher',invHint:'Generate a one-time invite and send the link. The teacher signs in with Google and sets up their own account.',gen:'Generate invite',inviteMsg:'You’re invited to join BookMyClass as a teacher. Open this link:',
-  weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
+  m_manage:'Manage',m_edit:'Edit booking',m_save:'Save changes',m_scope:'Apply to',m_this:'This occurrence only',m_future:'This and all future occurrences',m_type:'Lesson type',m_date:'Date',m_time:'Start time',m_notes:'Notes',m_by:'Booked by',m_skipped:'Dates not booked',m_close:'Close this time slot',m_jit:'Enable JIT for this slot',m_clear:'Clear override',m_book:'Book for a student',m_cancelOcc:'Cancel this occurrence',m_series:'Manage remaining series',m_details:'Booking details',m_lAvail:'Available',m_lBooked:'Booked',m_lClosed:'Closed',m_lJit:'JIT enabled',m_lCancel:'Cancelled',m_lUn:'Unavailable',m_noType:'Add an active lesson type first.',m_loading:'Loading timetable…',m_countErr:'Enter a number of lessons from 1 to 52.',m_countHint:'Enter 1 for a single lesson (max 52).',m_closedErr:'This time slot is closed.',m_availErr:'This time is outside the teacher availability.',m_phoneErr:'Please enter a valid phone number (with country code, e.g. +966…).',m_activeSeries:'Active series',m_endedSeries:'Ended series',m_next30:'Bookings, next 30 days',m_e_taken:'That time is not available',m_notAllowed:'You are not allowed to change this booking.',m_ttLoadErr:'Could not load time slots. Make sure the latest database update (v2) is installed.',weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
   onSpot:'Allow on-the-spot bookings (no advance notice)',noticeEight:'When this is off, students must book at least 8 hours ahead.',
   calendarTitle:'Teaching Schedule',calendarTab:'Calendar',
   calViewDay:'Day',calViewWeek:'Week',calViewAgenda:'Agenda',
@@ -252,7 +247,7 @@ const T = {
   bioL:'نبذة عنك (تظهر للطلاب)',photoL:'رابط الصورة (اختياري، https://)',meetL:'رابط الحصة (Google Meet أو Zoom…)',meetH:'يجب أن يبدأ بـ https:// ويمكنك تغييره في أي وقت.',waL:'رقم واتساب (أرقام فقط مع رمز الدولة)',noticeL:'الحد الأدنى للإشعار المسبق (بالساعات)',
   badProf:'يرجى التحقق من: الاسم، اسم الرابط، روابط https://‏، أرقام واتساب (6–15).',slugWarn:'إذا غيّرت اسم الرابط فسيتوقف الرابط القديم عن العمل.',
   invTitle:'دعوة معلم',invHint:'أنشئ دعوة لمرة واحدة وأرسل الرابط. يسجّل المعلم الدخول عبر Google ويُعدّ حسابه بنفسه.',gen:'إنشاء دعوة',inviteMsg:'تمت دعوتك للانضمام إلى BookMyClass كمعلم. افتح هذا الرابط:',
-  weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
+  m_manage:'إدارة',m_edit:'تعديل الحجز',m_save:'حفظ التعديلات',m_scope:'تطبيق على',m_this:'هذه الحصة فقط',m_future:'هذه الحصة وجميع الحصص القادمة',m_type:'نوع الحصة',m_date:'التاريخ',m_time:'وقت البدء',m_notes:'ملاحظات',m_by:'تم الحجز بواسطة',m_skipped:'تواريخ لم يتم حجزها',m_close:'إغلاق هذا الموعد',m_jit:'تفعيل الحجز الفوري لهذا الموعد',m_clear:'إلغاء الإعداد المخصص',m_book:'حجز لطالب',m_cancelOcc:'إلغاء هذه الحصة',m_series:'إدارة بقية السلسلة',m_details:'تفاصيل الحجز',m_lAvail:'متاح',m_lBooked:'محجوز',m_lClosed:'مغلق',m_lJit:'حجز فوري',m_lCancel:'ملغاة',m_lUn:'غير متاح',m_noType:'أضف نوع حصة نشطًا أولًا.',m_loading:'جارٍ تحميل الجدول…',m_countErr:'أدخل عدد الحصص من 1 إلى 52.',m_countHint:'أدخل 1 لحصة واحدة (الحد الأقصى 52).',m_closedErr:'هذا الموعد مغلق.',m_availErr:'هذا الوقت خارج أوقات إتاحة المعلم.',m_phoneErr:'يرجى إدخال رقم هاتف صحيح مع رمز الدولة، مثل +966…',m_activeSeries:'السلاسل النشطة',m_endedSeries:'السلاسل المنتهية',m_next30:'الحجوزات خلال 30 يومًا',m_e_taken:'هذا الوقت غير متاح',m_notAllowed:'غير مسموح لك بتعديل هذا الحجز.',m_ttLoadErr:'تعذر تحميل المواعيد. تأكد من تثبيت آخر تحديث لقاعدة البيانات (v2).',weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
   onSpot:'السماح بالحجز الفوري دون مهلة مسبقة',noticeEight:'عند إيقاف هذا الخيار، يجب الحجز قبل الموعد بثماني ساعات على الأقل.',
   calendarTitle:'جدول الحصص',calendarTab:'الجدول',
   calViewDay:'يوم',calViewWeek:'أسبوع',calViewAgenda:'قائمة المواعيد',
@@ -273,7 +268,7 @@ const S = {
   ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
   mine:[],rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
   tab:'link',calMode:'week',calendarOffset:0,dayOffset:0,modal:null,
-  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{}
+  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{},slotState:{},ttSlots:[],ttCancelled:[],ttKey:null,ttLoading:null,ttType:null,ttErr:false
 };
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
@@ -284,10 +279,24 @@ function setLang(l){lang=l;ls.set('lang',l);render()}
 window.setLang=setLang; window.getLang=()=>lang;
 
 
+const CALLING={'20':'EG','27':'ZA','30':'GR','31':'NL','32':'BE','33':'FR','34':'ES','36':'HU','39':'IT','40':'RO','41':'CH','43':'AT','44':'GB','45':'DK','46':'SE','47':'NO','48':'PL','49':'DE','51':'PE','52':'MX','53':'CU','54':'AR','55':'BR','56':'CL','57':'CO','58':'VE','60':'MY','61':'AU','62':'ID','63':'PH','64':'NZ','65':'SG','66':'TH','81':'JP','82':'KR','84':'VN','86':'CN','90':'TR','91':'IN','92':'PK','93':'AF','94':'LK','95':'MM','98':'IR','211':'SS','212':'MA','213':'DZ','216':'TN','218':'LY','220':'GM','221':'SN','233':'GH','234':'NG','249':'SD','251':'ET','254':'KE','255':'TZ','256':'UG','351':'PT','352':'LU','353':'IE','354':'IS','358':'FI','359':'BG','370':'LT','371':'LV','372':'EE','380':'UA','381':'RS','385':'HR','386':'SI','420':'CZ','421':'SK','852':'HK','853':'MO','855':'KH','856':'LA','880':'BD','886':'TW','960':'MV','961':'LB','962':'JO','963':'SY','964':'IQ','965':'KW','966':'SA','967':'YE','968':'OM','970':'PS','971':'AE','972':'IL','973':'BH','974':'QA','975':'BT','976':'MN','977':'NP','992':'TJ','993':'TM','994':'AZ','995':'GE','996':'KG','998':'UZ'};
+// '+1' (US/Canada/Caribbean) and '+7' (Russia/Kazakhstan) are shared codes: shown as a neutral globe, never guessed.
+function parsePhone(raw){
+  let p=String(raw||'').trim().replace(/[\s().-]/g,'');
+  if(!p) return {empty:true};
+  if(p.startsWith('00')) p='+'+p.slice(2);
+  if(!/^\+\d{7,15}$/.test(p)) return {invalid:true,hasPlus:p.startsWith('+')};
+  const d=p.slice(1);
+  if(d[0]==='1'||d[0]==='7') return {shared:true,code:d[0]};
+  for(const n of [3,2]){const iso=CALLING[d.slice(0,n)]; if(iso) return {iso,flag:String.fromCodePoint(...[...iso].map(c=>0x1F1E6+c.charCodeAt(0)-65))};}
+  return {unknown:true};
+}
 function phoneWithFlag(phone){
-  const p=String(phone||'').replace(/[\s().-]/g,'');
-  const prefixes=[['+20','🇪🇬'],['+966','🇸🇦'],['+971','🇦🇪'],['+965','🇰🇼'],['+974','🇶🇦'],['+973','🇧🇭'],['+968','🇴🇲'],['+44','🇬🇧'],['+1','🇺🇸'],['+48','🇵🇱'],['+49','🇩🇪'],['+33','🇫🇷'],['+90','🇹🇷'],['+91','🇮🇳']];
-  const hit=prefixes.find(x=>p.startsWith(x[0])); return (hit?hit[1]+' ':'🌐 ')+(phone||'');
+  const r=parsePhone(phone), t=String(phone||'').trim();
+  if(r.empty) return '—';
+  if(r.flag) return r.flag+' '+t;
+  if(r.invalid) return '⚠️ '+t;
+  return '🌐 '+t;
 }
 
 // ---- time zone helpers (no libraries) ----
@@ -316,7 +325,7 @@ async function loadMine(){
   if(!S.user){S.mine=[];return}
   try{await sb.rpc('maintain_my_recurring_bookings')}catch(e){console.warn('Recurring schedule refresh failed',e)}
   const r = await sb.from('bookings')
-    .select('id,student_name,starts_at,teacher_id,session_type_id,series_id,session_types(duration_min,name,name_ar),teachers(display_name,slug)')
+    .select('id,student_name,contact_phone,notes,starts_at,teacher_id,session_type_id,series_id,session_types(duration_min,name,name_ar),teachers(display_name,slug)')
     .eq('booker_id',S.user.id).eq('status','confirmed').gte('starts_at',new Date().toISOString()).order('starts_at');
   S.mine = r.data || [];
   await Promise.all(S.mine.map(async b=>{
@@ -333,6 +342,7 @@ async function loadMe(){
   if(S.me.teacher) await loadDash();
 }
 async function loadDash(){
+  S.ttKey=null;
   const id=S.me.teacher.id, today=new Date().toISOString().slice(0,10), now=new Date().toISOString();
   const bq = cols => sb.from('bookings').select(cols).eq('teacher_id',id).eq('status','confirmed').gte('starts_at',now).order('starts_at');
   try{await sb.rpc('maintain_my_recurring_bookings')}catch(e){console.warn('Recurring schedule refresh failed',e)}
@@ -381,26 +391,17 @@ async function loadBook(keep){
   S.types=a.data||[]; S.rules=b.data||[]; S.exc=c.data||[];
   S.busy=(r.data||[]).map(x=>[Date.parse(x.starts_at),Date.parse(x.blocked_until)]);
   S.ty=(ty&&S.types.find(x=>x.id===ty)) || (S.types.length===1?S.types[0]:null);
-  S.loaded=id; build();
+  await build(); S.loaded=id;
 }
-function build(){
-  S.slots={}; S.day=null; S.slot=null; if(!S.t||!S.ty) return;
-  const tz=S.t.timezone, dur=S.ty.duration_min*6e4, buf=S.ty.buffer_min*6e4;
-  const isTeacherOverride = S.rsAsTeacher && S.me?.teacher?.id === S.t.id;
-  const min=Date.now()+(isTeacherOverride || S.t.on_the_spot_booking ? 0 : 8)*36e5;
-  const td=new Date().toLocaleDateString('en-CA',{timeZone:tz}).split('-').map(Number);
-  const horizonDays = S.rs ? 28 : 14;
-  for(let i=0;i<horizonDays;i++){
-    const dt=new Date(Date.UTC(td[0],td[1]-1,td[2]+i)), ds=dt.toISOString().slice(0,10), ex=S.exc.filter(x=>x.on_date===ds);
-    const w = ex.some(x=>!x.is_available) ? [] : ex.length ? ex.filter(x=>x.is_available) : S.rules.filter(r=>r.weekday===dt.getUTCDay());
-    w.forEach(r=>{
-      const a=toUtc(ds,r.start_time.slice(0,5),tz), b=toUtc(ds,r.end_time.slice(0,5),tz);
-      for(let s=a;s+dur<=b;s+=Math.max(15*60000,dur+buf)){
-        if(s<min||S.busy.some(([x,y])=>s<y&&s+dur+buf>x)) continue;
-        const k=new Date(s).toLocaleDateString('en-CA'); const arr=(S.slots[k]=S.slots[k]||[]); if(!arr.includes(s)) arr.push(s);
-      }
-    });
-  }
+async function build(){
+  S.slots={}; S.slotState={}; S.day=null; S.slot=null; if(!S.t||!S.ty) return;
+  const {data,error}=await sb.rpc('get_available_slots',{p_teacher:S.t.id,p_session_type:S.ty.id,p_from:null,p_days:S.rs?28:14});
+  if(error){console.warn('get_available_slots failed',error); S.err=tr('m_ttLoadErr'); return}
+  (data||[]).forEach(r=>{
+    if(r.state==='closed') return;
+    const ms=Date.parse(r.slot_start), k=new Date(ms).toLocaleDateString('en-CA');
+    (S.slots[k]=S.slots[k]||[]).push(ms); S.slotState[ms]=r.state;
+  });
   Object.values(S.slots).forEach(a=>a.sort((x,y)=>x-y));
 }
 
@@ -442,7 +443,7 @@ async function loadAdminOverview(){
   S.adminLoading=false; S.adminData=error?{error:true}:data; render();
 }
 function setCalMode(m){S.calMode=m;render()}
-function pickType(id){S.ty=S.types.find(x=>x.id===id);build();render()}
+async function pickType(id){S.ty=S.types.find(x=>x.id===id);await build();render()}
 function pickDay(k){S.day=k||null;S.slot=null;render()}
 function pickSlot(v){S.slot=v?+v:null;render()}
 function closeModal(){S.modal=null;render()}
@@ -459,35 +460,44 @@ async function contactFor(id){
   const c = await sb.rpc('get_booking_contact',{p_booking:id});
   return (c.data && c.data[0]) || {};
 }
+function bookErr(msg){
+  const m=(msg||'').toLowerCase();
+  return tr(m.includes('booking limit')?'limit':m.includes('too soon')?'tooSoon':m.includes('slot closed')?'m_closedErr':m.includes('outside availability')?'m_availErr':m.includes('invalid phone')?'m_phoneErr':m.includes('name')?'needName':'taken');
+}
+function fillKnown(el){
+  if(!S.teacherBooking) return;
+  const b=[...S.dBk].reverse().find(x=>x.student_name===el.value&&x.contact_phone), p=$('#ph');
+  if(b&&p&&!p.value) p.value=b.contact_phone;
+}
 async function book(){
   if(S.booking) return;
   const n=$('#sn').value.trim(); if(!n){S.err=tr('needName');render();return}
   const ph=$('#ph').value.trim();
+  if(ph&&parsePhone(ph).invalid){S.err=tr('m_phoneErr');render();return}
   const fixed=!!$('#recurringFixed')?.checked;
-  const isRec=true;
-  const occurrences=fixed?Math.max(2,Math.min(52,parseInt($('#recurrenceCount')?.value||'8',10)||8)):52;
+  let cnt=null, mode='weekly';
+  if(fixed){cnt=parseInt($('#recurrenceCount')?.value||'',10); if(!(cnt>=1&&cnt<=52)){S.err=tr('m_countErr');render();return} mode=cnt===1?'once':'fixed';}
   S.booking=true;
   const submit=$('#app .card:last-child .btn');
   if(submit){submit.disabled=true;submit.textContent=lang==='ar'?'جارٍ تأكيد الحجز…':'Booking…';}
   try{
-    const {data,error}=await sb.rpc('book_slot',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:'',p_recurring:isRec,p_occurrences:occurrences});
-    if(error){
-      const em=(error.message||'').toLowerCase(), lim=em.includes('booking limit'), soon=em.includes('too soon');
-      S.booking=false; S.err=''; await loadBook(true); S.err=tr(lim?'limit':soon?'tooSoon':'taken'); render(); return;
-    }
+    const {data,error}=await sb.rpc('book_lesson',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:'',p_mode:mode,p_count:cnt});
+    if(error){S.booking=false; S.err=''; await loadBook(true); S.err=bookErr(error.message); render(); return;}
+    const skipped=(data&&data.skipped)||[], bid=data&&data.booking_id;
     const createdForTeacher=!!S.teacherBooking;
     S.err=''; S.booking=false;
     if(createdForTeacher){
       S.teacherBooking=false; S.rsAsTeacher=false; S.slug=null; S.done=null;
-      await loadDash(); S.tab='calendar'; S.msg=lang==='ar'?'تم حجز الحصة للطالب بنجاح.':'Lesson booked for the student.'; render(); return;
+      await loadDash(); S.tab='calendar';
+      S.msg=(lang==='ar'?'تم حجز الحصة للطالب بنجاح.':'Lesson booked for the student.')+(skipped.length?' '+tr('m_skipped')+': '+skipped.length:''); render(); return;
     }
-    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:'',recurring:isRec}; render();
+    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:'',recurring:mode!=='once',skipped}; render();
     try{
-      const ct=await contactFor(data);
+      const ct=await contactFor(bid);
       S.done.meeting=ct.meeting_url||''; S.done.whatsapp=ct.whatsapp||'';
       await loadMine();
       if(S.me?.teacher) await loadDash();
-    }catch(refreshError){ console.warn('Booking succeeded; optional post-booking refresh failed:',refreshError); }
+    }catch(refreshError){console.warn('Booking succeeded; optional post-booking refresh failed:',refreshError);}
     render();
   }catch(requestError){
     console.error('Booking request failed:',requestError);
@@ -506,15 +516,25 @@ function promptCancel(id){
   }
 }
 
-async function editBookingDetails(id,asTeacher=true){
-  const b=(asTeacher?S.dBk:S.mine).find(x=>x.id===id); if(!b)return;
-  const name=prompt('Student name',b.student_name||''); if(name===null)return;
-  const phone=prompt('Phone number',b.contact_phone||''); if(phone===null)return;
-  const notes=prompt('Notes',b.notes||''); if(notes===null)return;
-  const scope=b.series_id?(confirm('Apply these details to this and all future lessons in the series? Choose Cancel for this lesson only.')?'future':'single'):'single';
-  const {error}=await sb.rpc('update_booking_details',{p_booking:id,p_student:name,p_phone:phone,p_notes:notes,p_scope:scope});
-  if(error){alert(error.message||'Could not update booking');return;}
-  await loadMine(); if(S.me?.teacher)await loadDash(); render();
+function editBookingDetails(id,asTeacher=true){openEdit(id,asTeacher)}
+function openEdit(id,asTeacher){const b=(asTeacher?S.dBk:S.mine).find(x=>x.id===id); if(!b) return; S.modal={type:'edit',booking:b,asTeacher:!!asTeacher}; render();}
+function editErr(msg){
+  const m=(msg||'').toLowerCase(), d=(msg||'').match(/\(([^)]*)\)\s*$/);
+  const k=m.includes('slot closed')?'m_closedErr':m.includes('outside availability')?'m_availErr':m.includes('too soon')?'tooSoon':m.includes('too late')?'late':m.includes('invalid phone')?'m_phoneErr':m.includes('already taken')?'m_e_taken':m.includes('not allowed')?'m_notAllowed':null;
+  return k?tr(k)+(d?' ('+d[1]+')':''):(msg||tr('taken'));
+}
+async function submitEdit(){
+  const m=S.modal, b=m.booking, tz=S.me&&S.me.teacher&&S.me.teacher.timezone;
+  const v={n:$('#ed_n').value.trim(),p:$('#ed_p').value.trim(),t:$('#ed_t').value.trim(),ty:$('#ed_ty')?$('#ed_ty').value:null,d:$('#ed_d')?$('#ed_d').value:null,h:$('#ed_h')?$('#ed_h').value:null,sc:(document.querySelector('input[name=ed_scope]:checked')||{}).value||'single'};
+  const fail=e=>{S.modal={...m,vals:v,err:e};render()};
+  if(!v.n) return fail(tr('needName'));
+  if(v.p&&parsePhone(v.p).invalid) return fail(tr('m_phoneErr'));
+  let starts=null; if(m.asTeacher&&v.d&&v.h){const ms=toUtc(v.d,v.h,tz); if(Math.abs(ms-Date.parse(b.starts_at))>=1000) starts=new Date(ms).toISOString();}
+  const ty=(m.asTeacher&&v.ty&&v.ty!==b.session_type_id)?v.ty:null;
+  const btn=$('#ed_save'); if(btn){btn.disabled=true;btn.textContent='…';}
+  const {error}=await sb.rpc('edit_booking',{p_booking:b.id,p_student:v.n,p_phone:v.p,p_notes:v.t,p_starts:starts,p_session_type:ty,p_scope:b.series_id?v.sc:'single'});
+  if(error) return fail(editErr(error.message));
+  S.modal=null; await loadMine(); if(S.me&&S.me.teacher) await loadDash(); flash(tr('saved'),false);
 }
 
 async function executeCancel(id,scope){
@@ -544,7 +564,7 @@ async function startResched(id, scope, asTeacher){
   S.rs=b; S.rsScope=scope||'single'; S.rsAsTeacher=!!asTeacher; S.rsFrom=S.slug; S.slug=targetSlug; S.done=null; S.err='';
   writeAppHistory('push');
   await loadTeacher(); await loadBook();
-  S.ty=S.types.find(x=>x.id===b.session_type_id)||S.types[0]||null; build(); render();
+  S.ty=S.types.find(x=>x.id===b.session_type_id)||S.types[0]||null; await build(); render();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 async function stopResched(){
@@ -559,7 +579,7 @@ async function doResched(){
   const {data,error}=await sb.rpc('reschedule_booking',{p_booking:S.rs.id,p_starts:new Date(S.slot).toISOString(),p_scope:scope});
   if(error){
     const em=(error.message||'').toLowerCase(), late=em.includes('too late'), soon=em.includes('too soon');
-    S.err=''; await loadBook(true); S.ty=S.types.find(x=>x.id===S.rs.session_type_id)||S.ty; build(); S.err=tr(late?'late':soon?'tooSoon':'taken'); render(); return;
+    S.err=''; await loadBook(true); S.ty=S.types.find(x=>x.id===S.rs.session_type_id)||S.ty; await build(); S.err=tr(late?'late':soon?'tooSoon':'taken'); render(); return;
   }
   if(wasTeacher){
     S.rs=null; S.rsAsTeacher=false; S.slug=null; S.err='';
@@ -677,7 +697,7 @@ function minesCard(){
     return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')
       +'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(b.teachers?.display_name)+'</span>'
       +(link?'<br><a href="'+esc(link)+'" target="_blank" rel="noopener">'+tr('link')+'</a>':'')+'</div>'
-      +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',false)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('cancel')+'</button></div></div>';
+      +'<div class="row"><button class="chip" onclick="openEdit(\''+b.id+'\',false)">'+tr('m_edit')+'</button><button class="chip" onclick="promptResched(\''+b.id+'\',false)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('cancel')+'</button></div></div>';
   }).join('')+'</div>';
 }
 function doneCard(){
@@ -685,7 +705,7 @@ function doneCard(){
   const wa=(d.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+dur+' '+tr('min')+')');
   const gc=ms=>new Date(ms).toISOString().replace(/[-:]|\.\d{3}/g,'');
   const cal='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(d.t.display_name+' – '+d.name)+'&dates='+gc(d.start)+'/'+gc(d.start+dur*6e4)+'&details='+encodeURIComponent(m||'');
-  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span>'+(d.recurring?'<br><span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'
+  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span>'+(d.recurring?'<br><span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'+(d.skipped&&d.skipped.length?'<p class="mut">'+tr('m_skipped')+': '+d.skipped.map(x=>fD(new Date(x.starts_at).toLocaleDateString('en-CA'))).join(', ')+'</p>':'')
     +(m?'<p><a href="'+esc(m)+'" target="_blank" rel="noopener">'+tr('link')+'</a></p>':'')
     +(wa?'<a class="btn w" href="https://wa.me/'+wa+'?text='+txt+'" target="_blank" rel="noopener">'+tr('wa')+'</a>':'')
     +'<a class="btn g" href="'+esc(cal)+'" target="_blank" rel="noopener">'+tr('gcal')+'</a>'
@@ -731,7 +751,7 @@ function viewBook(){
     h+='<div class="card"><h2><span class="n">2</span>'+tr('day')+'</h2>';
     if(days.length){
       h+='<select onchange="pickDay(this.value)"><option value="">'+tr('pickDay')+'</option>'+days.map(k=>'<option value="'+k+'"'+(S.day===k?' selected':'')+'>'+fD(k)+'</option>').join('')+'</select>';
-      if(S.day) h+='<h2 style="margin-top:6px">'+tr('time')+'</h2><div class="time-options" role="group" aria-label="'+tr('pickTime')+'">'+(S.slots[S.day]||[]).map(s=>'<button type="button" class="time-option'+(S.slot===s?' selected':'')+'" aria-pressed="'+(S.slot===s)+'" onclick="pickSlot('+s+')">'+fT(s)+' – '+fT(s+dur)+'</button>').join('')+'</div>';
+      if(S.day) h+='<h2 style="margin-top:6px">'+tr('time')+'</h2><select onchange="pickSlot(this.value)"><option value="">'+tr('pickTime')+'</option>'+S.slots[S.day].map(s=>'<option value="'+s+'"'+(S.slot===s?' selected':'')+'>'+fT(s)+' – '+fT(s+dur)+(S.slotState&&S.slotState[s]==='jit'?' ⚡':'')+'</option>').join('')+'</select>';
       h+='<p class="mut" style="margin:0">'+tr('tz')+': '+esc(Intl.DateTimeFormat().resolvedOptions().timeZone)+'</p>';
     } else h+='<p class="mut">'+tr('none')+'</p>';
     h+='</div>';
@@ -739,7 +759,7 @@ function viewBook(){
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
     h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
-      :'<input id="sn" list="knownStudents" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="mut">'+tr('recurringChoice')+'</label><div class="frequency-options"><label class="frequency-option"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"><span><b>'+tr('weeklyRecurring')+'</b><br><small class="mut">'+tr('recurringHint')+'</small></span></label><label class="frequency-option"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"><span><b>'+tr('fixedCount')+'</b><br><small class="mut">'+(lang==='ar'?'حدد عدد الحصص الأسبوعية':'Choose how many weekly lessons')+'</small></span></label></div><div id="recurrenceCountWrap" hidden><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="2" max="52" value="8"></div><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
+      :'<input id="sn" list="knownStudents" oninput="fillKnown(this)" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="mut">'+tr('recurringChoice')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"> '+tr('weeklyRecurring')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"> '+tr('fixedCount')+'</label><div id="recurrenceCountWrap" hidden><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small></div><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
   if(!S.rs) h+=minesCard();
@@ -834,12 +854,8 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
       const st=b.session_types||{};
       h+='<div class="calbook"><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'
         +'<small>'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+(b.series_id?' · '+tr('weeklyBadge'):'')+'</small>'
-        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>Booked by: '+esc(b.profiles?.full_name||b.profiles?.email||'Account holder')+'</small>'
-        +'<div class="row" style="gap:6px;margin-top:6px">'
-        +'<button class="chip" style="padding:4px 8px;font-size:12px" onclick="editBookingDetails(\''+b.id+'\',true)">Edit details</button>'
-        +'<button class="chip" style="padding:4px 8px;font-size:12px" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button>'
-        +'<button class="chip danger" style="padding:4px 8px;font-size:12px" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button>'
-        +'</div></div>';
+        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</small>'
+        +'<div class="row" style="margin-top:6px"><button type="button" class="chip" onclick="openBookingMenu(\''+b.id+'\')">'+tr('m_manage')+'</button></div></div>';
     });
   } else {
     h+='<div class="calempty">'+tr('noBookingsDay')+'</div>';
@@ -848,45 +864,78 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
   return h;
 }
 
-function renderWeekTimetable(days,tz,dayKey,minBookAt){
-  const windowsFor=day=>{const ex=S.dExc.filter(x=>x.on_date===day.key);return ex.some(x=>!x.is_available)?[]:ex.length?ex.filter(x=>x.is_available).map(x=>[(x.start_time||'').slice(0,5),(x.end_time||'').slice(0,5)]):S.wk[new Date(day.key+'T12:00:00Z').getUTCDay()]||[]};
-  const windows=days.map(windowsFor); const all=windows.flat();
-  if(!all.length) return '<div class="calempty">'+tr('unavailable')+'</div>';
-  const mins=all.flatMap(w=>w.map(t=>{const [h,m]=t.split(':').map(Number);return h*60+m}));
-  const from=Math.floor(Math.min(...mins)/30)*30, to=Math.ceil(Math.max(...mins)/30)*30;
-  const times=[]; for(let m=from;m<to;m+=30) times.push(m);
-  const timeLabel=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
-  let h='<div class="timetable-wrap"><div class="timetable"><div class="tt-head tt-time">'+(lang==='ar'?'الوقت':'Time')+'</div>';
-  days.forEach(d=>h+='<div class="tt-head">'+d.date.toLocaleDateString(loc(),{timeZone:tz,weekday:'short',day:'numeric',month:'short'})+'</div>');
-  times.forEach(m=>{
-    h+='<div class="tt-time">'+timeLabel(m)+'</div>';
-    days.forEach((day,idx)=>{
-      const win=windows[idx].some(w=>{const [a,b]=w.map(t=>{const [hh,mm]=t.split(':').map(Number);return hh*60+mm});return m>=a&&m<b});
-      const at=toUtc(day.key,timeLabel(m),tz), bk=S.dBk.find(b=>dayKey(new Date(b.starts_at))===day.key&&at>=Date.parse(b.starts_at)&&at<Date.parse(b.blocked_until||b.ends_at));
-      const starts=S.dBk.find(b=>dayKey(new Date(b.starts_at))===day.key&&Math.abs(Date.parse(b.starts_at)-at)<60000);
-      if(starts){const st=starts.session_types||{};h+='<div class="tt-cell tt-booked"><b>'+esc(starts.student_name)+'</b><small>'+timeLabel(m)+' · '+(st.duration_min||'')+' '+tr('min')+'</small></div>';}
-      else if(bk) h+='<div class="tt-cell tt-occupied"></div>';
-      else if(win){
-        const type=S.dTypes.filter(t=>t.is_active&&m+t.duration_min<=to).sort((a,b)=>a.duration_min-b.duration_min)[0];
-        const iso=new Date(at).toISOString(), override=S.slotOverrides[iso];
-        if(override==='closed') h+='<div class="tt-cell tt-closed"><small class="tt-status">'+tr('slotClosed')+'</small><div class="tt-actions"><button class="chip" onclick="manageSlotOverride(\''+day.key+'\',\''+timeLabel(m)+'\',\'clear\')">'+tr('clearOverride')+'</button></div></div>';
-        else h+='<div class="tt-cell tt-free">'+(override==='jit'?'<small class="tt-status">'+tr('slotJit')+'</small>':'')+(type?'<button title="'+tr('bookForStudent')+'" aria-label="'+tr('bookForStudent')+'" onclick="startTeacherBookingAt(\''+day.key+'\',\''+timeLabel(m)+'\')">＋</button>':'')+'<div class="tt-actions"><button class="chip" onclick="manageSlotOverride(\''+day.key+'\',\''+timeLabel(m)+'\',\'closed\')">'+tr('closeSlot')+'</button><button class="chip" onclick="manageSlotOverride(\''+day.key+'\',\''+timeLabel(m)+'\',\'jit\')">'+tr('enableJit')+'</button></div></div>';
-      }
-      else h+='<div class="tt-cell tt-closed"></div>';
-    });
-  });
-  return h+'</div></div><div class="tt-legend"><span>🟩 '+tr('available')+'</span><span>🟪 '+(lang==='ar'?'حصة محجوزة':'Booked lesson')+'</span><span>⬜ '+tr('unavailable')+'</span></div>';
-}
-async function manageSlotOverride(day,time,action){
-  const tz=S.me.teacher.timezone, at=toUtc(day,time,tz);
-  const {error}=await sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:new Date(at).toISOString(),p_action:action});
-  if(error){alert(error.message||'Could not update this slot');return;}
-  const key=new Date(at).toISOString();
-  if(action==='clear') delete S.slotOverrides[key]; else S.slotOverrides[key]=action;
-  flash(action==='closed'?tr('slotClosed'):action==='jit'?tr('slotJit'):tr('saved'),false);
+function tzMin(ms,tz){const p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(ms).reduce((a,x)=>(a[x.type]=x.value,a),{});return (+p.hour%24)*60+ +p.minute}
+function tzKey(ms,tz){const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(ms).reduce((a,x)=>(a[x.type]=x.value,a),{});return p.year+'-'+p.month+'-'+p.day}
+function ttTypeObj(){const a=S.dTypes.filter(x=>x.is_active).sort((x,y)=>x.duration_min-y.duration_min);return a.find(x=>x.id===S.ttType)||a[0]||null}
+function setTtType(id){S.ttType=id;render()}
+async function loadTimetable(days,tz){
+  const ty=ttTypeObj(); if(!ty) return;
+  const key=days[0].key+'|'+ty.id; if(S.ttKey===key||S.ttLoading===key) return;
+  S.ttLoading=key;
+  const from=toUtc(days[0].key,'00:00',tz), id=S.me.teacher.id;
+  const [sl,cx]=await Promise.all([
+    sb.rpc('get_available_slots',{p_teacher:id,p_session_type:ty.id,p_from:days[0].key,p_days:7}),
+    sb.from('bookings').select('id,student_name,starts_at,ends_at').eq('teacher_id',id).eq('status','cancelled').gte('starts_at',new Date(from).toISOString()).lt('starts_at',new Date(from+7*864e5).toISOString())]);
+  if(S.ttLoading!==key) return;
+  S.ttLoading=null; S.ttKey=key; S.ttType=ty.id; S.ttErr=!!sl.error; S.ttSlots=sl.error?[]:(sl.data||[]); S.ttCancelled=cx.data||[];
   render();
 }
-async function startTeacherBookingAt(day,time){await startTeacherBooking();const types=S.types.filter(x=>x.is_active).sort((a,b)=>a.duration_min-b.duration_min);if(types[0]){S.ty=types[0];build();S.slot=Object.values(S.slots).flat().find(x=>Math.abs(x-toUtc(day,time,S.t.timezone))<60000)||null;S.day=S.slot?new Date(S.slot).toLocaleDateString('en-CA'):null;}render();}
+function renderWeekTimetable(days,tz,dayKey,minBookAt){
+  const ty=ttTypeObj();
+  if(!ty) return '<div class="calempty">'+tr('m_noType')+'</div>';
+  const key=days[0].key+'|'+ty.id;
+  if(S.ttKey!==key){loadTimetable(days,tz); return '<div class="calempty" role="status">'+tr('m_loading')+'</div>';}
+  const H=30, fmt24=ms=>new Date(ms).toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const windowsFor=day=>{const ex=S.dExc.filter(x=>x.on_date===day.key);return (ex.some(x=>!x.is_available)?[]:ex.length?ex.filter(x=>x.is_available).map(x=>[(x.start_time||'').slice(0,5),(x.end_time||'').slice(0,5)]):S.wk[new Date(day.key+'T12:00:00Z').getUTCDay()]||[]).map(w=>w.map(t=>{const [h,m]=t.split(':').map(Number);return h*60+m})).filter(w=>w[1]>w[0]).sort((a,b)=>a[0]-b[0])};
+  const wins=days.map(windowsFor);
+  const slots=(S.ttSlots||[]).map(r=>({iso:new Date(r.slot_start).toISOString(),st:r.state,a:Date.parse(r.slot_start),b:Date.parse(r.slot_end)}));
+  const bks=S.dBk.map(b=>({b,a:Date.parse(b.starts_at),e:Date.parse(b.ends_at)}));
+  const cxs=(S.ttCancelled||[]).map(b=>({b,a:Date.parse(b.starts_at),e:Date.parse(b.ends_at)}));
+  const mins=[...wins.flat().flat(),...slots.flatMap(x=>[tzMin(x.a,tz),tzMin(x.b,tz)]),...bks.flatMap(x=>[tzMin(x.a,tz),tzMin(x.e,tz)])];
+  let from=480,to=1200; if(mins.length){from=Math.floor(Math.min(...mins)/60)*60; to=Math.min(1440,Math.max(from+60,Math.ceil(Math.max(...mins)/60)*60));}
+  const px=m=>(m-from)/30*H, hgt=(a,b)=>Math.max(22,(b-a)/6e4/30*H-2);
+  const dayName=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,weekday:'short',day:'numeric',month:'short'});
+  let h='<div class="tt2-wrap"><div class="tt2" style="grid-template-columns:54px repeat(7,minmax(94px,1fr))"><div class="tt2-h tt2-t"></div>';
+  days.forEach(d=>h+='<div class="tt2-h">'+dayName(d)+'</div>');
+  h+='<div class="tt2-times" style="height:'+px(to)+'px">';
+  for(let m=from;m<to;m+=60) h+='<span style="top:'+px(m)+'px">'+String(Math.floor(m/60)).padStart(2,'0')+':00</span>';
+  h+='</div>';
+  days.forEach((d,i)=>{
+    h+='<div class="tt2-col" style="height:'+px(to)+'px">';
+    let cur=from; wins[i].forEach(w=>{ if(w[0]>cur) h+='<div class="tt2-un" style="top:'+px(cur)+'px;height:'+(px(w[0])-px(cur))+'px"></div>'; cur=Math.max(cur,w[1]); });
+    if(cur<to) h+='<div class="tt2-un" style="top:'+px(cur)+'px;height:'+(px(to)-px(cur))+'px"></div>';
+    cxs.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>h+='<div class="tt2-x" style="top:'+px(tzMin(x.a,tz))+'px;height:'+hgt(tzMin(x.a,tz),tzMin(x.a,tz)+(x.e-x.a)/6e4)+'px" title="'+tr('m_lCancel')+'"><s>'+esc(x.b.student_name)+'</s></div>');
+    slots.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>{
+      const lab=dayName(d)+' '+fmt24(x.a)+' – '+(x.st==='closed'?tr('m_lClosed'):x.st==='jit'?tr('m_lJit'):tr('m_lAvail'));
+      h+='<button type="button" class="tt2-s tt2-'+x.st+'" style="top:'+px(tzMin(x.a,tz))+'px;height:'+hgt(tzMin(x.a,tz),tzMin(x.a,tz)+(x.b-x.a)/6e4)+'px" aria-label="'+esc(lab)+'" onclick="openSlotMenu(\''+x.iso+'\')"><b>'+fmt24(x.a)+'</b>'+(x.st==='jit'?' ⚡':x.st==='closed'?' 🚫':'')+'</button>';
+    });
+    bks.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>{
+      const t0=tzMin(x.a,tz), pr=parsePhone(x.b.contact_phone);
+      h+='<button type="button" class="tt2-b" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(dayName(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+'</small></button>';
+    });
+    h+='</div>';
+  });
+  h+='</div></div>';
+  const chips=S.dTypes.filter(x=>x.is_active).sort((a,b)=>a.duration_min-b.duration_min);
+  const typeRow=chips.length>1?'<div class="row" style="margin:10px 0 0"><span class="mut">'+tr('m_type')+':</span>'+chips.map(x=>'<button type="button" class="chip'+(x.id===ty.id?' on':'')+'" onclick="setTtType(\''+x.id+'\')">'+x.duration_min+' '+tr('min')+'</button>').join('')+'</div>':'';
+  const err=S.ttErr?'<div class="err" style="margin-top:8px">'+tr('m_ttLoadErr')+'</div>':'';
+  return typeRow+err+h+'<div class="tt2-legend"><span><i class="tt2-s tt2-available"></i>'+tr('m_lAvail')+'</span><span><i class="tt2-b"></i>'+tr('m_lBooked')+'</span><span><i class="tt2-s tt2-closed"></i>'+tr('m_lClosed')+'</span><span><i class="tt2-s tt2-jit"></i>'+tr('m_lJit')+'</span><span><i class="tt2-x"></i>'+tr('m_lCancel')+'</span><span><i class="tt2-un"></i>'+tr('m_lUn')+'</span></div>';
+}
+function openSlotMenu(iso){const r=S.ttSlots.find(x=>new Date(x.slot_start).toISOString()===iso); if(!r) return; S.modal={type:'slotMenu',iso,state:r.state}; render();}
+function openBookingMenu(id){const b=S.dBk.find(x=>x.id===id); if(!b) return; S.modal={type:'bookingMenu',booking:b}; render();}
+async function manageSlotOverride(iso,action){
+  S.modal=null;
+  const {error}=await sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:iso,p_action:action});
+  if(error){flash(error.message||'Could not update this slot',true);return;}
+  S.ttKey=null; flash(action==='closed'?tr('slotClosed'):action==='jit'?tr('slotJit'):tr('saved'),false);
+}
+async function startTeacherBookingAtMs(ms){
+  S.modal=null; const ty=ttTypeObj(); await startTeacherBooking();
+  if(ty){S.ty=S.types.find(x=>x.id===ty.id)||S.ty; await build(); S.slot=Object.values(S.slots).flat().find(x=>x===ms)||null; S.day=S.slot?new Date(S.slot).toLocaleDateString('en-CA'):null;}
+  render();
+}
+function confirmCancelOne(id){if(confirm(tr('confirmCancel'))) executeCancel(id,'single')}
+
 
 function teacherCalendar(){
   const tz=S.me.teacher.timezone;
@@ -951,7 +1000,7 @@ function tabBookings(){
   return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+flashHtml()+(S.dBk.length?S.dBk.map(b=>{
     const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
     return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
-      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'<br><span class="mut">Booked by: '+esc(b.profiles?.full_name||b.profiles?.email||'Account holder')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'<br><span class="mut">'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
       +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button></div></div>';
   }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
 }
@@ -973,10 +1022,10 @@ function adminDashboard(){
   if(S.adminLoading&&!d) return '<div class="card mut">…</div>';
   if(!d||d.error) return '<div class="card"><h2>'+tr('adminStats')+'</h2><p class="err">'+tr('adminLoadError')+'</p><button class="btn" onclick="loadAdminOverview()">'+tr('fix')+'</button></div>';
   const st=d.stats||{};
-  let h='<div class="card"><h2>'+tr('adminStats')+'</h2><div class="g3">'+[[tr('totalTeachers'),st.total_teachers],[tr('activeTeachers'),st.active_teachers],[tr('totalBookings'),st.total_bookings],[tr('confirmedBookings'),st.confirmed_bookings],[tr('cancelledBookings'),st.cancelled_bookings],[tr('teacherCreated'),st.teacher_created_bookings]].map(([k,v])=>'<div class="feat"><b>'+esc(k)+'</b><strong style="font-size:25px">'+Number(v||0).toLocaleString()+'</strong></div>').join('')+'</div></div>';
+  let h='<div class="card"><h2>'+tr('adminStats')+'</h2><div class="g3">'+[[tr('totalTeachers'),st.total_teachers],[tr('activeTeachers'),st.active_teachers],[tr('totalBookings'),st.total_bookings],[tr('confirmedBookings'),st.confirmed_bookings],[tr('cancelledBookings'),st.cancelled_bookings],[tr('teacherCreated'),st.teacher_created_bookings],[tr('m_activeSeries'),st.active_series],[tr('m_endedSeries'),st.ended_series],[tr('m_next30'),st.bookings_next_30d]].map(([k,v])=>'<div class="feat"><b>'+esc(k)+'</b><strong style="font-size:25px">'+Number(v||0).toLocaleString()+'</strong></div>').join('')+'</div></div>';
   h+='<div class="card"><h2>'+tr('adminTeachers')+'</h2>';
   const ts=d.teachers||[];
-  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
+  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+' · ✔ '+(t.confirmed_bookings||0)+' · ✖ '+(t.cancelled_bookings||0)+' · 🔁 '+(t.active_series||0)+' · 👩‍🏫 '+(t.teacher_created||0)+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
   return h+'</div>';
 }
 
@@ -990,31 +1039,54 @@ function viewDash(){
 
 function renderModal(){
   const M=$('#modalRoot');
-  if(!S.modal){M.innerHTML='';return}
-  const b=S.modal.booking;
-  if(S.modal.type==='cancel'){
-    M.innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">'
-      +'<h3>'+tr('cancelModalTitle')+'</h3>'
-      +'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p>'
-      +'<p class="mut" style="margin:6px 0 0">'+tr('cancelModalSub')+'</p>'
-      +'<div class="stack">'
-      +'<button class="btn g" onclick="executeCancel(\''+b.id+'\',\'single\')">'+tr('cancelOne')+'</button>'
-      +'<button class="btn g" onclick="executeCancel(\''+b.id+'\',\'future\')">'+tr('cancelFuture')+'</button>'
-      +'<button class="btn d" onclick="executeCancel(\''+b.id+'\',\'all\')">'+tr('cancelAll')+'</button>'
-      +'<button class="chip" onclick="closeModal()">'+tr('back')+'</button>'
-      +'</div></div></div>';
-  } else if(S.modal.type==='resched'){
-    const asT = S.modal.asTeacher ? 'true' : 'false';
-    M.innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal">'
-      +'<h3>'+tr('reschedModalTitle')+'</h3>'
-      +'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p>'
-      +'<p class="mut" style="margin:6px 0 0">'+tr('reschedModalSub')+'</p>'
-      +'<div class="stack">'
-      +'<button class="btn" onclick="startResched(\''+b.id+'\',\'single\','+asT+')">'+tr('reschedOne')+'</button>'
-      +'<button class="btn g" onclick="startResched(\''+b.id+'\',\'future\','+asT+')">'+tr('reschedFuture')+'</button>'
-      +'<button class="chip" onclick="closeModal()">'+tr('back')+'</button>'
-      +'</div></div></div>';
+  if(!S.modal){M.innerHTML='';M._m=null;return}
+  if(M._m===S.modal&&M.innerHTML) return;   // do not rebuild (and wipe typed input) when unrelated state refreshes
+  M._m=S.modal;
+  const m=S.modal, b=m.booking, tz=S.me&&S.me.teacher?S.me.teacher.timezone:undefined;
+  const fFt=ms=>new Date(ms).toLocaleString(loc(),{timeZone:tz,weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
+  const wrap=(title,body)=>'<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'">'+'<h3>'+esc(title)+'</h3>'+body+'</div></div>';
+  const bt=(cls,fn,label)=>'<button type="button" class="'+cls+'" onclick="'+fn+'">'+label+'</button>';
+  let h='';
+  if(m.type==='cancel'){
+    h=wrap(tr('cancelModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('cancelModalSub')+'</p><div class="stack">'
+      +bt('btn g',"executeCancel('"+b.id+"','single')",tr('cancelOne'))+bt('btn g',"executeCancel('"+b.id+"','future')",tr('cancelFuture'))+bt('btn d',"executeCancel('"+b.id+"','all')",tr('cancelAll'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='resched'){
+    const asT=m.asTeacher?'true':'false';
+    h=wrap(tr('reschedModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('reschedModalSub')+'</p><div class="stack">'
+      +bt('btn',"startResched('"+b.id+"','single',"+asT+")",tr('reschedOne'))+bt('btn g',"startResched('"+b.id+"','future',"+asT+")",tr('reschedFuture'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='slotMenu'){
+    const ms=Date.parse(m.iso), st=m.state;
+    h=wrap(fFt(ms),'<p class="mut" style="margin:0">'+(st==='closed'?tr('m_lClosed'):st==='jit'?tr('m_lJit'):tr('m_lAvail'))+'</p><div class="stack">'
+      +(st!=='closed'?bt('btn',"startTeacherBookingAtMs("+ms+")",tr('m_book')):'')
+      +(st!=='closed'?bt('btn g',"manageSlotOverride('"+m.iso+"','closed')",tr('m_close')):'')
+      +(st==='available'?bt('btn g',"manageSlotOverride('"+m.iso+"','jit')",tr('m_jit')):'')
+      +(st!=='available'?bt('btn g',"manageSlotOverride('"+m.iso+"','clear')",tr('m_clear')):'')
+      +bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='bookingMenu'){
+    const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,''), p=b.profiles||{};
+    h=wrap(tr('m_details'),'<p style="margin:0"><b>'+esc(b.student_name)+'</b>'+(b.series_id?' <span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'
+      +'<p class="mut" style="margin:4px 0">'+fFt(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</p>'
+      +'<p style="margin:4px 0" dir="ltr">'+(ph?'<a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'—')+'</p>'
+      +'<p class="mut" style="margin:4px 0">'+tr('m_by')+': '+esc(p.full_name||'—')+(p.email?' · <span dir="ltr">'+esc(p.email)+'</span>':'')+'</p>'
+      +(b.notes?'<p class="mut" style="margin:4px 0">'+esc(b.notes)+'</p>':'')
+      +'<div class="stack">'+bt('btn',"openEdit('"+b.id+"',true)",tr('m_edit'))+bt('btn g',"confirmCancelOne('"+b.id+"')",tr('m_cancelOcc'))
+      +(b.series_id?bt('btn g',"promptCancel('"+b.id+"')",tr('m_series')):'')+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='edit'){
+    const v=m.vals||{n:b.student_name||'',p:b.contact_phone||'',t:b.notes||''};
+    let tf='';
+    if(m.asTeacher){
+      const ms=Date.parse(b.starts_at), types=S.dTypes.filter(x=>x.is_active||x.id===b.session_type_id);
+      tf='<label class="fl" for="ed_ty">'+tr('m_type')+'</label><select id="ed_ty">'+types.map(x=>'<option value="'+x.id+'"'+((v.ty||b.session_type_id)===x.id?' selected':'')+'>'+x.duration_min+' '+tr('min')+' · '+esc(tn(x))+'</option>').join('')+'</select>'
+        +'<div class="g2"><div><label class="fl" for="ed_d">'+tr('m_date')+'</label><input id="ed_d" type="date" value="'+(v.d||tzKey(ms,tz))+'"></div><div><label class="fl" for="ed_h">'+tr('m_time')+'</label><input id="ed_h" type="time" step="300" value="'+(v.h||new Date(ms).toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}))+'"></div></div><p class="mut" style="margin:0">'+esc(tz||'')+'</p>';
+    }
+    const sc=b.series_id?'<label class="fl">'+tr('m_scope')+'</label><label class="ck"><input type="radio" name="ed_scope" value="single"'+((v.sc||'single')==='single'?' checked':'')+'> '+tr('m_this')+'</label><label class="ck"><input type="radio" name="ed_scope" value="future"'+(v.sc==='future'?' checked':'')+'> '+tr('m_future')+'</label>':'';
+    h=wrap(tr('m_edit'),(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')
+      +'<label class="fl" for="ed_n">'+tr('name')+'</label><input id="ed_n" maxlength="120" value="'+esc(v.n)+'">'
+      +'<label class="fl" for="ed_p">'+tr('phone')+'</label><input id="ed_p" type="tel" maxlength="32" dir="ltr" value="'+esc(v.p)+'">'
+      +'<label class="fl" for="ed_t">'+tr('m_notes')+'</label><textarea id="ed_t" maxlength="1000" rows="2" style="width:100%">'+esc(v.t)+'</textarea>'
+      +tf+sc+'<div class="stack">'+bt('btn" id="ed_save','submitEdit()',tr('m_save'))+bt('chip','closeModal()',tr('back'))+'</div>');
   }
+  M.innerHTML=h;
 }
 
 // ---- main render ----
@@ -1079,6 +1151,7 @@ async function init(){
   S.reg = !!(S.user&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
   S.ready=true; render();
 }
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.modal)closeModal()});
 render(); init();
 </script>
 </body>
