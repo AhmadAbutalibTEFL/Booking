@@ -7,7 +7,8 @@
 <title>BookMyClass — Online Lesson Booking & Scheduling</title>
 <style>
 :root{--bg:#f3f5ff;--card:#fff;--ink:#1d2340;--mut:#6b7194;--pri:#5b5bf0;--acc:#2fc4b2;--line:#e1e5f6;--danger:#b00020;--danger-bg:#ffe9e9}
-@media(prefers-color-scheme:dark){:root{--bg:#12142a;--card:#1c1f3d;--ink:#eef0ff;--mut:#9aa0c8;--line:#2d315a;--danger:#ff8a9a;--danger-bg:#3b1822}}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark;--bg:#12142a;--card:#1c1f3d;--ink:#eef0ff;--mut:#9aa0c8;--line:#2d315a;--danger:#ff8a9a;--danger-bg:#3b1822}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#12142a;--card:#1c1f3d;--ink:#eef0ff;--mut:#9aa0c8;--line:#2d315a;--danger:#ff8a9a;--danger-bg:#3b1822}}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
 .hero{background:linear-gradient(135deg,#5b5bf0,#2fc4b2);color:#fff;padding:20px 18px 54px}
@@ -108,7 +109,9 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .tt2-legend .tt2-b{background:#6d5bd0;border-color:#5946b8}.tt2-legend .tt2-available{background:rgba(34,197,94,.2);border-color:#22c55e}.tt2-legend .tt2-jit{background:rgba(245,158,11,.3);border-color:#f59e0b}.tt2-legend .tt2-closed{background:rgba(128,132,160,.22);border-style:dashed;border-color:#8a8fa8}.tt2-legend .tt2-x{background:rgba(239,68,68,.12);border-style:dashed;border-color:#ef4444}.tt2-legend .tt2-un{background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(128,132,160,.3) 3px 6px);border-color:var(--line)}
 .modal{max-height:90vh;overflow:auto}.modal textarea,.modal select,.modal input{max-width:100%;box-sizing:border-box}
 @media(max-width:640px){.tt2{min-width:660px}.tt2-wrap{max-height:70vh}}
+.seg{display:inline-flex;gap:2px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px}.bar .seg button{padding:5px 9px;background:transparent;font-size:14px}.bar .seg button[aria-pressed=true]{background:rgba(255,255,255,.38)}.btn.d:disabled{opacity:.5;cursor:not-allowed}
 </style>
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <div class="hero">
@@ -191,7 +194,7 @@ const T = {
   bioL:'About you (shown to students)',photoL:'Photo link (optional, https://)',meetL:'Meeting link (Google Meet, Zoom…)',meetH:'Must start with https://. You can change it any time.',waL:'WhatsApp number (digits only, with country code)',noticeL:'Minimum notice (hours)',
   badProf:'Please check: name, link name, https:// links, WhatsApp digits (6–15).',slugWarn:'If you change the link name, the old link stops working.',
   invTitle:'Invite a teacher',invHint:'Generate a one-time invite and send the link. The teacher signs in with Google and sets up their own account.',gen:'Generate invite',inviteMsg:'You’re invited to join BookMyClass as a teacher. Open this link:',
-  m_manage:'Manage',m_edit:'Edit booking',m_save:'Save changes',m_scope:'Apply to',m_this:'This occurrence only',m_future:'This and all future occurrences',m_type:'Lesson type',m_date:'Date',m_time:'Start time',m_notes:'Notes',m_by:'Booked by',m_skipped:'Dates not booked',m_close:'Close this time slot',m_jit:'Enable JIT for this slot',m_clear:'Clear override',m_book:'Book for a student',m_cancelOcc:'Cancel this occurrence',m_series:'Manage remaining series',m_details:'Booking details',m_lAvail:'Available',m_lBooked:'Booked',m_lClosed:'Closed',m_lJit:'JIT enabled',m_lCancel:'Cancelled',m_lUn:'Unavailable',m_noType:'Add an active lesson type first.',m_loading:'Loading timetable…',m_countErr:'Enter a number of lessons from 1 to 52.',m_countHint:'Enter 1 for a single lesson (max 52).',m_closedErr:'This time slot is closed.',m_availErr:'This time is outside the teacher availability.',m_phoneErr:'Please enter a valid phone number (with country code, e.g. +966…).',m_activeSeries:'Active series',m_endedSeries:'Ended series',m_next30:'Bookings, next 30 days',m_e_taken:'That time is not available',m_notAllowed:'You are not allowed to change this booking.',m_ttLoadErr:'Could not load time slots. Make sure the latest database update (v2) is installed.',weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
+  m_themeSys:'System',m_themeLight:'Light',m_themeDark:'Dark',tMine:'My lessons',m_adminView:'Admin view',m_backAdmin:'Back to admin',m_deactivate:'Deactivate',m_activate:'Activate',m_pageLive:'Booking page is live',m_pagePaused:'Booking page is paused',m_pausedPublic:'This booking page is paused and hidden from the public.',m_acct:'Account',m_pauseHint:'Pausing hides your booking page from the public. Existing lessons stay as they are, and you can resume at any time.',m_pause:'Pause my booking page',m_resume:'Resume my booking page',m_delTitle:'Delete my account',m_delTitleAdmin:'Delete account',m_delHint:'Permanently removes your personal details and cancels all upcoming lessons. This cannot be undone.',m_delBody:'Your upcoming lessons will be cancelled, your booking page and personal details removed. Past lesson records stay for the other people involved. This cannot be undone.',m_delBodyAdmin:'This cancels the account upcoming lessons and removes its personal details. This cannot be undone and is recorded in the audit log.',m_delType:'Type {w} to confirm',m_delWord:'DELETE',m_delGo:'Delete account',m_accDeleted:'The account was deleted.',m_audit:'Recent admin actions',m_noAudit:'No admin actions yet.',m_manage:'Manage',m_edit:'Edit booking',m_save:'Save changes',m_scope:'Apply to',m_this:'This occurrence only',m_future:'This and all future occurrences',m_type:'Lesson type',m_date:'Date',m_time:'Start time',m_notes:'Notes',m_by:'Booked by',m_skipped:'Dates not booked',m_close:'Close this time slot',m_jit:'Enable JIT for this slot',m_clear:'Clear override',m_book:'Book for a student',m_cancelOcc:'Cancel this occurrence',m_series:'Manage remaining series',m_details:'Booking details',m_lAvail:'Available',m_lBooked:'Booked',m_lClosed:'Closed',m_lJit:'JIT enabled',m_lCancel:'Cancelled',m_lUn:'Unavailable',m_noType:'Add an active lesson type first.',m_loading:'Loading timetable…',m_countErr:'Enter a number of lessons from 1 to 52.',m_countHint:'Enter 1 for a single lesson (max 52).',m_closedErr:'This time slot is closed.',m_availErr:'This time is outside the teacher availability.',m_phoneErr:'Please enter a valid phone number (with country code, e.g. +966…).',m_activeSeries:'Active series',m_endedSeries:'Ended series',m_next30:'Bookings, next 30 days',m_e_taken:'That time is not available',m_notAllowed:'You are not allowed to change this booking.',m_ttLoadErr:'Could not load time slots. Make sure the latest database update (v2) is installed.',weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
   onSpot:'Allow on-the-spot bookings (no advance notice)',noticeEight:'When this is off, students must book at least 8 hours ahead.',
   calendarTitle:'Teaching Schedule',calendarTab:'Calendar',
   calViewDay:'Day',calViewWeek:'Week',calViewAgenda:'Agenda',
@@ -247,7 +250,7 @@ const T = {
   bioL:'نبذة عنك (تظهر للطلاب)',photoL:'رابط الصورة (اختياري، https://)',meetL:'رابط الحصة (Google Meet أو Zoom…)',meetH:'يجب أن يبدأ بـ https:// ويمكنك تغييره في أي وقت.',waL:'رقم واتساب (أرقام فقط مع رمز الدولة)',noticeL:'الحد الأدنى للإشعار المسبق (بالساعات)',
   badProf:'يرجى التحقق من: الاسم، اسم الرابط، روابط https://‏، أرقام واتساب (6–15).',slugWarn:'إذا غيّرت اسم الرابط فسيتوقف الرابط القديم عن العمل.',
   invTitle:'دعوة معلم',invHint:'أنشئ دعوة لمرة واحدة وأرسل الرابط. يسجّل المعلم الدخول عبر Google ويُعدّ حسابه بنفسه.',gen:'إنشاء دعوة',inviteMsg:'تمت دعوتك للانضمام إلى BookMyClass كمعلم. افتح هذا الرابط:',
-  m_manage:'إدارة',m_edit:'تعديل الحجز',m_save:'حفظ التعديلات',m_scope:'تطبيق على',m_this:'هذه الحصة فقط',m_future:'هذه الحصة وجميع الحصص القادمة',m_type:'نوع الحصة',m_date:'التاريخ',m_time:'وقت البدء',m_notes:'ملاحظات',m_by:'تم الحجز بواسطة',m_skipped:'تواريخ لم يتم حجزها',m_close:'إغلاق هذا الموعد',m_jit:'تفعيل الحجز الفوري لهذا الموعد',m_clear:'إلغاء الإعداد المخصص',m_book:'حجز لطالب',m_cancelOcc:'إلغاء هذه الحصة',m_series:'إدارة بقية السلسلة',m_details:'تفاصيل الحجز',m_lAvail:'متاح',m_lBooked:'محجوز',m_lClosed:'مغلق',m_lJit:'حجز فوري',m_lCancel:'ملغاة',m_lUn:'غير متاح',m_noType:'أضف نوع حصة نشطًا أولًا.',m_loading:'جارٍ تحميل الجدول…',m_countErr:'أدخل عدد الحصص من 1 إلى 52.',m_countHint:'أدخل 1 لحصة واحدة (الحد الأقصى 52).',m_closedErr:'هذا الموعد مغلق.',m_availErr:'هذا الوقت خارج أوقات إتاحة المعلم.',m_phoneErr:'يرجى إدخال رقم هاتف صحيح مع رمز الدولة، مثل +966…',m_activeSeries:'السلاسل النشطة',m_endedSeries:'السلاسل المنتهية',m_next30:'الحجوزات خلال 30 يومًا',m_e_taken:'هذا الوقت غير متاح',m_notAllowed:'غير مسموح لك بتعديل هذا الحجز.',m_ttLoadErr:'تعذر تحميل المواعيد. تأكد من تثبيت آخر تحديث لقاعدة البيانات (v2).',weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
+  m_themeSys:'تلقائي',m_themeLight:'فاتح',m_themeDark:'داكن',tMine:'حصصي',m_adminView:'عرض المشرف',m_backAdmin:'العودة للإدارة',m_deactivate:'تعطيل',m_activate:'تفعيل',m_pageLive:'صفحة الحجز مفعّلة',m_pagePaused:'صفحة الحجز متوقفة',m_pausedPublic:'صفحة الحجز هذه متوقفة ومخفية عن العامة.',m_acct:'الحساب',m_pauseHint:'الإيقاف المؤقت يخفي صفحة الحجز عن العامة. تبقى الحصص الحالية كما هي ويمكنك الاستئناف في أي وقت.',m_pause:'إيقاف صفحة الحجز مؤقتًا',m_resume:'استئناف صفحة الحجز',m_delTitle:'حذف حسابي',m_delTitleAdmin:'حذف الحساب',m_delHint:'يحذف بياناتك الشخصية نهائيًا ويلغي جميع الحصص القادمة. لا يمكن التراجع.',m_delBody:'سيتم إلغاء حصصك القادمة وحذف صفحة الحجز وبياناتك الشخصية. تبقى سجلات الحصص السابقة للأطراف الأخرى. لا يمكن التراجع.',m_delBodyAdmin:'سيتم إلغاء الحصص القادمة لهذا الحساب وحذف بياناته الشخصية. لا يمكن التراجع وسيُسجَّل ذلك في سجل الإدارة.',m_delType:'اكتب {w} للتأكيد',m_delWord:'حذف',m_delGo:'حذف الحساب',m_accDeleted:'تم حذف الحساب.',m_audit:'آخر إجراءات الإدارة',m_noAudit:'لا توجد إجراءات بعد.',m_manage:'إدارة',m_edit:'تعديل الحجز',m_save:'حفظ التعديلات',m_scope:'تطبيق على',m_this:'هذه الحصة فقط',m_future:'هذه الحصة وجميع الحصص القادمة',m_type:'نوع الحصة',m_date:'التاريخ',m_time:'وقت البدء',m_notes:'ملاحظات',m_by:'تم الحجز بواسطة',m_skipped:'تواريخ لم يتم حجزها',m_close:'إغلاق هذا الموعد',m_jit:'تفعيل الحجز الفوري لهذا الموعد',m_clear:'إلغاء الإعداد المخصص',m_book:'حجز لطالب',m_cancelOcc:'إلغاء هذه الحصة',m_series:'إدارة بقية السلسلة',m_details:'تفاصيل الحجز',m_lAvail:'متاح',m_lBooked:'محجوز',m_lClosed:'مغلق',m_lJit:'حجز فوري',m_lCancel:'ملغاة',m_lUn:'غير متاح',m_noType:'أضف نوع حصة نشطًا أولًا.',m_loading:'جارٍ تحميل الجدول…',m_countErr:'أدخل عدد الحصص من 1 إلى 52.',m_countHint:'أدخل 1 لحصة واحدة (الحد الأقصى 52).',m_closedErr:'هذا الموعد مغلق.',m_availErr:'هذا الوقت خارج أوقات إتاحة المعلم.',m_phoneErr:'يرجى إدخال رقم هاتف صحيح مع رمز الدولة، مثل +966…',m_activeSeries:'السلاسل النشطة',m_endedSeries:'السلاسل المنتهية',m_next30:'الحجوزات خلال 30 يومًا',m_e_taken:'هذا الوقت غير متاح',m_notAllowed:'غير مسموح لك بتعديل هذا الحجز.',m_ttLoadErr:'تعذر تحميل المواعيد. تأكد من تثبيت آخر تحديث لقاعدة البيانات (v2).',weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
   onSpot:'السماح بالحجز الفوري دون مهلة مسبقة',noticeEight:'عند إيقاف هذا الخيار، يجب الحجز قبل الموعد بثماني ساعات على الأقل.',
   calendarTitle:'جدول الحصص',calendarTab:'الجدول',
   calViewDay:'يوم',calViewWeek:'أسبوع',calViewAgenda:'قائمة المواعيد',
@@ -275,6 +278,8 @@ const loc = () => lang === 'ar' ? 'ar' : 'en';
 const su = u => /^https:\/\//i.test(u||'') ? u : '';
 const ls = {get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 
+function applyTheme(){const m=ls.get('theme')||'system';if(m==='light'||m==='dark')document.documentElement.setAttribute('data-theme',m);else document.documentElement.removeAttribute('data-theme')}
+function setTheme(m){ls.set('theme',m);applyTheme();render()}
 function setLang(l){lang=l;ls.set('lang',l);render()}
 window.setLang=setLang; window.getLang=()=>lang;
 
@@ -336,8 +341,9 @@ async function loadMine(){
 async function loadMe(){
   if(!S.user){S.me=null;return}
   const [p,t] = await Promise.all([
-    sb.from('profiles').select('role,full_name').eq('id',S.user.id).maybeSingle(),
+    sb.from('profiles').select('role,full_name,deleted_at').eq('id',S.user.id).maybeSingle(),
     sb.rpc('get_my_teacher')]);
+  if(p.data&&p.data.deleted_at){try{await sb.rpc('restore_my_profile')}catch(e){}}
   S.me = {role:(p.data&&p.data.role)||'student', teacher:(t.data&&t.data[0])||null};
   if(S.me.teacher) await loadDash();
 }
@@ -376,7 +382,7 @@ async function loadDash(){
 async function loadTeacher(){
   S.t=null; S.bad=false; S.loaded=null;
   if(!S.slug) return;
-  const r = await sb.from('teachers').select(TCOLS).eq('slug',S.slug).eq('is_active',true).maybeSingle();
+  const r = await sb.from('teachers').select(TCOLS).eq('slug',S.slug).maybeSingle();
   S.t = r.data || null; S.bad = !S.t;
 }
 async function loadBook(keep){
@@ -439,8 +445,8 @@ async function startTeacherBooking(){
 async function stopTeacherBooking(){if(history.state?.bmc&&history.state.teacherBooking){history.back();return;}S.teacherBooking=false;S.rsAsTeacher=false;S.slug=null;S.done=null;S.err='';writeAppHistory('push');await loadDash();render()}
 async function loadAdminOverview(){
   if(S.adminLoading||S.me?.role!=='admin') return; S.adminLoading=true; render();
-  const {data,error}=await sb.rpc('admin_platform_overview');
-  S.adminLoading=false; S.adminData=error?{error:true}:data; render();
+  const [ov,au]=await Promise.all([sb.rpc('admin_platform_overview'),sb.rpc('admin_get_audit',{p_limit:15})]);
+  S.adminLoading=false; S.adminData=ov.error?{error:true}:ov.data; S.adminAudit=au.data||[]; render();
 }
 function setCalMode(m){S.calMode=m;render()}
 async function pickType(id){S.ty=S.types.find(x=>x.id===id);await build();render()}
@@ -738,7 +744,7 @@ function viewBook(){
   if(S.bad) return '<div class="card err">'+tr('badLink')+'</div>';
   if(!S.t) return '';
   if(S.done) return doneCard();
-  let h=teacherCard(S.t);
+  let h=adminBanner()+(S.t.is_active===false?'<div class="card err">'+tr('m_pausedPublic')+'</div>':'')+teacherCard(S.t);
   if(S.teacherBooking) h+='<div class="card"><div class="row" style="justify-content:space-between"><b>'+(lang==='ar'?'حجز حصة لطالب من لوحة المعلم':'Teacher booking for a student')+'</b><button class="chip" onclick="stopTeacherBooking()">'+tr('back')+'</button></div></div>';
   if(!S.user) return h+'<div class="card ok"><p>'+tr('signToBook')+'</p><button class="btn" onclick="signIn()">'+tr('login')+'</button></div>';
   if(S.loaded!==S.t.id) return h+'<div class="card mut">…</div>';
@@ -762,7 +768,6 @@ function viewBook(){
       :'<input id="sn" list="knownStudents" oninput="fillKnown(this)" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+'<label class="mut">'+tr('recurringChoice')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"> '+tr('weeklyRecurring')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"> '+tr('fixedCount')+'</label><div id="recurrenceCountWrap" hidden><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small></div><p class="mut">'+tr('recurringHint')+'</p>'+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
-  if(!S.rs) h+=minesCard();
   return h;
 }
 
@@ -790,6 +795,7 @@ function viewHome(){
   h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'
     +(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
   h+='<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>';
+  h+=acctCard();
   if(S.me&&S.me.role==='admin') h+=invitesCard();
   return h;
 }
@@ -1015,9 +1021,10 @@ function tabProfile(){
     +fld(tr('tzl'),tzSel('pt',t.timezone))
     +'<label class="ck"><input id="onspot" type="checkbox"'+(t.on_the_spot_booking?' checked':'')+'> '+tr('onSpot')+'</label><p class="mut">'+tr('noticeEight')+'</p>'
     +fld(tr('slugL'),'<input id="ps" style="direction:ltr" value="'+esc(t.slug)+'"><p class="mut" style="margin:-4px 0 10px">'+tr('slugWarn')+'</p>')
-    +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>';
+    +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>'+acctCard();
 }
 function adminDashboard(){
+  if(!S.adminData&&!S.adminLoading&&S.me&&S.me.role==='admin'){setTimeout(loadAdminOverview,0);return '<div class="card mut">…</div>';}
   const d=S.adminData;
   if(S.adminLoading&&!d) return '<div class="card mut">…</div>';
   if(!d||d.error) return '<div class="card"><h2>'+tr('adminStats')+'</h2><p class="err">'+tr('adminLoadError')+'</p><button class="btn" onclick="loadAdminOverview()">'+tr('fix')+'</button></div>';
@@ -1025,16 +1032,52 @@ function adminDashboard(){
   let h='<div class="card"><h2>'+tr('adminStats')+'</h2><div class="g3">'+[[tr('totalTeachers'),st.total_teachers],[tr('activeTeachers'),st.active_teachers],[tr('totalBookings'),st.total_bookings],[tr('confirmedBookings'),st.confirmed_bookings],[tr('cancelledBookings'),st.cancelled_bookings],[tr('teacherCreated'),st.teacher_created_bookings],[tr('m_activeSeries'),st.active_series],[tr('m_endedSeries'),st.ended_series],[tr('m_next30'),st.bookings_next_30d]].map(([k,v])=>'<div class="feat"><b>'+esc(k)+'</b><strong style="font-size:25px">'+Number(v||0).toLocaleString()+'</strong></div>').join('')+'</div></div>';
   h+='<div class="card"><h2>'+tr('adminTeachers')+'</h2>';
   const ts=d.teachers||[];
-  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+' · ✔ '+(t.confirmed_bookings||0)+' · ✖ '+(t.cancelled_bookings||0)+' · 🔁 '+(t.active_series||0)+' · 👩‍🏫 '+(t.teacher_created||0)+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
+  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+' · ✔ '+(t.confirmed_bookings||0)+' · ✖ '+(t.cancelled_bookings||0)+' · 🔁 '+(t.active_series||0)+' · 👩‍🏫 '+(t.teacher_created||0)+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a><button type="button" class="chip" onclick="adminToggleTeacher(\''+t.id+'\','+!t.is_active+')">'+tr(t.is_active?'m_deactivate':'m_activate')+'</button><button type="button" class="chip danger" onclick="openDanger(\'admin\',\''+t.id+'\')">'+tr('m_delGo')+'</button></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
+  h+='</div><div class="card"><h2>'+tr('m_audit')+'</h2>'+((S.adminAudit||[]).length?(S.adminAudit||[]).map(a=>'<div class="bk"><div><b>'+esc(String(a.action).replace(/_/g,' '))+'</b> · '+esc(a.target_name||'')+'<br><span class="mut">'+new Date(a.created_at).toLocaleString(loc())+'</span></div></div>').join(''):'<p class="mut">'+tr('m_noAudit')+'</p>');
   return h+'</div>';
 }
 
 function viewDash(){
-  const tabs=[['link','tLink'],['calendar','calendarTab'],['hours','tHours'],['types','tTypes'],['bk','tBook'],['prof','tProf']];
-  if(S.me.role==='admin') tabs.push(['inv','tInv'],['admin','tAdmin']);
+  const isT=!!S.me.teacher, isA=S.me.role==='admin';
+  let tabs=isT?[['link','tLink'],['calendar','calendarTab'],['hours','tHours'],['types','tTypes'],['bk','tBook'],['mine','tMine'],['prof','tProf']]:[];
+  if(isA) tabs=isT?tabs.concat([['inv','tInv'],['admin','tAdmin']]):[['admin','tAdmin'],['mine','tMine'],['inv','tInv']];
+  if(!tabs.some(x=>x[0]===S.tab)) S.tab=tabs[0][0];
   let h='<div class="card"><div class="row">'+tabs.map(([k,l])=>'<button class="chip'+(S.tab===k?' on':'')+'" onclick="setTab(\''+k+'\')">'+tr(l)+'</button>').join('')+'</div></div>';
-  h+=({link:tabLink,calendar:teacherCalendar,hours:tabHours,types:tabTypes,bk:tabBookings,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  h+=({link:tabLink,calendar:teacherCalendar,hours:tabHours,types:tabTypes,bk:tabBookings,mine:tabMine,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   return h;
+}
+function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')}
+function adminBanner(){
+  if(!S.me||S.me.role!=='admin'||!S.t) return '';
+  return '<div class="card" style="border:2px dashed var(--pri)"><div class="row" style="justify-content:space-between"><div><b>'+tr('m_adminView')+'</b> <span class="badge">'+(S.t.is_active===false?tr('m_pagePaused'):tr('m_pageLive'))+'</span></div><div class="row"><button type="button" class="chip" onclick="adminToggleTeacher(\''+S.t.id+'\','+(S.t.is_active===false)+')">'+tr(S.t.is_active===false?'m_activate':'m_deactivate')+'</button><button type="button" class="chip" onclick="S.tab=\'admin\';nav(null)">'+tr('m_backAdmin')+'</button></div></div></div>';
+}
+async function adminToggleTeacher(id,active){
+  const {error}=await sb.rpc('admin_set_teacher_active',{p_teacher:id,p_active:active});
+  if(error){flash(error.message,true);return}
+  if(S.t&&S.t.id===id) await loadTeacher();
+  S.adminData=null; flash(tr('saved'),false);
+}
+async function toggleMyPage(active){
+  const {error}=await sb.rpc('set_my_teacher_active',{p_active:active});
+  if(error){flash(error.message,true);return}
+  await loadMe(); flash(tr('saved'),false);
+}
+function openDanger(kind,target){S.modal={type:'danger',kind,target:target||null}; render();}
+async function confirmDanger(){
+  const m=S.modal; if(!m||($('#dg_in')||{}).value.trim().toLowerCase()!==tr('m_delWord').toLowerCase()) return;
+  const btn=$('#dg_go'); if(btn){btn.disabled=true;btn.textContent='…';}
+  const {error}=m.kind==='admin'?await sb.rpc('admin_delete_account',{p_user:m.target}):await sb.rpc('delete_my_account');
+  if(error){S.modal={...m,err:error.message};render();return}
+  S.modal=null;
+  if(m.kind==='self'){await signOut(); alert(tr('m_accDeleted'));}
+  else{S.adminData=null; flash(tr('m_accDeleted'),false);}
+}
+function acctCard(){
+  if(!S.me||S.me.role==='admin') return '';
+  const t=S.me.teacher, live=!t||t.is_active!==false;
+  return '<div class="card"><h2>'+tr('m_acct')+'</h2>'
+   +(t?'<p><span class="badge">'+(live?tr('m_pageLive'):tr('m_pagePaused'))+'</span></p><p class="mut">'+tr('m_pauseHint')+'</p><button type="button" class="btn g" onclick="toggleMyPage('+(!live)+')">'+tr(live?'m_pause':'m_resume')+'</button><hr style="border:0;border-top:1px solid var(--line);margin:16px 0">':'')
+   +'<h3 style="color:var(--danger);margin:0 0 6px">'+tr('m_delTitle')+'</h3><p class="mut">'+tr('m_delHint')+'</p><button type="button" class="btn d" onclick="openDanger(\'self\')">'+tr('m_delGo')+'</button></div>';
 }
 
 function renderModal(){
@@ -1086,6 +1129,10 @@ function renderModal(){
       +'<label class="fl" for="ed_t">'+tr('m_notes')+'</label><textarea id="ed_t" maxlength="1000" rows="2" style="width:100%">'+esc(v.t)+'</textarea>'
       +tf+sc+'<div class="stack">'+bt('btn" id="ed_save','submitEdit()',tr('m_save'))+bt('chip','closeModal()',tr('back'))+'</div>');
   }
+  if(m.type==='danger'){
+    const adm=m.kind==='admin', nm=adm?((S.adminData&&S.adminData.teachers||[]).find(x=>x.id===m.target)||{}).display_name||'':'';
+    h=wrap(tr(adm?'m_delTitleAdmin':'m_delTitle')+(nm?': '+nm:''),(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')+'<p>'+tr(adm?'m_delBodyAdmin':'m_delBody')+'</p><label class="fl" for="dg_in">'+tr('m_delType').replace('{w}',tr('m_delWord'))+'</label><input id="dg_in" autocomplete="off" oninput="$(\'#dg_go\').disabled=this.value.trim().toLowerCase()!==tr(\'m_delWord\').toLowerCase()"><div class="stack">'+bt('btn d" id="dg_go" disabled="disabled','confirmDanger()',tr('m_delGo'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  }
   M.innerHTML=h;
 }
 
@@ -1094,7 +1141,7 @@ function render(){
   document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   const A=$('#app');
   $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
-  let b='<button type="button" id="languageToggle">'+tr('lang')+'</button> ';
+  const th=ls.get('theme')||'system'; let b='<span class="seg" role="group" aria-label="Theme">'+[['system','🖥️','m_themeSys'],['light','☀️','m_themeLight'],['dark','🌙','m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+(th===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span> <button type="button" id="languageToggle">'+tr('lang')+'</button> ';
   if(S.user&&S.slug) b+='<button onclick="nav(null)">'+tr(S.me&&S.me.teacher?'goDash':'goHome')+'</button> ';
   b+='<button onclick="S.user?signOut():signIn()">'+tr(S.user?'out':'in')+'</button>';
   $('#btns').innerHTML=b;
@@ -1103,10 +1150,10 @@ function render(){
   $('#footPriv').textContent=tr('footPriv');
   $('#footTerms').textContent=tr('footTerms');
 
-  const dash=!S.slug&&S.user&&S.me&&S.me.teacher&&!S.reg;
+  const dash=!S.slug&&S.user&&S.me&&(S.me.teacher||S.me.role==='admin')&&!S.reg;
   A.className = (dash && S.tab==='calendar' && S.calMode==='week') ? 'wide' : '';
   $('#h1').textContent = S.slug&&S.t ? tr('bookWith')+' '+S.t.display_name : dash ? tr('dashTitle') : tr('title');
-  $('#sub').textContent = S.slug ? '' : dash ? S.me.teacher.display_name : tr('sub');
+  $('#sub').textContent = S.slug ? '' : dash ? (S.me.teacher?S.me.teacher.display_name:tr('tAdmin')) : tr('sub');
   if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
   if(!S.ready){A.innerHTML='<div class="card mut">…</div>';return}
   A.innerHTML = S.slug ? viewBook()
@@ -1151,6 +1198,7 @@ async function init(){
   S.reg = !!(S.user&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
   S.ready=true; render();
 }
+applyTheme();
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.modal)closeModal()});
 render(); init();
 </script>
