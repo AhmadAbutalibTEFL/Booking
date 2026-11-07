@@ -110,6 +110,30 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .modal{max-height:90vh;overflow:auto}.modal textarea,.modal select,.modal input{max-width:100%;box-sizing:border-box}
 @media(max-width:640px){.tt2{min-width:660px}.tt2-wrap{max-height:70vh}}
 .seg{display:inline-flex;gap:2px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px}.bar .seg button{padding:5px 9px;background:transparent;font-size:14px}.bar .seg button[aria-pressed=true]{background:rgba(255,255,255,.38)}.btn.d:disabled{opacity:.5;cursor:not-allowed}
+.rw-av{display:inline-flex;align-items:center;justify-content:center;width:var(--s);height:var(--s);font-size:calc(var(--s)*.55);border-radius:50%;background:var(--bg);border:3px solid var(--line);flex:none}
+.rw-av.fr_gold{border-color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.35),0 0 18px rgba(245,197,66,.6)}
+.rw-av.fr_rainbow{border:3px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,conic-gradient(red,orange,yellow,green,cyan,blue,violet,red) border-box}
+.rw-av.fr_neon{border-color:#b388ff;box-shadow:0 0 0 2px #b388ff,0 0 20px #7c4dff,inset 0 0 12px rgba(124,77,255,.5);animation:glow 2s ease-in-out infinite alternate}
+@keyframes glow{to{box-shadow:0 0 0 2px #e0c3ff,0 0 32px #b388ff,inset 0 0 16px rgba(179,136,255,.7)}}
+.rw-name{font-weight:800;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rw-pts{text-align:center}.rw-pts b{display:block;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}.rw-pts small{color:var(--mut)}
+.rw-bar{height:10px;border-radius:99px;background:var(--line);margin:12px 0 6px;overflow:hidden}.rw-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#6d5bd0,#ff7ab6);animation:grow .9s ease-out}
+@keyframes grow{from{width:0}}
+.rw-badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.rw-bdg{border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;filter:grayscale(1);opacity:.55}
+.rw-bdg span{font-size:28px;display:block}.rw-bdg b{display:block;font-size:12px}.rw-bdg small{color:var(--mut);font-size:11px}
+.rw-bdg.on{filter:none;opacity:1;border-color:#f5c542;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.rw-h{margin:14px 0 6px;font-size:14px;color:var(--mut)}
+.rw-store{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.rw-item{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.rw-item span{font-size:30px;display:block}.rw-item b{display:block;font-size:12px;margin:4px 0}
+.rw-item.eq{border-color:var(--pri);box-shadow:0 0 0 2px rgba(109,91,208,.25)}
+.rw-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.rw-stats div{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}.rw-stats b{display:block;font-size:22px}.rw-stats small{color:var(--mut)}
+.pts-pop{font-weight:700;font-size:18px;color:#16a34a;animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+.rw-toast{position:fixed;inset-inline:0;bottom:24px;margin:auto;width:max-content;max-width:90vw;background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:14px;z-index:2100;font-weight:700;animation:pop .4s,fadeout .5s 3.6s forwards}
+@keyframes fadeout{to{opacity:0;transform:translateY(10px)}}
+.rw-item .chip:disabled{opacity:.5;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.rw-av,.rw-bar i,.rw-bdg.on,.pts-pop,.rw-toast{animation:none!important}}
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
@@ -141,6 +165,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
 // ====== CONFIG: your Supabase URL + publishable (anon) key ======
 const SB_URL = 'https://crtxvqamgksiigfpmxvg.supabase.co';
@@ -194,7 +219,7 @@ const T = {
   bioL:'About you (shown to students)',photoL:'Photo link (optional, https://)',meetL:'Meeting link (Google Meet, Zoom…)',meetH:'Must start with https://. You can change it any time.',waL:'WhatsApp number (digits only, with country code)',noticeL:'Minimum notice (hours)',
   badProf:'Please check: name, link name, https:// links, WhatsApp digits (6–15).',slugWarn:'If you change the link name, the old link stops working.',
   invTitle:'Invite a teacher',invHint:'Generate a one-time invite and send the link. The teacher signs in with Google and sets up their own account.',gen:'Generate invite',inviteMsg:'You’re invited to join BookMyClass as a teacher. Open this link:',
-  m_themeSys:'System',m_themeLight:'Light',m_themeDark:'Dark',tMine:'My lessons',m_adminView:'Admin view',m_backAdmin:'Back to admin',m_deactivate:'Deactivate',m_activate:'Activate',m_pageLive:'Booking page is live',m_pagePaused:'Booking page is paused',m_pausedPublic:'This booking page is paused and hidden from the public.',m_acct:'Account',m_pauseHint:'Pausing hides your booking page from the public. Existing lessons stay as they are, and you can resume at any time.',m_pause:'Pause my booking page',m_resume:'Resume my booking page',m_delTitle:'Delete my account',m_delTitleAdmin:'Delete account',m_delHint:'Permanently removes your personal details and cancels all upcoming lessons. This cannot be undone.',m_delBody:'Your upcoming lessons will be cancelled, your booking page and personal details removed. Past lesson records stay for the other people involved. This cannot be undone.',m_delBodyAdmin:'This cancels the account upcoming lessons and removes its personal details. This cannot be undone and is recorded in the audit log.',m_delType:'Type {w} to confirm',m_delWord:'DELETE',m_delGo:'Delete account',m_accDeleted:'The account was deleted.',m_audit:'Recent admin actions',m_noAudit:'No admin actions yet.',m_manage:'Manage',m_edit:'Edit booking',m_save:'Save changes',m_scope:'Apply to',m_this:'This occurrence only',m_future:'This and all future occurrences',m_type:'Lesson type',m_date:'Date',m_time:'Start time',m_notes:'Notes',m_by:'Booked by',m_skipped:'Dates not booked',m_close:'Close this time slot',m_jit:'Enable JIT for this slot',m_clear:'Clear override',m_book:'Book for a student',m_cancelOcc:'Cancel this occurrence',m_series:'Manage remaining series',m_details:'Booking details',m_lAvail:'Available',m_lBooked:'Booked',m_lClosed:'Closed',m_lJit:'JIT enabled',m_lCancel:'Cancelled',m_lUn:'Unavailable',m_noType:'Add an active lesson type first.',m_loading:'Loading timetable…',m_countErr:'Enter a number of lessons from 1 to 52.',m_countHint:'Enter 1 for a single lesson (max 52).',m_closedErr:'This time slot is closed.',m_availErr:'This time is outside the teacher availability.',m_phoneErr:'Please enter a valid phone number (with country code, e.g. +966…).',m_activeSeries:'Active series',m_endedSeries:'Ended series',m_next30:'Bookings, next 30 days',m_e_taken:'That time is not available',m_notAllowed:'You are not allowed to change this booking.',m_ttLoadErr:'Could not load time slots. Make sure the latest database update (v2) is installed.',weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
+  m_themeSys:'System',m_themeLight:'Light',m_themeDark:'Dark',tMine:'My lessons',m_adminView:'Admin view',m_backAdmin:'Back to admin',m_deactivate:'Deactivate',m_activate:'Activate',m_pageLive:'Booking page is live',m_pagePaused:'Booking page is paused',m_pausedPublic:'This booking page is paused and hidden from the public.',m_acct:'Account',m_pauseHint:'Pausing hides your booking page from the public. Existing lessons stay as they are, and you can resume at any time.',m_pause:'Pause my booking page',m_resume:'Resume my booking page',m_delTitle:'Delete my account',m_delTitleAdmin:'Delete account',m_delHint:'Permanently removes your personal details and cancels all upcoming lessons. This cannot be undone.',m_delBody:'Your upcoming lessons will be cancelled, your booking page and personal details removed. Past lesson records stay for the other people involved. This cannot be undone.',m_delBodyAdmin:'This cancels the account upcoming lessons and removes its personal details. This cannot be undone and is recorded in the audit log.',m_delType:'Type {w} to confirm',m_delWord:'DELETE',m_delGo:'Delete account',m_accDeleted:'The account was deleted.',m_audit:'Recent admin actions',m_noAudit:'No admin actions yet.',tMe:'My profile',r_loading:'Loading your rewards…',r_level:'Level',r_points:'points',r_toNext:'points to the next level',r_maxLevel:'Top level reached!',r_weeks:'week streak',r_badges:'Badges',r_store:'Store',r_buy:'Buy',r_equip:'Use',r_unequip:'Remove',r_equipped:'In use',r_notEnough:'Not enough points yet.',r_bought:'Unlocked! 🎉',r_levelUp:'Level {n} reached! 🎉',r_newBadge:'New badge!',r_recent:'Recent points',r_earned:'points earned',r_kind_avatar:'Avatars',r_kind_frame:'Frames',r_kind_title:'Titles',r_kind_confetti:'Celebrations',r_ev_booked:'Lesson booked',r_ev_booked_revoked:'Booking cancelled',r_ev_attended:'Lesson attended',r_ev_attended_revoked:'Attendance changed',r_ev_redeem:'Store purchase',r_toMark:'Lessons to mark',r_markHint:'Mark who attended. Students earn points for attended lessons.',r_attended:'Attended',r_noShow:'No-show',r_markedAtt:'Marked as attended.',r_markedNo:'Marked as no-show.',r_sAttended:'Lessons taught',r_sNoShow:'No-shows',r_sUpcoming:'Upcoming',r_sStudents:'Students',r_rules:'How points work: +5 when you book, +20 when a lesson is attended.',m_manage:'Manage',m_edit:'Edit booking',m_save:'Save changes',m_scope:'Apply to',m_this:'This occurrence only',m_future:'This and all future occurrences',m_type:'Lesson type',m_date:'Date',m_time:'Start time',m_notes:'Notes',m_by:'Booked by',m_skipped:'Dates not booked',m_close:'Close this time slot',m_jit:'Enable JIT for this slot',m_clear:'Clear override',m_book:'Book for a student',m_cancelOcc:'Cancel this occurrence',m_series:'Manage remaining series',m_details:'Booking details',m_lAvail:'Available',m_lBooked:'Booked',m_lClosed:'Closed',m_lJit:'JIT enabled',m_lCancel:'Cancelled',m_lUn:'Unavailable',m_noType:'Add an active lesson type first.',m_loading:'Loading timetable…',m_countErr:'Enter a number of lessons from 1 to 52.',m_countHint:'Enter 1 for a single lesson (max 52).',m_closedErr:'This time slot is closed.',m_availErr:'This time is outside the teacher availability.',m_phoneErr:'Please enter a valid phone number (with country code, e.g. +966…).',m_activeSeries:'Active series',m_endedSeries:'Ended series',m_next30:'Bookings, next 30 days',m_e_taken:'That time is not available',m_notAllowed:'You are not allowed to change this booking.',m_ttLoadErr:'Could not load time slots. Make sure the latest database update (v2) is installed.',weeklyRecurring:'Weekly recurring booking',recurringHint:'Repeats every week until you stop the series.',recurrenceCount:'Number of weekly lessons',fixedCount:'Book a fixed number of weekly lessons',recurringChoice:'Booking frequency',slotClosed:'Closed',slotJit:'JIT enabled',closeSlot:'Close this slot',enableJit:'Enable JIT',clearOverride:'Clear override',slotAction:'Manage slot',
   onSpot:'Allow on-the-spot bookings (no advance notice)',noticeEight:'When this is off, students must book at least 8 hours ahead.',
   calendarTitle:'Teaching Schedule',calendarTab:'Calendar',
   calViewDay:'Day',calViewWeek:'Week',calViewAgenda:'Agenda',
@@ -250,7 +275,7 @@ const T = {
   bioL:'نبذة عنك (تظهر للطلاب)',photoL:'رابط الصورة (اختياري، https://)',meetL:'رابط الحصة (Google Meet أو Zoom…)',meetH:'يجب أن يبدأ بـ https:// ويمكنك تغييره في أي وقت.',waL:'رقم واتساب (أرقام فقط مع رمز الدولة)',noticeL:'الحد الأدنى للإشعار المسبق (بالساعات)',
   badProf:'يرجى التحقق من: الاسم، اسم الرابط، روابط https://‏، أرقام واتساب (6–15).',slugWarn:'إذا غيّرت اسم الرابط فسيتوقف الرابط القديم عن العمل.',
   invTitle:'دعوة معلم',invHint:'أنشئ دعوة لمرة واحدة وأرسل الرابط. يسجّل المعلم الدخول عبر Google ويُعدّ حسابه بنفسه.',gen:'إنشاء دعوة',inviteMsg:'تمت دعوتك للانضمام إلى BookMyClass كمعلم. افتح هذا الرابط:',
-  m_themeSys:'تلقائي',m_themeLight:'فاتح',m_themeDark:'داكن',tMine:'حصصي',m_adminView:'عرض المشرف',m_backAdmin:'العودة للإدارة',m_deactivate:'تعطيل',m_activate:'تفعيل',m_pageLive:'صفحة الحجز مفعّلة',m_pagePaused:'صفحة الحجز متوقفة',m_pausedPublic:'صفحة الحجز هذه متوقفة ومخفية عن العامة.',m_acct:'الحساب',m_pauseHint:'الإيقاف المؤقت يخفي صفحة الحجز عن العامة. تبقى الحصص الحالية كما هي ويمكنك الاستئناف في أي وقت.',m_pause:'إيقاف صفحة الحجز مؤقتًا',m_resume:'استئناف صفحة الحجز',m_delTitle:'حذف حسابي',m_delTitleAdmin:'حذف الحساب',m_delHint:'يحذف بياناتك الشخصية نهائيًا ويلغي جميع الحصص القادمة. لا يمكن التراجع.',m_delBody:'سيتم إلغاء حصصك القادمة وحذف صفحة الحجز وبياناتك الشخصية. تبقى سجلات الحصص السابقة للأطراف الأخرى. لا يمكن التراجع.',m_delBodyAdmin:'سيتم إلغاء الحصص القادمة لهذا الحساب وحذف بياناته الشخصية. لا يمكن التراجع وسيُسجَّل ذلك في سجل الإدارة.',m_delType:'اكتب {w} للتأكيد',m_delWord:'حذف',m_delGo:'حذف الحساب',m_accDeleted:'تم حذف الحساب.',m_audit:'آخر إجراءات الإدارة',m_noAudit:'لا توجد إجراءات بعد.',m_manage:'إدارة',m_edit:'تعديل الحجز',m_save:'حفظ التعديلات',m_scope:'تطبيق على',m_this:'هذه الحصة فقط',m_future:'هذه الحصة وجميع الحصص القادمة',m_type:'نوع الحصة',m_date:'التاريخ',m_time:'وقت البدء',m_notes:'ملاحظات',m_by:'تم الحجز بواسطة',m_skipped:'تواريخ لم يتم حجزها',m_close:'إغلاق هذا الموعد',m_jit:'تفعيل الحجز الفوري لهذا الموعد',m_clear:'إلغاء الإعداد المخصص',m_book:'حجز لطالب',m_cancelOcc:'إلغاء هذه الحصة',m_series:'إدارة بقية السلسلة',m_details:'تفاصيل الحجز',m_lAvail:'متاح',m_lBooked:'محجوز',m_lClosed:'مغلق',m_lJit:'حجز فوري',m_lCancel:'ملغاة',m_lUn:'غير متاح',m_noType:'أضف نوع حصة نشطًا أولًا.',m_loading:'جارٍ تحميل الجدول…',m_countErr:'أدخل عدد الحصص من 1 إلى 52.',m_countHint:'أدخل 1 لحصة واحدة (الحد الأقصى 52).',m_closedErr:'هذا الموعد مغلق.',m_availErr:'هذا الوقت خارج أوقات إتاحة المعلم.',m_phoneErr:'يرجى إدخال رقم هاتف صحيح مع رمز الدولة، مثل +966…',m_activeSeries:'السلاسل النشطة',m_endedSeries:'السلاسل المنتهية',m_next30:'الحجوزات خلال 30 يومًا',m_e_taken:'هذا الوقت غير متاح',m_notAllowed:'غير مسموح لك بتعديل هذا الحجز.',m_ttLoadErr:'تعذر تحميل المواعيد. تأكد من تثبيت آخر تحديث لقاعدة البيانات (v2).',weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
+  m_themeSys:'تلقائي',m_themeLight:'فاتح',m_themeDark:'داكن',tMine:'حصصي',m_adminView:'عرض المشرف',m_backAdmin:'العودة للإدارة',m_deactivate:'تعطيل',m_activate:'تفعيل',m_pageLive:'صفحة الحجز مفعّلة',m_pagePaused:'صفحة الحجز متوقفة',m_pausedPublic:'صفحة الحجز هذه متوقفة ومخفية عن العامة.',m_acct:'الحساب',m_pauseHint:'الإيقاف المؤقت يخفي صفحة الحجز عن العامة. تبقى الحصص الحالية كما هي ويمكنك الاستئناف في أي وقت.',m_pause:'إيقاف صفحة الحجز مؤقتًا',m_resume:'استئناف صفحة الحجز',m_delTitle:'حذف حسابي',m_delTitleAdmin:'حذف الحساب',m_delHint:'يحذف بياناتك الشخصية نهائيًا ويلغي جميع الحصص القادمة. لا يمكن التراجع.',m_delBody:'سيتم إلغاء حصصك القادمة وحذف صفحة الحجز وبياناتك الشخصية. تبقى سجلات الحصص السابقة للأطراف الأخرى. لا يمكن التراجع.',m_delBodyAdmin:'سيتم إلغاء الحصص القادمة لهذا الحساب وحذف بياناته الشخصية. لا يمكن التراجع وسيُسجَّل ذلك في سجل الإدارة.',m_delType:'اكتب {w} للتأكيد',m_delWord:'حذف',m_delGo:'حذف الحساب',m_accDeleted:'تم حذف الحساب.',m_audit:'آخر إجراءات الإدارة',m_noAudit:'لا توجد إجراءات بعد.',tMe:'ملفي',r_loading:'جارٍ تحميل مكافآتك…',r_level:'المستوى',r_points:'نقطة',r_toNext:'نقطة للمستوى التالي',r_maxLevel:'وصلت لأعلى مستوى!',r_weeks:'أسبوع متتالٍ',r_badges:'الشارات',r_store:'المتجر',r_buy:'شراء',r_equip:'استخدام',r_unequip:'إزالة',r_equipped:'مستخدم',r_notEnough:'نقاطك لا تكفي بعد.',r_bought:'تم الفتح! 🎉',r_levelUp:'وصلت للمستوى {n}! 🎉',r_newBadge:'شارة جديدة!',r_recent:'آخر النقاط',r_earned:'نقطة مكتسبة',r_kind_avatar:'الصور الرمزية',r_kind_frame:'الإطارات',r_kind_title:'الألقاب',r_kind_confetti:'الاحتفالات',r_ev_booked:'حجز حصة',r_ev_booked_revoked:'إلغاء حجز',r_ev_attended:'حضور حصة',r_ev_attended_revoked:'تعديل الحضور',r_ev_redeem:'شراء من المتجر',r_toMark:'حصص بحاجة لتسجيل الحضور',r_markHint:'سجّل من حضر. يكسب الطلاب نقاطًا عن الحصص التي حضروها.',r_attended:'حضر',r_noShow:'غاب',r_markedAtt:'تم تسجيل الحضور.',r_markedNo:'تم تسجيل الغياب.',r_sAttended:'حصص تمت',r_sNoShow:'غياب',r_sUpcoming:'قادمة',r_sStudents:'الطلاب',r_rules:'كيف تعمل النقاط: +5 عند الحجز، و+20 عند حضور الحصة.',m_manage:'إدارة',m_edit:'تعديل الحجز',m_save:'حفظ التعديلات',m_scope:'تطبيق على',m_this:'هذه الحصة فقط',m_future:'هذه الحصة وجميع الحصص القادمة',m_type:'نوع الحصة',m_date:'التاريخ',m_time:'وقت البدء',m_notes:'ملاحظات',m_by:'تم الحجز بواسطة',m_skipped:'تواريخ لم يتم حجزها',m_close:'إغلاق هذا الموعد',m_jit:'تفعيل الحجز الفوري لهذا الموعد',m_clear:'إلغاء الإعداد المخصص',m_book:'حجز لطالب',m_cancelOcc:'إلغاء هذه الحصة',m_series:'إدارة بقية السلسلة',m_details:'تفاصيل الحجز',m_lAvail:'متاح',m_lBooked:'محجوز',m_lClosed:'مغلق',m_lJit:'حجز فوري',m_lCancel:'ملغاة',m_lUn:'غير متاح',m_noType:'أضف نوع حصة نشطًا أولًا.',m_loading:'جارٍ تحميل الجدول…',m_countErr:'أدخل عدد الحصص من 1 إلى 52.',m_countHint:'أدخل 1 لحصة واحدة (الحد الأقصى 52).',m_closedErr:'هذا الموعد مغلق.',m_availErr:'هذا الوقت خارج أوقات إتاحة المعلم.',m_phoneErr:'يرجى إدخال رقم هاتف صحيح مع رمز الدولة، مثل +966…',m_activeSeries:'السلاسل النشطة',m_endedSeries:'السلاسل المنتهية',m_next30:'الحجوزات خلال 30 يومًا',m_e_taken:'هذا الوقت غير متاح',m_notAllowed:'غير مسموح لك بتعديل هذا الحجز.',m_ttLoadErr:'تعذر تحميل المواعيد. تأكد من تثبيت آخر تحديث لقاعدة البيانات (v2).',weeklyRecurring:'حصص أسبوعية متكررة',recurringHint:'تتكرر أسبوعيًا حتى تقوم بإنهاء السلسلة.',recurrenceCount:'عدد الحصص الأسبوعية',fixedCount:'حجز عدد محدد من الحصص الأسبوعية',recurringChoice:'نمط التكرار',slotClosed:'مغلق',slotJit:'حجز فوري مفعّل',closeSlot:'إغلاق هذا الموعد',enableJit:'تفعيل الحجز الفوري',clearOverride:'إزالة التخصيص',slotAction:'إدارة الموعد',
   onSpot:'السماح بالحجز الفوري دون مهلة مسبقة',noticeEight:'عند إيقاف هذا الخيار، يجب الحجز قبل الموعد بثماني ساعات على الأقل.',
   calendarTitle:'جدول الحصص',calendarTab:'الجدول',
   calViewDay:'يوم',calViewWeek:'أسبوع',calViewAgenda:'قائمة المواعيد',
@@ -271,7 +296,7 @@ const S = {
   ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
   mine:[],rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
   tab:'link',calMode:'week',calendarOffset:0,dayOffset:0,modal:null,
-  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{},slotState:{},ttSlots:[],ttCancelled:[],ttKey:null,ttLoading:null,ttType:null,ttErr:false
+  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{},rw:null,rwErr:false,rwLoading:false,rwShown:null,tstats:null,past:[],pastKey:null,slotState:{},ttSlots:[],ttCancelled:[],ttKey:null,ttLoading:null,ttType:null,ttErr:false
 };
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
@@ -280,6 +305,108 @@ const ls = {get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},se
 
 function applyTheme(){const m=ls.get('theme')||'system';if(m==='light'||m==='dark')document.documentElement.setAttribute('data-theme',m);else document.documentElement.removeAttribute('data-theme')}
 function setTheme(m){ls.set('theme',m);applyTheme();render()}
+const LVL={en:['Beginner','Explorer','Learner','Achiever','Scholar','Expert','Master','Champion','Legend','Grandmaster'],ar:['مبتدئ','مستكشف','متعلّم','مُنجِز','دارس','خبير','متمكّن','بطل','أسطورة','عبقري']};
+const BADGES={first:['🎟️','First booking','أول حجز','Book your first lesson','احجز أول حصة'],regular:['📚','Regular','منتظم','Attend 5 lessons','احضر 5 حصص'],dedicated:['🔥','Dedicated','مثابر','Attend 10 lessons','احضر 10 حصص'],master:['🏅','Lesson master','سيد الحصص','Attend 25 lessons','احضر 25 حصة'],streak4:['⚡','4-week streak','سلسلة 4 أسابيع','Attend lessons 4 weeks in a row','احضر 4 أسابيع متتالية'],streak8:['🌟','8-week streak','سلسلة 8 أسابيع','Attend lessons 8 weeks in a row','احضر 8 أسابيع متتالية'],collector:['🧺','Collector','جامع','Own 3 store items','امتلك 3 عناصر من المتجر']};
+const CF={classic:{},cf_stars:{shape:'⭐'},cf_hearts:{shape:'❤️'},cf_gold:{colors:['#f5c542','#ffd966','#fff3b0','#e0a800']},cf_rainbow:{colors:['#ff595e','#ffca3a','#8ac926','#1982c4','#6a4c93']}};
+function celebrate(big){
+  if(typeof confetti!=='function') return;
+  const id=(S.rw&&S.rw.profile&&S.rw.profile.confetti)||'classic', c=CF[id]||{}, o={disableForReducedMotion:true,zIndex:2000};
+  if(c.colors) o.colors=c.colors;
+  if(c.shape&&confetti.shapeFromText){o.shapes=[confetti.shapeFromText({text:c.shape,scalar:2})];o.scalar=2}
+  confetti({...o,particleCount:big?160:90,spread:big?100:70,origin:{y:.65}});
+  if(big){
+    setTimeout(()=>confetti({...o,particleCount:80,angle:60,spread:60,origin:{x:0,y:.7}}),180);
+    setTimeout(()=>confetti({...o,particleCount:80,angle:120,spread:60,origin:{x:1,y:.7}}),180);
+  }
+}
+function showToast(msg){const d=document.createElement('div');d.className='rw-toast';d.setAttribute('role','status');d.textContent=msg;document.body.appendChild(d);setTimeout(()=>d.remove(),4300)}
+function animateCounts(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.querySelectorAll('[data-count]').forEach(el=>{
+    const to=+el.dataset.count, from=S.rwShown!=null?S.rwShown:0; if(from===to) return;
+    const t0=performance.now(), step=t=>{const k=Math.min(1,(t-t0)/700); el.textContent=Math.round(from+(to-from)*k); if(k<1) requestAnimationFrame(step); else S.rwShown=to};
+    requestAnimationFrame(step);
+  });
+}
+async function loadRewards(){
+  if(!S.user||S.rwLoading) return; S.rwLoading=true;
+  const {data,error}=await sb.rpc('get_my_rewards'); S.rwLoading=false;
+  if(error){console.warn('rewards unavailable',error); S.rwErr=true; S.rw=null; render(); return}
+  S.rwErr=false; S.rw=data;
+  try{
+    const key='rw_seen_'+S.user.id, seen=JSON.parse(ls.get(key)||'null'), earned=data.badges.filter(b=>b.earned).map(b=>b.id);
+    if(seen){const nb=earned.filter(x=>!(seen.badges||[]).includes(x));
+      if(data.level>seen.level||nb.length){celebrate(true); showToast(data.level>seen.level?tr('r_levelUp').replace('{n}',data.level):tr('r_newBadge')+' '+BADGES[nb[0]][0]);}}
+    ls.set(key,JSON.stringify({level:data.level,badges:earned}));
+  }catch(e){}
+  render(); animateCounts();
+}
+function itemName(i){return lang==='ar'?i.name_ar:i.name}
+function avatarHtml(p,size){
+  const items=(S.rw&&S.rw.items)||[], av=items.find(i=>i.id===(p&&p.avatar))||items.find(i=>i.id==='av_smile');
+  return '<span class="rw-av '+esc((p&&p.frame)||'')+'" style="--s:'+(size||64)+'px" aria-hidden="true">'+(av?av.emoji:'🙂')+'</span>';
+}
+function rewardsCard(){
+  if(S.rwErr) return '';
+  if(!S.rw){ if(!S.rwLoading) setTimeout(loadRewards,0); return '<div class="card mut" role="status">'+tr('r_loading')+'</div>'; }
+  const r=S.rw, p=r.profile||{}, ti=r.items.find(i=>i.id===p.title), L=lang==='ar'?'ar':'en';
+  if(S.me&&S.me.teacher&&r.earned===0&&!r.recent.length&&!r.items.some(i=>i.cost>0&&i.owned)) return '';
+  const pct=r.level_next?Math.min(100,Math.round((r.earned-r.level_floor)/(r.level_next-r.level_floor)*100)):100;
+  const nm=(S.user&&S.user.user_metadata&&(S.user.user_metadata.full_name||S.user.user_metadata.name))||(S.user&&S.user.email)||'';
+  let h='<div class="card rw"><div class="row" style="align-items:center;gap:14px;flex-wrap:nowrap">'+avatarHtml(p,72)
+   +'<div style="flex:1;min-width:0"><div class="rw-name">'+esc(nm)+'</div>'+(ti?'<span class="badge">'+ti.emoji+' '+esc(itemName(ti))+'</span> ':'')
+   +'<div class="mut">'+tr('r_level')+' '+r.level+' · '+LVL[L][r.level-1]+'</div></div>'
+   +'<div class="rw-pts"><b data-count="'+r.points+'">'+r.points+'</b><small>⭐ '+tr('r_points')+'</small></div></div>'
+   +'<div class="rw-bar" role="progressbar" aria-valuenow="'+pct+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+pct+'%"></i></div>'
+   +'<div class="mut" style="font-size:12px">'+(r.level_next?(r.level_next-r.earned)+' '+tr('r_toNext'):tr('r_maxLevel'))+' · 🔥 '+r.stats.streak_weeks+' '+tr('r_weeks')+'</div>'
+   +'<p class="mut" style="font-size:12px;margin:8px 0 0">'+tr('r_rules')+'</p></div>';
+  h+='<div class="card"><h2>'+tr('r_badges')+'</h2><div class="rw-badges">'+r.badges.map(b=>{const d=BADGES[b.id]||['🏷️',b.id,b.id,'',''];
+    return '<div class="rw-bdg'+(b.earned?' on':'')+'" title="'+esc(d[L==='ar'?4:3])+'"><span>'+d[0]+'</span><b>'+d[L==='ar'?2:1]+'</b><small>'+(b.earned?'✓':b.progress+'/'+b.target)+'</small></div>'}).join('')+'</div></div>';
+  h+='<div class="card"><h2>'+tr('r_store')+'</h2>';
+  ['avatar','frame','title','confetti'].forEach(k=>{
+    h+='<h3 class="rw-h">'+tr('r_kind_'+k)+'</h3><div class="rw-store">'+r.items.filter(i=>i.kind===k).map(i=>{
+      const act=i.owned?(i.equipped?(k==='avatar'?'':'<button type="button" class="chip" onclick="equipItem(\''+k+'\',null)">'+tr('r_unequip')+'</button>'):'<button type="button" class="chip" onclick="equipItem(\''+k+'\',\''+i.id+'\')">'+tr('r_equip')+'</button>')
+        :'<button type="button" class="chip'+(r.points>=i.cost?' on':'')+'" '+(r.points>=i.cost?'':'disabled ')+'onclick="buyItem(\''+i.id+'\')">'+tr('r_buy')+' · '+i.cost+' ⭐</button>';
+      return '<div class="rw-item'+(i.equipped?' eq':'')+'"><span>'+i.emoji+'</span><b>'+esc(itemName(i))+'</b>'+(i.equipped?'<small class="mut">'+tr('r_equipped')+'</small><br>':'')+act+'</div>'}).join('')+'</div>';
+  });
+  h+='</div>';
+  if(r.recent.length) h+='<div class="card"><h2>'+tr('r_recent')+'</h2>'+r.recent.map(e=>'<div class="bk"><div>'+tr('r_ev_'+e.kind)+'<br><span class="mut">'+new Date(e.at).toLocaleDateString(loc())+'</span></div><b style="color:'+(e.points>=0?'#16a34a':'var(--danger)')+'">'+(e.points>0?'+':'')+e.points+' ⭐</b></div>').join('')+'</div>';
+  return h;
+}
+async function buyItem(id){
+  const {error}=await sb.rpc('redeem_reward',{p_item:id});
+  if(error){flash(error.message==='not enough points'?tr('r_notEnough'):error.message,true);return}
+  await loadRewards(); celebrate(true); showToast(tr('r_bought'));
+}
+async function equipItem(kind,id){
+  const {error}=await sb.rpc('equip_reward',{p_kind:kind,p_item:id});
+  if(error){flash(error.message,true);return}
+  await loadRewards();
+}
+async function loadPast(){
+  if(S.pastLoading||!S.me||!S.me.teacher) return; S.pastLoading=true; const now=Date.now();
+  const {data}=await sb.from('bookings').select('id,student_name,starts_at,booker_id').eq('teacher_id',S.me.teacher.id).eq('status','confirmed').is('attendance',null)
+    .lt('starts_at',new Date(now).toISOString()).gte('starts_at',new Date(now-14*864e5).toISOString()).order('starts_at',{ascending:false});
+  S.pastLoading=false; S.past=data||[]; S.pastKey='ok'; render();
+}
+function markCard(){
+  if(!S.me||!S.me.teacher) return '';
+  if(S.pastKey!=='ok'){ if(!S.pastLoading) setTimeout(loadPast,0); return ''; }
+  if(!S.past.length) return '';
+  return '<div class="card"><h2>'+tr('r_toMark')+' ('+S.past.length+')</h2><p class="mut">'+tr('r_markHint')+'</p>'+S.past.slice(0,8).map(b=>'<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+'</span></div><div class="row"><button type="button" class="chip" onclick="markAtt(\''+b.id+'\',\'attended\')">✔ '+tr('r_attended')+'</button><button type="button" class="chip danger" onclick="markAtt(\''+b.id+'\',\'no_show\')">✖ '+tr('r_noShow')+'</button></div></div>').join('')+'</div>';
+}
+async function markAtt(id,st){
+  const {error}=await sb.rpc('mark_attendance',{p_booking:id,p_status:st});
+  if(error){flash(error.message,true);return}
+  S.pastKey=null; S.tstats=null; flash(st==='attended'?tr('r_markedAtt'):tr('r_markedNo'),false);
+}
+function statsCard(){
+  if(!S.me||!S.me.teacher) return '';
+  if(!S.tstats){ if(!S.tstatsLoading){S.tstatsLoading=true; sb.rpc('get_teacher_stats').then(({data})=>{S.tstatsLoading=false;S.tstats=data||{};render()})} return ''; }
+  const x=S.tstats;
+  return '<div class="card"><h2>'+tr('tMe')+'</h2><div class="rw-stats">'+[[x.attended,'r_sAttended'],[x.no_shows,'r_sNoShow'],[x.upcoming,'r_sUpcoming'],[x.students,'r_sStudents']].map(([n,k])=>'<div><b>'+(n||0)+'</b><small>'+tr(k)+'</small></div>').join('')+'</div></div>';
+}
+function tabMe(){return flashHtml()+statsCard()+rewardsCard()}
 function setLang(l){lang=l;ls.set('lang',l);render()}
 window.setLang=setLang; window.getLang=()=>lang;
 
@@ -348,7 +475,7 @@ async function loadMe(){
   if(S.me.teacher) await loadDash();
 }
 async function loadDash(){
-  S.ttKey=null;
+  S.ttKey=null; S.pastKey=null; S.tstats=null;
   const id=S.me.teacher.id, today=new Date().toISOString().slice(0,10), now=new Date().toISOString();
   const bq = cols => sb.from('bookings').select(cols).eq('teacher_id',id).eq('status','confirmed').gte('starts_at',now).order('starts_at');
   try{await sb.rpc('maintain_my_recurring_bookings')}catch(e){console.warn('Recurring schedule refresh failed',e)}
@@ -497,11 +624,12 @@ async function book(){
       await loadDash(); S.tab='calendar';
       S.msg=(lang==='ar'?'تم حجز الحصة للطالب بنجاح.':'Lesson booked for the student.')+(skipped.length?' '+tr('m_skipped')+': '+skipped.length:''); render(); return;
     }
-    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:'',recurring:mode!=='once',skipped}; render();
+    S.done={start:S.slot,name:n,type:S.ty,t:S.t,meeting:'',whatsapp:'',recurring:mode!=='once',skipped}; render(); celebrate();
     try{
       const ct=await contactFor(bid);
       S.done.meeting=ct.meeting_url||''; S.done.whatsapp=ct.whatsapp||'';
       await loadMine();
+      const b0=S.rw?S.rw.points:0; await loadRewards(); if(S.rw&&S.rw.points>b0) S.done.points=S.rw.points-b0;
       if(S.me?.teacher) await loadDash();
     }catch(refreshError){console.warn('Booking succeeded; optional post-booking refresh failed:',refreshError);}
     render();
@@ -711,7 +839,7 @@ function doneCard(){
   const wa=(d.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+dur+' '+tr('min')+')');
   const gc=ms=>new Date(ms).toISOString().replace(/[-:]|\.\d{3}/g,'');
   const cal='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(d.t.display_name+' – '+d.name)+'&dates='+gc(d.start)+'/'+gc(d.start+dur*6e4)+'&details='+encodeURIComponent(m||'');
-  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span>'+(d.recurring?'<br><span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'+(d.skipped&&d.skipped.length?'<p class="mut">'+tr('m_skipped')+': '+d.skipped.map(x=>fD(new Date(x.starts_at).toLocaleDateString('en-CA'))).join(', ')+'</p>':'')
+  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span>'+(d.recurring?'<br><span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'+(d.skipped&&d.skipped.length?'<p class="mut">'+tr('m_skipped')+': '+d.skipped.map(x=>fD(new Date(x.starts_at).toLocaleDateString('en-CA'))).join(', ')+'</p>':'')+(d.points?'<p class="pts-pop">+'+d.points+' ⭐ '+tr('r_earned')+'</p>':'')
     +(m?'<p><a href="'+esc(m)+'" target="_blank" rel="noopener">'+tr('link')+'</a></p>':'')
     +(wa?'<a class="btn w" href="https://wa.me/'+wa+'?text='+txt+'" target="_blank" rel="noopener">'+tr('wa')+'</a>':'')
     +'<a class="btn g" href="'+esc(cal)+'" target="_blank" rel="noopener">'+tr('gcal')+'</a>'
@@ -795,6 +923,7 @@ function viewHome(){
   h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'
     +(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
   h+='<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>';
+  h+=rewardsCard();
   h+=acctCard();
   if(S.me&&S.me.role==='admin') h+=invitesCard();
   return h;
@@ -1039,11 +1168,11 @@ function adminDashboard(){
 
 function viewDash(){
   const isT=!!S.me.teacher, isA=S.me.role==='admin';
-  let tabs=isT?[['link','tLink'],['calendar','calendarTab'],['hours','tHours'],['types','tTypes'],['bk','tBook'],['mine','tMine'],['prof','tProf']]:[];
-  if(isA) tabs=isT?tabs.concat([['inv','tInv'],['admin','tAdmin']]):[['admin','tAdmin'],['mine','tMine'],['inv','tInv']];
+  let tabs=isT?[['link','tLink'],['calendar','calendarTab'],['hours','tHours'],['types','tTypes'],['bk','tBook'],['me','tMe'],['mine','tMine'],['prof','tProf']]:[];
+  if(isA) tabs=isT?tabs.concat([['inv','tInv'],['admin','tAdmin']]):[['admin','tAdmin'],['me','tMe'],['mine','tMine'],['inv','tInv']];
   if(!tabs.some(x=>x[0]===S.tab)) S.tab=tabs[0][0];
   let h='<div class="card"><div class="row">'+tabs.map(([k,l])=>'<button class="chip'+(S.tab===k?' on':'')+'" onclick="setTab(\''+k+'\')">'+tr(l)+'</button>').join('')+'</div></div>';
-  h+=({link:tabLink,calendar:teacherCalendar,hours:tabHours,types:tabTypes,bk:tabBookings,mine:tabMine,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  h+=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),me:tabMe,mine:tabMine,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   return h;
 }
 function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')}
@@ -1199,6 +1328,8 @@ async function init(){
   S.ready=true; render();
 }
 applyTheme();
+const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments); if(S.user) loadRewards();};
+const _signOut=signOut; signOut=async function(){S.rw=null;S.rwErr=false;S.rwShown=null;S.tstats=null;S.pastKey=null;S.past=[];return _signOut.apply(this,arguments)};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&S.modal)closeModal()});
 render(); init();
 </script>
