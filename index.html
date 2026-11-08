@@ -1139,7 +1139,7 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
   const ov=(S.ttOv||[]).map(o=>({t:Date.parse(o.slot_start),k:o.action}));
   const mins=[...wins.flat().flat(),...bks.filter(x=>days.some(d=>d.key===tzKey(x.a,tz))).flatMap(x=>[tzMin(x.a,tz),tzMin(x.e,tz)])];
   let from=480,to=1200; if(mins.length){from=Math.floor(Math.min(...mins)/60)*60; to=Math.min(1440,Math.max(from+60,Math.ceil(Math.max(...mins)/60)*60));}
-  const px=m=>(m-from)/30*H, hgt=(a,b)=>Math.max(22,(b-a)/6e4/30*H-2);
+  const px=m=>(m-from)/30*H, hgt=(a,b)=>Math.max(22,(b-a)/30*H-2);
   const wd=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,weekday:'short'}), dn=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,day:'numeric'});
   let h='<div class="tt2-wrap"><div class="tt2" style="grid-template-columns:54px repeat(7,minmax(98px,1fr))"><div class="tt2-h tt2-t"></div>';
   days.forEach(d=>h+='<div class="tt2-h'+(d.key===todayKey?' today':'')+'"><span class="dn">'+dn(d)+'</span><span class="dw">'+wd(d)+'</span></div>');
@@ -1155,7 +1155,6 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
       const lab=wd(d)+' '+dn(d)+' '+fmt24(cs)+' – '+(st==='closed'?tr('m_lClosed'):st==='jit'?tr('m_lJit'):tr('m_lAvail'));
       h+='<button type="button" class="tt2-c '+st+(past?' past':'')+'" style="top:'+px(m)+'px;height:'+(H-2)+'px" aria-label="'+esc(lab)+'"'+(past?' disabled':' onclick="openSlotMenu(\''+new Date(cs).toISOString()+'\',\''+st+'\')"')+'><span>'+fmt24(cs)+'</span></button>';
     }});
-    cxs.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>h+='<div class="tt2-x" style="top:'+px(tzMin(x.a,tz))+'px;height:'+hgt(tzMin(x.a,tz),tzMin(x.a,tz)+(x.e-x.a)/6e4)+'px" title="'+tr('m_lCancel')+'"><s>'+esc(x.b.student_name)+'</s></div>');
     bks.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>{
       const t0=tzMin(x.a,tz), pr=parsePhone(x.b.contact_phone), long=(x.e-x.a)/6e4>30;
       h+='<button type="button" class="tt2-b '+(long?'long':'short')+'" data-q="'+esc((x.b.student_name+' '+(x.b.contact_phone||'')).toLowerCase())+'" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(wd(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+(x.b.attendance==='attended'?' · ✔':x.b.attendance==='no_show'?' · ✖':'')+'</small></button>';
@@ -1163,7 +1162,7 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
     if(d.key===todayKey&&tzMin(now,tz)>=from&&tzMin(now,tz)<to) h+='<div class="tt2-now" style="top:'+px(tzMin(now,tz))+'px"></div>';
     h+='</div>';
   });
-  h+='</div></div><div class="tt2-legend"><span><i class="tt2-c available"></i>'+tr('m_lAvail')+'</span><span><i class="tt2-b short"></i>'+tr('m_lBookedShort')+'</span><span><i class="tt2-b long"></i>'+tr('m_lBookedLong')+'</span><span><i class="tt2-c closed"></i>'+tr('m_lClosed')+'</span><span><i class="tt2-c jit"></i>'+tr('m_lJit')+'</span><span><i class="tt2-x"></i>'+tr('m_lCancel')+'</span><span><i class="tt2-un"></i>'+tr('m_lUn')+'</span></div><p class="mut" style="font-size:12px">'+tr('m_gridHint')+'</p>';
+  h+='</div></div><div class="tt2-legend"><span><i class="tt2-c available"></i>'+tr('m_lAvail')+'</span><span><i class="tt2-b short"></i>'+tr('m_lBookedShort')+'</span><span><i class="tt2-b long"></i>'+tr('m_lBookedLong')+'</span><span><i class="tt2-c closed"></i>'+tr('m_lClosed')+'</span><span><i class="tt2-c jit"></i>'+tr('m_lJit')+'</span><span><i class="tt2-un"></i>'+tr('m_lUn')+'</span></div><p class="mut" style="font-size:12px">'+tr('m_gridHint')+'</p>';
   return h;
 }
 function setTtQ(v){S.ttQ=v; applyTtSearch()}
