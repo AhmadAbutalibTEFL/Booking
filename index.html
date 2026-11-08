@@ -1029,4 +1029,442 @@ function regCard(){
     +fld(tr('slugL'),'<input id="rs" value="'+esc(slugify(nm))+'" oninput="this.dataset.m=1" style="direction:ltr" autocapitalize="none">')
     +fld(tr('tzl'),tzSel('rt',tz))
     +'<button class="btn" onclick="registerTeacher()">'+tr('create')+'</button>'
-    +(hasInvite()?'':'<br><button class="btn g"
+    +(hasInvite()?'':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
+}
+function viewHome(){
+  if(S.reg) return regCard();
+  let h=minesCard();
+  h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'
+    +(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
+  h+='<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>';
+  h+=rewardsCard();
+  h+=acctCard();
+  if(S.me&&S.me.role==='admin') h+=invitesCard();
+  return h;
+}
+
+// ---- dashboard tabs ----
+function tabLink(){
+  const t=S.me.teacher, link=myLink();
+  const ok=[[S.dRules.length>0,'ckHours','hours'],[!!t.meeting_url,'ckMeet','prof'],[S.dTypes.some(x=>x.is_active),'ckTypes','types'],[!!t.whatsapp,'ckWa','prof']];
+  return '<div class="card"><h2>'+tr('linkTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('linkHint')+'</p>'
+    +'<div class="lk"><input id="lk" readonly value="'+esc(link)+'"><button class="chip" id="cp" onclick="copyLink()">'+tr('copy')+'</button></div>'
+    +'<a class="btn w" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(tr('shareMsg')+' '+link)+'">'+tr('shareWa')+'</a>'
+    +'<a class="btn g" href="javascript:nav(\''+esc(t.slug)+'\')">'+tr('preview')+'</a></div>'
+    +'<div class="card"><h2>'+tr('check')+'</h2>'+ok.map(([v,k,tab])=>'<div class="ck"><span>'+(v?'✅':'⚠️')+'</span><span>'+tr(k)+(v?'':' · <a onclick="setTab(\''+tab+'\')">'+tr('fix')+'</a>')+'</span></div>').join('')+'</div>';
+}
+function tabHours(){
+  const t=S.me.teacher, today=new Date().toISOString().slice(0,10);
+  let h='<div class="card"><h2>'+tr('hoursTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('hoursHint')+' <b dir="ltr">'+esc(t.timezone)+'</b></p>';
+  for(let d=0;d<7;d++){
+    h+='<div class="day"><b>'+wdName(d)+'</b><div class="rs">'
+      +(S.wk[d].length?S.wk[d].map((r,j)=>'<div class="row"><input class="t" type="time" value="'+r[0]+'" onchange="setR('+d+','+j+',0,this.value)"> – <input class="t" type="time" value="'+r[1]+'" onchange="setR('+d+','+j+',1,this.value)"><button class="chip" aria-label="'+tr('remove')+'" onclick="delR('+d+','+j+')">✕</button></div>').join(''):'<span class="mut" style="padding-top:8px">'+tr('closed')+'</span>')
+      +'<div><button class="chip" onclick="addR('+d+')">'+tr('addR')+'</button></div></div></div>';
+  }
+  h+='<br><button class="btn" onclick="saveHours()">'+tr('save')+'</button></div>';
+  h+='<div class="card"><h2>'+tr('offTitle')+'</h2><p class="mut">'+tr('offHint')+'</p>'
+    +(S.dExc.length?S.dExc.map(x=>'<div class="row" style="justify-content:space-between;padding:6px 0"><span>📅 '+fD(x.on_date)+' · '+(x.is_available?esc((x.start_time||'').slice(0,5)+' – '+(x.end_time||'').slice(0,5)):tr('dayOff'))+'</span><button class="chip" onclick="delExc(\''+x.id+'\')">'+tr('remove')+'</button></div>').join(''):'<p class="mut">'+tr('noExc')+'</p>')
+    +'<div class="sub"><input id="xd" type="date" min="'+today+'"><div class="row" style="margin-bottom:10px"><input class="t" id="xa" type="time"> – <input class="t" id="xb" type="time"></div>'
+    +'<div class="g2"><button class="btn g" onclick="addExc(true)">'+tr('dayOff')+'</button><button class="btn g" onclick="addExc(false)">'+tr('custom')+'</button></div></div></div>';
+  return h;
+}
+function typeFields(id,x){
+  x=x||{};
+  return '<div class="g2">'+fld(tr('nameEn'),'<input id="ty-n-'+id+'" value="'+esc(x.name||'')+'">')+fld(tr('nameAr'),'<input id="ty-a-'+id+'" dir="rtl" value="'+esc(x.name_ar||'')+'">')
+    +fld(tr('dur'),'<input id="ty-d-'+id+'" type="number" min="5" step="5" value="'+(x.duration_min||'')+'">')+fld(tr('buf'),'<input id="ty-b-'+id+'" type="number" min="0" step="5" value="'+(x.buffer_min??5)+'">')+'</div>';
+}
+function tabTypes(){
+  return '<div class="card"><h2>'+tr('typesTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('typesHint')+'</p>'
+    +S.dTypes.map(x=>'<div class="sub">'+typeFields(x.id,x)+'<div class="row" style="justify-content:space-between"><label class="row"><input type="checkbox" id="ty-v-'+x.id+'"'+(x.is_active?' checked':'')+'> '+tr('vis')+'</label><button class="chip" onclick="saveType(\''+x.id+'\')">'+tr('save')+'</button></div></div>').join('')+'</div>'
+    +'<div class="card"><h2>'+tr('addType')+'</h2>'+typeFields('new',{buffer_min:5})+'<button class="btn" onclick="addType()">'+tr('add')+'</button></div>';
+}
+
+function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
+  const wd=new Date(day.key+'T12:00:00Z').getUTCDay(), ex=S.dExc.filter(x=>x.on_date===day.key);
+  const windows=ex.some(x=>!x.is_available)?[]:ex.length?ex.filter(x=>x.is_available).map(x=>[(x.start_time||'').slice(0,5),(x.end_time||'').slice(0,5)]):S.wk[wd]||[];
+  const bookings=S.dBk.filter(b=>dayKey(new Date(b.starts_at))===day.key).sort((a,b)=>Date.parse(a.starts_at)-Date.parse(b.starts_at));
+  let h='<div class="calday'+(isSingle?' single':'')+'"><h3>'+day.date.toLocaleDateString(loc(),{timeZone:tz,weekday:isSingle?'long':'short',day:'numeric',month:'short'})+'</h3>';
+  if(windows.length){
+    const free=[]; const types=S.dTypes.filter(x=>x.is_active).sort((a,b)=>a.duration_min-b.duration_min);
+    windows.forEach(w=>{
+      const [sh,sm]=w[0].split(':').map(Number),[eh,em]=w[1].split(':').map(Number), from=sh*60+sm,to=eh*60+em;
+      for(let m=from;m<to;m+=30){
+        const hh=String(Math.floor(m/60)).padStart(2,'0'),mm=String(m%60).padStart(2,'0'), at=toUtc(day.key,hh+':'+mm,tz);
+        const open=at>=minBookAt&&types.some(ty=>m+ty.duration_min<=to&&!bookings.some(b=>at<Date.parse(b.blocked_until||b.ends_at)&&at+ty.duration_min*60000+ty.buffer_min*60000>Date.parse(b.starts_at)));
+        if(open) free.push(fmt24(at));
+      }
+    });
+    h+='<div class="calfree"><b>'+tr('available')+' ('+windows.map(w=>w[0]+'–'+w[1]).join(', ')+')</b><div class="row" style="gap:4px;margin-top:5px">'+(free.length?free.map(x=>'<span class="chip" style="padding:3px 7px;font-size:11px;cursor:default">'+x+'</span>').join(''):'<span>'+tr('noFreeSlots')+'</span>')+'</div></div>';
+  } else {
+    h+='<div class="calempty">'+tr('unavailable')+'</div>';
+  }
+  if(bookings.length){
+    bookings.forEach(b=>{
+      const st=b.session_types||{};
+      h+='<div class="calbook"><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'
+        +'<small>'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+(b.series_id?' · '+tr('weeklyBadge'):'')+'</small>'
+        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</small>'
+        +'<div class="row" style="margin-top:6px"><button type="button" class="chip" onclick="openBookingMenu(\''+b.id+'\')">'+tr('m_manage')+'</button></div></div>';
+    });
+  } else {
+    h+='<div class="calempty">'+tr('noBookingsDay')+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function tzMin(ms,tz){const p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(ms).reduce((a,x)=>(a[x.type]=x.value,a),{});return (+p.hour%24)*60+ +p.minute}
+function tzKey(ms,tz){const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(ms).reduce((a,x)=>(a[x.type]=x.value,a),{});return p.year+'-'+p.month+'-'+p.day}
+function ttTypeObj(){const a=S.dTypes.filter(x=>x.is_active).sort((x,y)=>x.duration_min-y.duration_min);return a.find(x=>x.id===S.ttType)||a[0]||null}
+function setTtType(id){}
+async function loadTimetable(days,tz){
+  const key=days[0].key; if(S.ttKey===key||S.ttLoading===key) return; S.ttLoading=key;
+  const id=S.me.teacher.id, from=toUtc(days[0].key,'00:00',tz), to=from+7*864e5, f=new Date(from).toISOString(), t=new Date(to).toISOString();
+  const [ov,cx,pa]=await Promise.all([
+    sb.rpc('get_booking_slot_overrides',{p_teacher:id,p_from:f,p_to:t}),
+    sb.from('bookings').select('id,student_name,starts_at,ends_at').eq('teacher_id',id).eq('status','cancelled').gte('starts_at',f).lt('starts_at',t),
+    sb.from('bookings').select('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,attendance,booker_id,meeting_url,session_types(name,duration_min)').eq('teacher_id',id).eq('status','confirmed').gte('starts_at',f).lt('starts_at',t).lt('starts_at',new Date().toISOString())]);
+  if(S.ttLoading!==key) return;
+  S.ttLoading=null; S.ttKey=key; S.ttOv=ov.error?[]:(ov.data||[]); S.ttCancelled=cx.data||[]; S.ttPast=pa.data||[]; render();
+}
+function renderWeekTimetable(days,tz,dayKey,minBookAt){
+  if(!S.dTypes.some(x=>x.is_active)) return '<div class="calempty">'+tr('m_noType')+'</div>';
+  if(S.ttKey!==days[0].key){loadTimetable(days,tz); return '<div class="calempty" role="status">'+tr('m_loading')+'</div>';}
+  const H=34, CELL=30*6e4, now=Date.now(), todayKey=dayKey(new Date());
+  const fmt24=ms=>new Date(ms).toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const windowsFor=day=>{const ex=S.dExc.filter(x=>x.on_date===day.key);return (ex.some(x=>!x.is_available)?[]:ex.length?ex.filter(x=>x.is_available).map(x=>[(x.start_time||'').slice(0,5),(x.end_time||'').slice(0,5)]):S.wk[new Date(day.key+'T12:00:00Z').getUTCDay()]||[]).map(w=>w.map(t=>{const [h,m]=t.split(':').map(Number);return h*60+m})).filter(w=>w[1]>w[0]).sort((a,b)=>a[0]-b[0])};
+  const wins=days.map(windowsFor);
+  const bks=allBk().map(b=>({b,a:Date.parse(b.starts_at),e:Date.parse(b.ends_at),u:Date.parse(b.blocked_until||b.ends_at)}));
+  const cxs=(S.ttCancelled||[]).map(b=>({b,a:Date.parse(b.starts_at),e:Date.parse(b.ends_at)}));
+  const ov=(S.ttOv||[]).map(o=>({t:Date.parse(o.slot_start),k:o.action}));
+  const mins=[...wins.flat().flat(),...bks.filter(x=>days.some(d=>d.key===tzKey(x.a,tz))).flatMap(x=>[tzMin(x.a,tz),tzMin(x.e,tz)])];
+  let from=480,to=1200; if(mins.length){from=Math.floor(Math.min(...mins)/60)*60; to=Math.min(1440,Math.max(from+60,Math.ceil(Math.max(...mins)/60)*60));}
+  const px=m=>(m-from)/30*H, hgt=(a,b)=>Math.max(22,(b-a)/6e4/30*H-2);
+  const wd=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,weekday:'short'}), dn=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,day:'numeric'});
+  let h='<div class="tt2-wrap"><div class="tt2" style="grid-template-columns:54px repeat(7,minmax(98px,1fr))"><div class="tt2-h tt2-t"></div>';
+  days.forEach(d=>h+='<div class="tt2-h'+(d.key===todayKey?' today':'')+'"><span class="dn">'+dn(d)+'</span><span class="dw">'+wd(d)+'</span></div>');
+  h+='<div class="tt2-times" style="height:'+px(to)+'px">';
+  for(let m=from;m<to;m+=30) h+='<span style="top:'+px(m)+'px">'+String(Math.floor(m/60)).padStart(2,'0')+':'+(m%60?'30':'00')+'</span>';
+  h+='</div>';
+  days.forEach((d,i)=>{
+    h+='<div class="tt2-col" style="height:'+px(to)+'px">';
+    wins[i].forEach(w=>{for(let m=w[0];m+30<=w[1];m+=30){
+      const cs=toUtc(d.key,String(Math.floor(m/60)).padStart(2,'0')+':'+(m%60?'30':'00'),tz), ce=cs+CELL;
+      if(bks.some(x=>x.a<ce&&x.u>cs)) continue;
+      const st=ov.some(o=>o.k==='closed'&&o.t>=cs&&o.t<ce)?'closed':ov.some(o=>o.k==='jit'&&o.t>=cs&&o.t<ce)?'jit':'available', past=ce<=now;
+      const lab=wd(d)+' '+dn(d)+' '+fmt24(cs)+' – '+(st==='closed'?tr('m_lClosed'):st==='jit'?tr('m_lJit'):tr('m_lAvail'));
+      h+='<button type="button" class="tt2-c '+st+(past?' past':'')+'" style="top:'+px(m)+'px;height:'+(H-2)+'px" aria-label="'+esc(lab)+'"'+(past?' disabled':' onclick="openSlotMenu(\''+new Date(cs).toISOString()+'\',\''+st+'\')"')+'><span>'+fmt24(cs)+'</span></button>';
+    }});
+    cxs.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>h+='<div class="tt2-x" style="top:'+px(tzMin(x.a,tz))+'px;height:'+hgt(tzMin(x.a,tz),tzMin(x.a,tz)+(x.e-x.a)/6e4)+'px" title="'+tr('m_lCancel')+'"><s>'+esc(x.b.student_name)+'</s></div>');
+    bks.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>{
+      const t0=tzMin(x.a,tz), pr=parsePhone(x.b.contact_phone), long=(x.e-x.a)/6e4>30;
+      h+='<button type="button" class="tt2-b '+(long?'long':'short')+'" data-q="'+esc((x.b.student_name+' '+(x.b.contact_phone||'')).toLowerCase())+'" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(wd(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+(x.b.attendance==='attended'?' · ✔':x.b.attendance==='no_show'?' · ✖':'')+'</small></button>';
+    });
+    if(d.key===todayKey&&tzMin(now,tz)>=from&&tzMin(now,tz)<to) h+='<div class="tt2-now" style="top:'+px(tzMin(now,tz))+'px"></div>';
+    h+='</div>';
+  });
+  h+='</div></div><div class="tt2-legend"><span><i class="tt2-c available"></i>'+tr('m_lAvail')+'</span><span><i class="tt2-b short"></i>'+tr('m_lBookedShort')+'</span><span><i class="tt2-b long"></i>'+tr('m_lBookedLong')+'</span><span><i class="tt2-c closed"></i>'+tr('m_lClosed')+'</span><span><i class="tt2-c jit"></i>'+tr('m_lJit')+'</span><span><i class="tt2-x"></i>'+tr('m_lCancel')+'</span><span><i class="tt2-un"></i>'+tr('m_lUn')+'</span></div><p class="mut" style="font-size:12px">'+tr('m_gridHint')+'</p>';
+  return h;
+}
+function setTtQ(v){S.ttQ=v; applyTtSearch()}
+function applyTtSearch(){
+  const q=(S.ttQ||'').trim().toLowerCase(), bs=document.querySelectorAll('.tt2-b'); let n=0;
+  bs.forEach(b=>{const hit=!!q&&(b.dataset.q||'').includes(q); b.classList.toggle('hit',hit); b.classList.toggle('dim',!!q&&!hit); if(hit) n++});
+  const c=document.getElementById('ttCount'); if(c) c.textContent=q?(n?n+' '+tr('m_matches'):tr('m_noMatch')):'';
+}
+function jumpToDate(v){
+  if(!v) return; const ws=lang==='ar'?0:1, wsOf=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()-((x.getDay()-ws+7)%7));return x};
+  S.calendarOffset=Math.round((wsOf(new Date(v+'T12:00:00'))-wsOf(new Date()))/(7*864e5)); render();
+}
+function openSlotMenu(iso,st){S.modal={type:'slotMenu',iso,state:st||'available'}; render();}
+function openBookingMenu(id){const b=allBk().find(x=>x.id===id); if(!b) return; S.modal={type:'bookingMenu',booking:b}; render();}
+async function manageSlotOverride(iso,action){
+  S.modal=null;
+  const {error}=await sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:iso,p_action:action});
+  if(error){flash(error.message||'Could not update this slot',true);return;}
+  S.ttKey=null; flash(action==='closed'?tr('slotClosed'):action==='jit'?tr('slotJit'):tr('saved'),false);
+}
+async function startTeacherBookingAtMs(ms){
+  S.modal=null; await startTeacherBooking();
+  const ty=S.types.slice().sort((a,b)=>a.duration_min-b.duration_min)[0]; if(!ty){render();return}
+  S.ty=ty; await build(); const dur=ty.duration_min*6e4, all=Object.values(S.slots).flat().sort((a,b)=>a-b);
+  const pick=all.find(x=>x<=ms+29*6e4&&x+dur>ms)||all.find(x=>x>=ms)||null;
+  S.slot=pick; S.day=pick?new Date(pick).toLocaleDateString('en-CA'):null; render();
+}
+function confirmCancelOne(id){if(confirm(tr('confirmCancel'))) executeCancel(id,'single')}
+
+
+function teacherCalendar(){
+  const tz=S.me.teacher.timezone;
+  const dayKey=d=>{const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});return p.year+'-'+p.month+'-'+p.day};
+  const fmtTime=iso=>new Date(iso).toLocaleTimeString(loc(),{timeZone:tz,hour:'numeric',minute:'2-digit'});
+  const fmt24=ms=>new Date(ms).toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const minBookAt=Date.now()+(S.me.teacher.on_the_spot_booking?0:8)*3600000;
+
+  const modeBtns = ['day','week','agenda'].map(m=>{
+    const label = m==='day'?tr('calViewDay'):m==='week'?tr('calViewWeek'):tr('calViewAgenda');
+    return '<button class="chip'+(S.calMode===m?' on':'')+'" onclick="setCalMode(\''+m+'\')">'+label+'</button>';
+  }).join('');
+
+  let h='<div class="card"><div class="calnav"><h2>'+tr('calendarTitle')+'</h2><div class="row">'+modeBtns+'<button class="btn" style="width:auto" onclick="startTeacherBooking()">＋ '+tr('bookForStudent')+'</button></div></div>'+flashHtml()+'<p class="mut" style="margin-top:0">'+tr('calendarHint')+' (<b dir="ltr">'+esc(tz)+'</b>)</p>';
+
+  if(S.calMode==='day'){
+    const d=new Date(); d.setDate(d.getDate()+S.dayOffset);
+    const dayObj={date:d,key:dayKey(d)};
+    h+='<div class="calnav">'
+      +'<div class="row"><button class="chip" onclick="S.dayOffset--;render()">‹ '+tr('prevDay')+'</button>'
+      +'<button class="chip" onclick="S.dayOffset=0;render()">'+tr('todayBtn')+'</button>'
+      +'<button class="chip" onclick="S.dayOffset++;render()">'+tr('nextDay')+' ›</button></div>'
+      +'<b>'+d.toLocaleDateString(loc(),{timeZone:tz,weekday:'long',month:'short',day:'numeric'})+'</b>'
+      +'</div>';
+    h+=renderDayCol(dayObj, tz, fmtTime, fmt24, dayKey, minBookAt, true);
+  } else if(S.calMode==='week'){
+    const wsd=lang==='ar'?0:1, td=new Date(), base=new Date(td); base.setDate(td.getDate()-((td.getDay()-wsd+7)%7)+S.calendarOffset*7);
+    const days=[]; for(let i=0;i<7;i++){const d=new Date(base);d.setDate(base.getDate()+i);days.push({date:d,key:dayKey(d)});}
+    h+='<div class="calnav"><div class="row"><button type="button" class="chip" aria-label="'+tr('previousWeek')+'" onclick="S.calendarOffset--;render()">‹</button><button type="button" class="chip" onclick="S.calendarOffset=0;render()">'+tr('todayBtn')+'</button><button type="button" class="chip" aria-label="'+tr('nextWeek')+'" onclick="S.calendarOffset++;render()">›</button><input type="date" class="datejump" aria-label="'+tr('m_jump')+'" value="'+days[0].key+'" onchange="jumpToDate(this.value)"></div>'
+      +'<b>'+days[0].date.toLocaleDateString(loc(),{month:'short',day:'numeric'})+' – '+days[6].date.toLocaleDateString(loc(),{month:'short',day:'numeric',year:'numeric'})+'</b></div>'
+      +'<div class="row" style="margin:6px 0"><input type="search" class="ttsearch" id="ttSearch" placeholder="🔍 '+tr('m_searchStudent')+'" aria-label="'+tr('m_searchStudent')+'" value="'+esc(S.ttQ||'')+'" oninput="setTtQ(this.value)"><span class="mut" id="ttCount" role="status"></span></div>';
+    h+=renderWeekTimetable(days,tz,dayKey,minBookAt);
+  } else {
+    if(!S.dBk.length){
+      h+='<p class="mut">'+tr('noBk')+'</p>';
+    } else {
+      let lastKey='';
+      S.dBk.forEach(b=>{
+        const k=dayKey(new Date(b.starts_at)), st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
+        if(k!==lastKey){
+          lastKey=k;
+          h+='<h3 style="margin:16px 0 6px;padding-top:10px;border-top:1px solid var(--line)">📅 '+fD(k)+'</h3>';
+        }
+        h+='<div class="bk"><div><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')
+          +'<br><span class="mut">'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</span>'
+          +(ph?' · <a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(b.contact_phone)+'</a>':'')
+          +'</div><div class="row">'
+          +'<button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button>'
+          +'<button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button>'
+          +'</div></div>';
+      });
+    }
+  }
+  h+='</div>';
+  return h;
+}
+
+function tabBookings(){
+  return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+flashHtml()+(S.dBk.length?S.dBk.map(b=>{
+    const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
+    return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'<br><span class="mut">'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
+      +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button></div></div>';
+  }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
+}
+function tabProfile(){
+  const t=S.me.teacher;
+  return '<div class="card"><h2>'+tr('tProf')+'</h2>'+flashHtml()
+    +fld(tr('dname'),'<input id="pn" value="'+esc(t.display_name)+'">')
+    +fld(tr('bioL'),'<textarea id="pb">'+esc(t.bio||'')+'</textarea>')
+    +fld(tr('photoL'),'<input id="pp" style="direction:ltr" value="'+esc(t.photo_url||'')+'">')
+    +fld(tr('meetL'),'<input id="pm" style="direction:ltr" placeholder="https://meet.google.com/…" value="'+esc(t.meeting_url||'')+'"><p class="mut" style="margin:-4px 0 10px">'+tr('meetH')+'</p>')
+    +fld(tr('waL'),'<input id="pw" type="tel" style="direction:ltr" placeholder="9665XXXXXXXX" value="'+esc(t.whatsapp||'')+'">')
+    +fld(tr('tzl'),tzSel('pt',t.timezone))
+    +'<label class="ck"><input id="onspot" type="checkbox"'+(t.on_the_spot_booking?' checked':'')+'> '+tr('onSpot')+'</label><p class="mut">'+tr('noticeEight')+'</p>'
+    +fld(tr('slugL'),'<input id="ps" style="direction:ltr" value="'+esc(t.slug)+'"><p class="mut" style="margin:-4px 0 10px">'+tr('slugWarn')+'</p>')
+    +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>'+acctCard();
+}
+function adminDashboard(){
+  if(!S.adminData&&!S.adminLoading&&S.me&&S.me.role==='admin'){setTimeout(loadAdminOverview,0);return '<div class="card mut">…</div>';}
+  const d=S.adminData;
+  if(S.adminLoading&&!d) return '<div class="card mut">…</div>';
+  if(!d||d.error) return '<div class="card"><h2>'+tr('adminStats')+'</h2><p class="err">'+tr('adminLoadError')+'</p><button class="btn" onclick="loadAdminOverview()">'+tr('fix')+'</button></div>';
+  const st=d.stats||{};
+  let h='<div class="card"><h2>'+tr('adminStats')+'</h2><div class="g3">'+[[tr('totalTeachers'),st.total_teachers],[tr('activeTeachers'),st.active_teachers],[tr('totalBookings'),st.total_bookings],[tr('confirmedBookings'),st.confirmed_bookings],[tr('cancelledBookings'),st.cancelled_bookings],[tr('teacherCreated'),st.teacher_created_bookings],[tr('m_activeSeries'),st.active_series],[tr('m_endedSeries'),st.ended_series],[tr('m_next30'),st.bookings_next_30d]].map(([k,v])=>'<div class="feat"><b>'+esc(k)+'</b><strong style="font-size:25px">'+Number(v||0).toLocaleString()+'</strong></div>').join('')+'</div></div>';
+  h+='<div class="card"><h2>'+tr('adminTeachers')+'</h2>';
+  const ts=d.teachers||[];
+  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+' · ✔ '+(t.confirmed_bookings||0)+' · ✖ '+(t.cancelled_bookings||0)+' · 🔁 '+(t.active_series||0)+' · 👩‍🏫 '+(t.teacher_created||0)+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a><button type="button" class="chip" onclick="adminToggleTeacher(\''+t.id+'\','+!t.is_active+')">'+tr(t.is_active?'m_deactivate':'m_activate')+'</button><button type="button" class="chip danger" onclick="openDanger(\'admin\',\''+t.id+'\')">'+tr('m_delGo')+'</button></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
+  h+='</div><div class="card"><h2>'+tr('m_audit')+'</h2>'+((S.adminAudit||[]).length?(S.adminAudit||[]).map(a=>'<div class="bk"><div><b>'+esc(String(a.action).replace(/_/g,' '))+'</b> · '+esc(a.target_name||'')+'<br><span class="mut">'+new Date(a.created_at).toLocaleString(loc())+'</span></div></div>').join(''):'<p class="mut">'+tr('m_noAudit')+'</p>');
+  return h+'</div>';
+}
+
+function viewDash(){
+  const isT=!!S.me.teacher, isA=S.me.role==='admin';
+  let tabs=isT?['link','calendar','bk','hours','types','notif','me','mine','prof']:[];
+  if(isA) tabs=isT?tabs.concat(['inv','admin']):['admin','notif','me','mine','inv'];
+  if(!tabs.includes(S.tab)) S.tab=tabs[0];
+  const col=ls.get('navCollapsed')==='1', rtl=lang==='ar';
+  const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
+    +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'</nav>';
+  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:tabMe,mine:tabMine,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="S.navOpen=false;render()"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+content+'</section></div>';
+}
+function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')}
+function adminBanner(){
+  if(!S.me||S.me.role!=='admin'||!S.t) return '';
+  return '<div class="card" style="border:2px dashed var(--pri)"><div class="row" style="justify-content:space-between"><div><b>'+tr('m_adminView')+'</b> <span class="badge">'+(S.t.is_active===false?tr('m_pagePaused'):tr('m_pageLive'))+'</span></div><div class="row"><button type="button" class="chip" onclick="adminToggleTeacher(\''+S.t.id+'\','+(S.t.is_active===false)+')">'+tr(S.t.is_active===false?'m_activate':'m_deactivate')+'</button><button type="button" class="chip" onclick="S.tab=\'admin\';nav(null)">'+tr('m_backAdmin')+'</button></div></div></div>';
+}
+async function adminToggleTeacher(id,active){
+  const {error}=await sb.rpc('admin_set_teacher_active',{p_teacher:id,p_active:active});
+  if(error){flash(error.message,true);return}
+  if(S.t&&S.t.id===id) await loadTeacher();
+  S.adminData=null; flash(tr('saved'),false);
+}
+async function toggleMyPage(active){
+  const {error}=await sb.rpc('set_my_teacher_active',{p_active:active});
+  if(error){flash(error.message,true);return}
+  await loadMe(); flash(tr('saved'),false);
+}
+function openDanger(kind,target){S.modal={type:'danger',kind,target:target||null}; render();}
+async function confirmDanger(){
+  const m=S.modal; if(!m||($('#dg_in')||{}).value.trim().toLowerCase()!==tr('m_delWord').toLowerCase()) return;
+  const btn=$('#dg_go'); if(btn){btn.disabled=true;btn.textContent='…';}
+  const {error}=m.kind==='admin'?await sb.rpc('admin_delete_account',{p_user:m.target}):await sb.rpc('delete_my_account');
+  if(error){S.modal={...m,err:error.message};render();return}
+  S.modal=null;
+  if(m.kind==='self'){await signOut(); alert(tr('m_accDeleted'));}
+  else{S.adminData=null; flash(tr('m_accDeleted'),false);}
+}
+function acctCard(){
+  if(!S.me||S.me.role==='admin') return '';
+  const t=S.me.teacher, live=!t||t.is_active!==false;
+  return '<div class="card"><h2>'+tr('m_acct')+'</h2>'
+   +(t?'<p><span class="badge">'+(live?tr('m_pageLive'):tr('m_pagePaused'))+'</span></p><p class="mut">'+tr('m_pauseHint')+'</p><button type="button" class="btn g" onclick="toggleMyPage('+(!live)+')">'+tr(live?'m_pause':'m_resume')+'</button><hr style="border:0;border-top:1px solid var(--line);margin:16px 0">':'')
+   +'<h3 style="color:var(--danger);margin:0 0 6px">'+tr('m_delTitle')+'</h3><p class="mut">'+tr('m_delHint')+'</p><button type="button" class="btn d" onclick="openDanger(\'self\')">'+tr('m_delGo')+'</button></div>';
+}
+
+function renderModal(){
+  const M=$('#modalRoot');
+  if(!S.modal){M.innerHTML='';M._m=null;if(S._pf&&S._pf.focus){try{S._pf.focus()}catch(e){}} S._pf=null;return}
+  if(M._m===S.modal&&M.innerHTML) return;   // do not rebuild (and wipe typed input) when unrelated state refreshes
+  M._m=S.modal;
+  const m=S.modal, b=m.booking, tz=S.me&&S.me.teacher?S.me.teacher.timezone:undefined;
+  const fFt=ms=>new Date(ms).toLocaleString(loc(),{timeZone:tz,weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
+  const wrap=(title,body)=>'<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'">'+'<h3>'+esc(title)+'</h3>'+body+'</div></div>';
+  const bt=(cls,fn,label)=>'<button type="button" class="'+cls+'" onclick="'+fn+'">'+label+'</button>';
+  let h='';
+  if(m.type==='cancel'){
+    h=wrap(tr('cancelModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('cancelModalSub')+'</p><div class="stack">'
+      +bt('btn g',"executeCancel('"+b.id+"','single')",tr('cancelOne'))+bt('btn g',"executeCancel('"+b.id+"','future')",tr('cancelFuture'))+bt('btn d',"executeCancel('"+b.id+"','all')",tr('cancelAll'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='resched'){
+    const asT=m.asTeacher?'true':'false';
+    h=wrap(tr('reschedModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('reschedModalSub')+'</p><div class="stack">'
+      +bt('btn',"startResched('"+b.id+"','single',"+asT+")",tr('reschedOne'))+bt('btn g',"startResched('"+b.id+"','future',"+asT+")",tr('reschedFuture'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='slotMenu'){
+    const ms=Date.parse(m.iso), st=m.state;
+    h=wrap(fFt(ms),'<p class="mut" style="margin:0">'+(st==='closed'?tr('m_lClosed'):st==='jit'?tr('m_lJit'):tr('m_lAvail'))+'</p><p class="mut" style="margin:6px 0 0;font-size:13px">'+tr(st==='closed'?'m_closedHint':st==='jit'?'m_jitOnHint':'m_jitHint')+'</p><div class="stack">'
+      +(st!=='closed'?bt('btn',"startTeacherBookingAtMs("+ms+")",tr('m_book')):'')
+      +(st!=='closed'?bt('btn g',"manageSlotOverride('"+m.iso+"','closed')",tr('m_close')):'')
+      +(st==='available'?bt('btn g',"manageSlotOverride('"+m.iso+"','jit')",tr('m_jit')):'')
+      +(st!=='available'?bt('btn g',"manageSlotOverride('"+m.iso+"','clear')",tr('m_clear')):'')
+      +bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='bookingMenu'){
+    const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,''), p=b.profiles||{};
+    h=wrap(tr('m_details'),'<p style="margin:0"><b>'+esc(b.student_name)+'</b>'+(b.series_id?' <span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'
+      +'<p class="mut" style="margin:4px 0">'+fFt(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</p>'
+      +'<p style="margin:4px 0" dir="ltr">'+(ph?'<a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'—')+'</p>'
+      +'<p class="mut" style="margin:4px 0">'+tr('m_by')+': '+esc(p.full_name||'—')+(p.email?' · <span dir="ltr">'+esc(p.email)+'</span>':'')+'</p>'
+      +(b.notes?'<p class="mut" style="margin:4px 0">'+esc(b.notes)+'</p>':'')
+      +'<div class="stack">'+((Date.parse(b.starts_at)<Date.now())?(b.attendance?'<p class="mut">'+tr(b.attendance==='attended'?'r_attended':'r_noShow')+'</p>':'')+bt('btn',"markAttMenu('"+b.id+"','attended')",'✔ '+tr('r_attended'))+bt('btn g',"markAttMenu('"+b.id+"','no_show')",'✖ '+tr('r_noShow')):bt('btn',"openEdit('"+b.id+"',true)",tr('m_edit'))+bt('btn g',"confirmCancelOne('"+b.id+"')",tr('m_cancelOcc'))+(b.series_id?bt('btn g',"promptCancel('"+b.id+"')",tr('m_series')):''))+bt('chip',"icsFor('"+b.id+"')",'📆 '+tr('m_ics'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='edit'){
+    const v=m.vals||{n:b.student_name||'',p:b.contact_phone||'',t:b.notes||''};
+    let tf='';
+    if(m.asTeacher){
+      const ms=Date.parse(b.starts_at), types=S.dTypes.filter(x=>x.is_active||x.id===b.session_type_id);
+      tf='<label class="fl" for="ed_ty">'+tr('m_type')+'</label><select id="ed_ty">'+types.map(x=>'<option value="'+x.id+'"'+((v.ty||b.session_type_id)===x.id?' selected':'')+'>'+x.duration_min+' '+tr('min')+' · '+esc(tn(x))+'</option>').join('')+'</select>'
+        +'<div class="g2"><div><label class="fl" for="ed_d">'+tr('m_date')+'</label><input id="ed_d" type="date" value="'+(v.d||tzKey(ms,tz))+'"></div><div><label class="fl" for="ed_h">'+tr('m_time')+'</label><input id="ed_h" type="time" step="300" value="'+(v.h||new Date(ms).toLocaleTimeString('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}))+'"></div></div><p class="mut" style="margin:0">'+esc(tz||'')+'</p>';
+    }
+    const sc=b.series_id?'<label class="fl">'+tr('m_scope')+'</label><label class="ck"><input type="radio" name="ed_scope" value="single"'+((v.sc||'single')==='single'?' checked':'')+'> '+tr('m_this')+'</label><label class="ck"><input type="radio" name="ed_scope" value="future"'+(v.sc==='future'?' checked':'')+'> '+tr('m_future')+'</label>':'';
+    h=wrap(tr('m_edit'),(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')
+      +'<label class="fl" for="ed_n">'+tr('name')+'</label><input id="ed_n" maxlength="120" value="'+esc(v.n)+'">'
+      +'<label class="fl" for="ed_p">'+tr('phone')+'</label><input id="ed_p" type="tel" maxlength="32" dir="ltr" value="'+esc(v.p)+'">'
+      +'<label class="fl" for="ed_t">'+tr('m_notes')+'</label><textarea id="ed_t" maxlength="1000" rows="2" style="width:100%">'+esc(v.t)+'</textarea>'
+      +tf+sc+'<div class="stack">'+bt('btn" id="ed_save','submitEdit()',tr('m_save'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  }
+  if(m.type==='danger'){
+    const adm=m.kind==='admin', nm=adm?((S.adminData&&S.adminData.teachers||[]).find(x=>x.id===m.target)||{}).display_name||'':'';
+    h=wrap(tr(adm?'m_delTitleAdmin':'m_delTitle')+(nm?': '+nm:''),(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')+'<p>'+tr(adm?'m_delBodyAdmin':'m_delBody')+'</p><label class="fl" for="dg_in">'+tr('m_delType').replace('{w}',tr('m_delWord'))+'</label><input id="dg_in" autocomplete="off" oninput="$(\'#dg_go\').disabled=this.value.trim().toLowerCase()!==tr(\'m_delWord\').toLowerCase()"><div class="stack">'+bt('btn d" id="dg_go" disabled="disabled','confirmDanger()',tr('m_delGo'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  }
+  if(!S._pf) S._pf=document.activeElement;
+  M.innerHTML=h;
+  const first=M.querySelector('input,select,textarea,button:not([disabled])'); if(first&&first.focus) first.focus();
+}
+
+// ---- main render ----
+function render(){
+  document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  const A=$('#app');
+  $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
+  const th=ls.get('theme')||'system'; let b='<span class="seg" role="group" aria-label="Theme">'+[['system','🖥️','m_themeSys'],['light','☀️','m_themeLight'],['dark','🌙','m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+(th===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span> <button type="button" id="languageToggle">'+tr('lang')+'</button> ';
+  if(S.user&&S.slug) b+='<button onclick="nav(null)">'+tr(S.me&&S.me.teacher?'goDash':'goHome')+'</button> ';
+  b+='<button onclick="S.user?signOut():signIn()">'+tr(S.user?'out':'in')+'</button>';
+  if(S.user&&S.me){b='<button type="button" class="bell" aria-label="'+tr('nav_notif')+'" onclick="toggleBell()" aria-expanded="'+!!S.bellOpen+'">🔔<span class="dot" id="bellDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span></button> '+b;}
+  if(S.user&&S.me&&!S.slug&&(S.me.teacher||S.me.role==='admin')&&!S.reg) b='<button type="button" class="burger" aria-label="'+tr('nav_main')+'" onclick="S.navOpen=!S.navOpen;render()">☰</button> '+b;
+  $('#btns').innerHTML=b;
+  const languageToggle=$('#languageToggle'); if(languageToggle) languageToggle.addEventListener('click',()=>setLang(lang==='ar'?'en':'ar'));
+  $('#footNote').textContent=tr('footNote');
+  $('#footPriv').textContent=tr('footPriv');
+  $('#footTerms').textContent=tr('footTerms');
+
+  const dash=!S.slug&&S.user&&S.me&&(S.me.teacher||S.me.role==='admin')&&!S.reg;
+  A.className = dash ? 'wide' : '';
+  $('#h1').textContent = S.slug&&S.t ? tr('bookWith')+' '+S.t.display_name : dash ? tr('dashTitle') : tr('title');
+  $('#sub').textContent = S.slug ? '' : dash ? (S.me.teacher?S.me.teacher.display_name:tr('tAdmin')) : tr('sub');
+  if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
+  if(!S.ready){A.innerHTML='<div class="card mut">…</div>';return}
+  A.innerHTML = S.slug ? viewBook()
+    : !S.user ? viewLanding()
+    : !S.me ? '<div class="card mut">…</div>'
+    : dash ? viewDash()
+    : viewHome();
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch();
+  document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':dash&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
+}
+
+async function init(){
+  const q=new URLSearchParams(location.search), m=location.pathname.match(/^\/t\/([a-z0-9-]+)/i);
+  let slug=((q.get('t')||(m&&m[1])||'')+'').toLowerCase()||null;
+  const inv=q.get('invite'); if(inv) ls.set('invite',inv.toUpperCase().replace(/[^A-Z0-9]/g,''));
+  const {data:{session}}=await sb.auth.getSession(); S.user=session?.user||null;
+  const next=ls.get('next'); ls.del('next');
+  if(!slug&&S.user&&next) slug=next;
+  S.slug=slug;
+  writeAppHistory('replace');
+  window.addEventListener('popstate', async (event)=>{
+    if(event.state?.bmc){ await restoreAppRoute(event.state); }
+    else {
+      // Keep browser Back inside the app instead of leaving an authenticated page
+      // through a stale OAuth redirect/history entry. Never sign the user out here.
+      writeAppHistory('replace');
+      if(S.user&&S.me?.teacher){S.slug=null;S.teacherBooking=false;S.rs=null;S.rsAsTeacher=false;await loadDash();render();}
+    }
+  });
+  sb.auth.onAuthStateChange((_e,s)=>{
+    const u=s?.user||null;
+    if((u?.id||null)!==(S.user?.id||null)) setTimeout(async()=>{
+      S.user=u; S.loaded=null; S.done=null;
+      if(u){await Promise.all([loadMe(),loadMine()])} else {S.me=null;S.mine=[]}
+      if(S.slug&&S.t&&u) await loadBook();
+      S.reg = !!(u&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
+      render();
+    },0);
+  });
+  if(S.user) await Promise.all([loadMe(),loadMine()]);
+  await loadTeacher();
+  if(S.slug&&S.user&&S.t) await loadBook();
+  S.reg = !!(S.user&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
+  S.ready=true; render();
+}
+applyTheme();
+const _render=render; render=function(){try{return _render.apply(this,arguments)}catch(e){console.error(e); try{const A=document.getElementById('app'); if(A&&!A.children.length) A.innerHTML='<div class="card err" role="alert"><b>This page could not be shown.</b><br><small></small></div>'; const sm=A&&A.querySelector('.err small'); if(sm) sm.textContent=String(e&&e.stack||e).split('\n').slice(0,3).join(' | ');}catch(_){} if(window.__bmcFatal) window.__bmcFatal('render: '+String(e&&e.stack||e).split('\n').slice(0,3).join(' | '));}};
+const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments); if(S.user){loadRewards();startNotifs();}};
+const _setTab=setTab; setTab=function(t){S.navOpen=false;S.bellOpen=false;return _setTab.apply(this,arguments)};
+window.addEventListener('offline',()=>{if(!document.getElementById('offBar')){const d=document.createElement('div');d.id='offBar';d.className='offline';d.setAttribute('role','alert');d.textContent=tr('m_offline');document.body.appendChild(d)}});
+window.addEventListener('online',()=>{const d=document.getElementById('offBar');if(d)d.remove()});
+document.addEventListener('click',e=>{if(S.bellOpen&&!e.target.closest('.npanel,.bell')){S.bellOpen=false;render()}});
+const _signOut=signOut; signOut=async function(){stopNotifs();S.rw=null;S.rwErr=false;S.rwShown=null;S.tstats=null;S.pastKey=null;S.past=[];return _signOut.apply(this,arguments)};
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(S.modal)closeModal(); else if(S.bellOpen){S.bellOpen=false;render()} else if(S.navOpen){S.navOpen=false;render()}}
+  if(e.key==='Tab'&&S.modal){const f=[...document.querySelectorAll('#modalRoot input,#modalRoot select,#modalRoot textarea,#modalRoot button:not([disabled]),#modalRoot a[href]')]; if(f.length){const a=document.activeElement,i=f.indexOf(a); if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus()} else if(!e.shiftKey&&(i===f.length-1||i<0)){e.preventDefault();f[0].focus()}}}
+});
+render(); init();
+</script>
+</body>
+</html>
