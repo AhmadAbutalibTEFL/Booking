@@ -167,6 +167,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 @media print{.bar,.side,.seg,.chip,.btn,.calnav,.ttsearch,.site-footer,#panelRoot,.tt2-legend{display:none!important}.tt2-wrap{max-height:none;overflow:visible}}
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>(function(){function show(m){if(!document.body){document.addEventListener('DOMContentLoaded',function(){show(m)});return}var d=document.getElementById('bmcFatal');if(!d){d=document.createElement('div');d.id='bmcFatal';d.setAttribute('role','alert');d.style.cssText='position:fixed;z-index:99999;left:8px;right:8px;bottom:8px;background:#fff;color:#7a0010;border:2px solid #b00020;border-radius:12px;padding:12px;font:13px/1.45 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3);max-height:50vh;overflow:auto;direction:ltr;text-align:left';document.body.appendChild(d)}d.innerHTML='<b>Something went wrong.</b> Please reload. If it keeps happening, send a screenshot of this box.<br><code style="white-space:pre-wrap;word-break:break-all"></code><br><button type="button" onclick="location.reload()" style="margin-top:6px;padding:6px 12px">Reload</button>';d.querySelector('code').textContent=m}window.__bmcFatal=show;window.addEventListener('error',function(e){show((e.message||'error')+'  @ '+String(e.filename||'').split('/').pop()+':'+e.lineno+':'+e.colno)})})();</script>
 </head>
 <body>
 <a class="skip" href="#app" onclick="setTimeout(function(){var a=document.getElementById('app');a&&a.focus()},0)">Skip to content</a>
@@ -1028,23 +1029,4 @@ function regCard(){
     +fld(tr('slugL'),'<input id="rs" value="'+esc(slugify(nm))+'" oninput="this.dataset.m=1" style="direction:ltr" autocapitalize="none">')
     +fld(tr('tzl'),tzSel('rt',tz))
     +'<button class="btn" onclick="registerTeacher()">'+tr('create')+'</button>'
-    +(hasInvite()?'':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
-}
-function viewHome(){
-  if(S.reg) return regCard();
-  let h=minesCard();
-  h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'
-    +(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
-  h+='<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>';
-  h+=rewardsCard();
-  h+=acctCard();
-  if(S.me&&S.me.role==='admin') h+=invitesCard();
-  return h;
-}
-
-// ---- dashboard tabs ----
-function tabLink(){
-  const t=S.me.teacher, link=myLink();
-  const ok=[[S.dRules.length>0,'ckHours','hours'],[!!t.meeting_url,'ckMeet','prof'],[S.dTypes.some(x=>x.is_active),'ckTypes','types'],[!!t.whatsapp,'ckWa','prof']];
-  return '<div class="card"><h2>'+tr('linkTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('linkHint')+'</p>'
-    +'<div class="lk"><input id="lk" readonly value="'+esc(link)+'"><button class="chip" id="cp" onclick="copyLink()">'+tr('
+    +(hasInvite()?'':'<br><button class="btn g"
