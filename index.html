@@ -522,7 +522,11 @@ async function markAttMenu(id,st){
   S.modal=null; const {error}=await sb.rpc('mark_attendance',{p_booking:id,p_status:st}); if(error){flash(error.message,true);return}
   S.ttKey=null; S.pastKey=null; S.tstats=null; flash(st==='attended'?tr('r_markedAtt'):tr('r_markedNo'),false);
 }
-function setLang(l){lang=l;ls.set('lang',l);render()}
+  function syncContext(){
+  if(!S.user) return Promise.resolve();
+  return sb.rpc('set_my_context',{p_timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,p_language:lang}).then(()=>{},()=>{});
+}
+function setLang(l){lang=l;ls.set('lang',l);syncContext();render()}
 window.setLang=setLang; window.getLang=()=>lang;
 
 
@@ -729,6 +733,7 @@ async function book(){
   const submit=$('#app .card:last-child .btn');
   if(submit){submit.disabled=true;submit.textContent=lang==='ar'?'جارٍ تأكيد الحجز…':'Booking…';}
   try{
+    await syncContext();
     const {data,error}=await sb.rpc('book_lesson',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:'',p_mode:mode,p_count:cnt});
     if(error){S.booking=false; S.err=''; await loadBook(true); S.err=bookErr(error.message); render(); return;}
     const skipped=(data&&data.skipped)||[], bid=data&&data.booking_id;
@@ -1454,7 +1459,7 @@ async function init(){
 }
 applyTheme();
 const _render=render; render=function(){try{return _render.apply(this,arguments)}catch(e){console.error(e); try{const A=document.getElementById('app'); if(A&&!A.children.length) A.innerHTML='<div class="card err" role="alert"><b>This page could not be shown.</b><br><small></small></div>'; const sm=A&&A.querySelector('.err small'); if(sm) sm.textContent=String(e&&e.stack||e).split('\n').slice(0,3).join(' | ');}catch(_){} if(window.__bmcFatal) window.__bmcFatal('render: '+String(e&&e.stack||e).split('\n').slice(0,3).join(' | '));}};
-const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments); if(S.user){loadRewards();startNotifs();}};
+const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments); if(S.user){loadRewards();startNotifs();syncContext();}};
 const _setTab=setTab; setTab=function(t){S.navOpen=false;S.bellOpen=false;return _setTab.apply(this,arguments)};
 window.addEventListener('offline',()=>{if(!document.getElementById('offBar')){const d=document.createElement('div');d.id='offBar';d.className='offline';d.setAttribute('role','alert');d.textContent=tr('m_offline');document.body.appendChild(d)}});
 window.addEventListener('online',()=>{const d=document.getElementById('offBar');if(d)d.remove()});
