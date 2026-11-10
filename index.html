@@ -79,6 +79,7 @@ a.btn{display:block;text-align:center;text-decoration:none;margin-top:10px}
 .calempty{font-size:12px;color:var(--mut);padding:8px 0}
 .calnav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;background:rgba(91,91,240,.14);color:var(--pri);margin-inline-start:6px}
+.sd-st{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;margin-inline-start:6px}.sd-st.ok{background:rgba(47,196,178,.18);color:#0b7d70}.sd-st.off{background:var(--danger-bg);color:var(--danger)}.sd-st.mu{background:var(--line);color:var(--mut)}:root[data-theme=dark] .sd-st.ok{color:var(--acc)}.sd-note{margin:-4px 0 10px;font-size:13px}
 .modal-bg{position:fixed;inset:0;background:rgba(15,18,38,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
 .modal{background:var(--card);color:var(--ink);border-radius:18px;max-width:440px;width:100%;padding:20px;box-shadow:0 12px 36px rgba(0,0,0,.28)}
 .modal h3{margin:0 0 8px;font-size:18px}
@@ -238,6 +239,7 @@ const T = {
   cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a lesson on BookMyClass:',
   mine:'Your upcoming lessons',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this lesson?',late:'It’s too late to change this lesson online. Please message the teacher.',
   limit:'You’ve reached the limit of 5 upcoming lessons.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
+  sd_tz:'Times are shown in your timezone ({z}).',sd_rules:'You can change or cancel a lesson here. If it is too late to change it online, you will be asked to message your teacher.',sd_next:'Next lesson',sd_past:'Past & cancelled lessons',sd_pastEmpty:'No past lessons yet.',sd_pastErr:'Couldn’t load your lesson history right now. Please try again later.',sd_more:'Show more',sd_less:'Show less',sd_confirmed:'Confirmed',sd_completed:'Completed',sd_cancelled:'Cancelled',
   homeTitle:'Book a new lesson',homeHint:'Open the booking link your teacher shared with you to view their schedule.',noSessions:'You have no upcoming lessons scheduled yet.',
   imTeacher:'I’m a teacher — set up my account',goHome:'My lessons',goDash:'Dashboard',
   regTitle:'Create your teacher account',code:'Invite code',dname:'Your display name',slugL:'Link name (letters, numbers, dashes)',tzl:'Time zone',create:'Create account',
@@ -294,6 +296,7 @@ const T = {
   cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت حصة عبر BookMyClass:',
   mine:'حصصك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الحصة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
   limit:'وصلت للحد الأقصى: 5 حصص قادمة.',changing:'تغيير موعد حصة',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
+  sd_tz:'تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sd_rules:'يمكنك تغيير الحصة أو إلغاءها من هنا. إذا فات وقت التعديل عبر الموقع، فسيُطلب منك مراسلة المعلم.',sd_next:'الحصة القادمة',sd_past:'الحصص السابقة والملغاة',sd_pastEmpty:'لا توجد حصص سابقة بعد.',sd_pastErr:'تعذّر تحميل سجل حصصك حاليًا. يرجى المحاولة لاحقًا.',sd_more:'عرض المزيد',sd_less:'عرض أقل',sd_confirmed:'مؤكدة',sd_completed:'مكتملة',sd_cancelled:'ملغاة',
   homeTitle:'احجز حصة جديدة',homeHint:'افتح رابط الحجز الذي شاركه معك المعلم لعرض جدوله.',noSessions:'ليس لديك حصص قادمة مجدولة حاليًا.',
   imTeacher:'أنا معلم — إعداد حسابي',goHome:'حصصي',goDash:'لوحة التحكم',
   regTitle:'أنشئ حساب المعلم',code:'رمز الدعوة',dname:'الاسم الظاهر',slugL:'اسم الرابط (حروف إنجليزية وأرقام وشرطات)',tzl:'المنطقة الزمنية',create:'إنشاء الحساب',
@@ -330,7 +333,7 @@ let lang = 'en';
 try { lang = localStorage.getItem('lang') || ((navigator.language||'').startsWith('ar') ? 'ar' : 'en'); } catch(e){}
 const S = {
   ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
-  mine:[],rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
+  mine:[],minePast:[],minePastErr:false,pastAll:false,rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
   tab:'link',calMode:'week',calendarOffset:0,dayOffset:0,modal:null,
   invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{},notifs:[],unread:0,bellOpen:false,navOpen:false,notifLoaded:false,notifErr:false,nFilter:'all',ttOv:[],ttQ:'',rw:null,rwErr:false,rwLoading:false,rwShown:null,tstats:null,past:[],pastKey:null,slotState:{},ttPast:[],ttCancelled:[],ttKey:null,ttLoading:null,ttType:null,ttErr:false
 };
@@ -473,6 +476,7 @@ function startNotifs(){
       const n=p.new; if(!n||S.notifs.some(x=>x.id===n.id)) return;
       S.notifs.unshift(n); S.unread++; S._nk=null; const txt=notifText(n); showToast('🔔 '+txt);
       if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('BookMyClass',{body:txt})}catch(e){}}
+      if(/^booking_/.test(n.kind||'')&&!S.modal&&!S.rs&&!S.slug){loadMine().then(()=>render());return}
       if(S.bellOpen||S.tab==='notif') render(); else updateBadges();
     }).subscribe();
   }catch(e){console.warn('realtime unavailable',e)}
@@ -573,7 +577,7 @@ const hasInvite = () => !!ls.get('invite');
 
 // ---- data loading ----
 async function loadMine(){
-  if(!S.user){S.mine=[];return}
+  if(!S.user){S.mine=[];S.minePast=[];return}
   try{await sb.rpc('maintain_my_recurring_bookings')}catch(e){console.warn('Recurring schedule refresh failed',e)}
   const r = await sb.from('bookings')
     .select('id,student_name,contact_phone,notes,starts_at,teacher_id,session_type_id,series_id,session_types(duration_min,name,name_ar),teachers(display_name,slug)')
@@ -583,6 +587,14 @@ async function loadMine(){
     const c = await sb.rpc('get_booking_contact',{p_booking:b.id});
     b.ct = (c.data && c.data[0]) || {};
   }));
+  // history: past lessons and cancelled lessons, own rows only (RLS must scope by booker_id)
+  try{
+    const h = await sb.from('bookings')
+      .select('id,starts_at,status,series_id,session_types(duration_min,name,name_ar),teachers(display_name,slug)')
+      .eq('booker_id',S.user.id).or('starts_at.lt.'+new Date().toISOString()+',status.neq.confirmed')
+      .order('starts_at',{ascending:false}).limit(30);
+    S.minePastErr = !!h.error; S.minePast = h.data || [];
+  }catch(e){S.minePast=[];S.minePastErr=true}
 }
 async function loadMe(){
   if(!S.user){S.me=null;return}
@@ -944,15 +956,35 @@ function teacherCard(t){
   const p=su(t.photo_url);
   return '<div class="card tc"><div class="av">'+(p?'<img src="'+esc(p)+'" alt="">':esc((t.display_name||'?').trim().charAt(0).toUpperCase()))+'</div><div><h2>'+esc(t.display_name)+'</h2>'+(t.bio?'<p class="mut">'+esc(t.bio)+'</p>':'')+'</div></div>';
 }
+const sdDate = ms => new Date(ms).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
+const sdRange = (ms,d) => '<bdi>'+fT(ms)+(d?' – '+fT(ms+d*6e4):'')+'</bdi>';
+const sdPill = (c,t) => '<span class="sd-st '+c+'">'+t+'</span>';
+function sdTz(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone||''}catch(e){return ''}}
 function minesCard(){
   if(!S.user||!S.mine.length) return '';
-  return '<div class="card"><h2>'+tr('mine')+'</h2>'+S.mine.map(b=>{
-    const st=b.session_types||{}, link=su(b.ct&&b.ct.meeting_url);
-    return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')
-      +'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+' · '+esc(b.teachers?.display_name)+'</span>'
+  const tz=sdTz();
+  return '<div class="card"><h2>'+tr('mine')+'</h2><p class="mut sd-note">'+(tz?tr('sd_tz').replace('{z}',esc(tz))+' ':'')+tr('sd_rules')+'</p>'+S.mine.map((b,i)=>{
+    const st=b.session_types||{}, d=st.duration_min||0, ms=Date.parse(b.starts_at), link=su(b.ct&&b.ct.meeting_url);
+    return '<div class="bk"><div><b>'+esc(b.teachers?.display_name||'')+'</b>'+sdPill('ok',tr('sd_confirmed'))+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+(i===0?'<span class="badge">'+tr('sd_next')+'</span>':'')
+      +'<br><span class="mut">'+sdDate(ms)+'<br>'+sdRange(ms,d)+(d?' · '+d+' '+tr('min'):'')+'</span>'
+      +'<br><span class="mut">'+esc(b.student_name)+'</span>'
       +(link?'<br><a href="'+esc(link)+'" target="_blank" rel="noopener">'+tr('link')+'</a>':'')+'</div>'
       +'<div class="row"><button class="chip" onclick="openEdit(\''+b.id+'\',false)">'+tr('m_edit')+'</button><button class="chip" onclick="promptResched(\''+b.id+'\',false)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('cancel')+'</button></div></div>';
   }).join('')+'</div>';
+}
+function pastCard(showEmpty){
+  if(!S.user) return '';
+  const all=S.minePast||[];
+  if(!all.length&&!S.minePastErr&&!showEmpty) return '';
+  const rows=(S.pastAll?all:all.slice(0,5)).map(b=>{
+    const st=b.session_types||{}, d=st.duration_min||0, ms=Date.parse(b.starts_at);
+    const pill=b.status==='cancelled'?sdPill('off',tr('sd_cancelled')):b.status==='confirmed'?sdPill('mu',tr('sd_completed')):sdPill('mu',esc(b.status||''));
+    return '<div class="bk"><div><b>'+esc(b.teachers?.display_name||'')+'</b>'+pill+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')
+      +'<br><span class="mut">'+sdDate(ms)+' · '+sdRange(ms,d)+(d?' · '+d+' '+tr('min'):'')+'</span></div></div>';
+  }).join('');
+  return '<div class="card"><h2>'+tr('sd_past')+'</h2>'
+    +(S.minePastErr?'<p class="mut">'+tr('sd_pastErr')+'</p>':all.length?rows:'<p class="mut">'+tr('sd_pastEmpty')+'</p>')
+    +(all.length>5?'<button class="chip" onclick="S.pastAll=!S.pastAll;render()">'+tr(S.pastAll?'sd_less':'sd_more')+'</button>':'')+'</div>';
 }
 function doneCard(){
   const d=S.done, m=su(d.meeting), dur=d.type.duration_min;
@@ -1042,6 +1074,7 @@ function viewHome(){
   let h=minesCard();
   h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'
     +(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
+  h+=pastCard(true);
   h+='<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>';
   h+=rewardsCard();
   h+=acctCard();
@@ -1301,7 +1334,7 @@ function viewDash(){
   const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:tabMe,mine:tabMine,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="S.navOpen=false;render()"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+content+'</section></div>';
 }
-function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')}
+function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')+pastCard(false)}
 function adminBanner(){
   if(!S.me||S.me.role!=='admin'||!S.t) return '';
   return '<div class="card" style="border:2px dashed var(--pri)"><div class="row" style="justify-content:space-between"><div><b>'+tr('m_adminView')+'</b> <span class="badge">'+(S.t.is_active===false?tr('m_pagePaused'):tr('m_pageLive'))+'</span></div><div class="row"><button type="button" class="chip" onclick="adminToggleTeacher(\''+S.t.id+'\','+(S.t.is_active===false)+')">'+tr(S.t.is_active===false?'m_activate':'m_deactivate')+'</button><button type="button" class="chip" onclick="S.tab=\'admin\';nav(null)">'+tr('m_backAdmin')+'</button></div></div></div>';
