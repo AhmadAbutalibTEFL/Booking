@@ -503,7 +503,25 @@ function renderPanel(){
   if(!S.bellOpen||!S.user){P.innerHTML='';return}
   P.innerHTML='<div class="npanel" role="dialog" aria-label="'+tr('nav_notif')+'"><div class="row" style="justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)"><b>'+tr('nav_notif')+'</b><span class="row" style="gap:6px"><button type="button" class="chip" onclick="markAllRead()"'+(S.unread?'':' disabled')+'>'+tr('n_markAll')+'</button><button type="button" class="chip" onclick="S.bellOpen=false;S.tab=\'notif\';if(S.slug)nav(null);render()">'+tr('n_viewAll')+'</button></span></div>'
    +(S.notifs.length?S.notifs.slice(0,8).map(notifItem).join(''):'<p class="mut" style="padding:18px;text-align:center">'+tr('n_empty')+'</p>')+'</div>';
+  positionPanel();
 }
+// anchor the panel under the bell, clamped to the viewport (RTL-aware)
+function npPos(r,vw,vh,rtl){
+  const m=12, w=Math.min(380,vw-2*m);
+  let left=rtl?r.left:r.right-w;
+  left=Math.max(m,Math.min(left,vw-m-w));
+  const top=Math.max(8,Math.min(r.bottom+8,vh-172));
+  return {left,top,width:w,maxH:Math.max(160,vh-top-m)};
+}
+function positionPanel(){
+  const el=document.querySelector('.npanel'), bell=document.querySelector('.bell');
+  if(!el||!bell) return;
+  const q=npPos(bell.getBoundingClientRect(),window.innerWidth,window.innerHeight,document.documentElement.dir==='rtl');
+  el.style.insetInlineEnd='auto'; el.style.right='auto';
+  el.style.left=q.left+'px'; el.style.top=q.top+'px'; el.style.width=q.width+'px'; el.style.maxHeight=q.maxH+'px';
+}
+window.addEventListener('resize',()=>{if(S.bellOpen)positionPanel()});
+window.addEventListener('scroll',()=>{if(S.bellOpen)positionPanel()},{passive:true});
 function tabNotif(){
   const can=window.Notification, perm=can?Notification.permission:'unsupported', f=S.nFilter||'all', list=S.notifs.filter(n=>f==='all'||!n.read_at);
   return flashHtml()+'<div class="card"><div class="calnav"><h2>'+tr('nav_notif')+'</h2><div class="row"><button type="button" class="chip'+(f==='all'?' on':'')+'" onclick="S.nFilter=\'all\';render()">'+tr('n_all')+'</button><button type="button" class="chip'+(f==='unread'?' on':'')+'" onclick="S.nFilter=\'unread\';render()">'+tr('n_unread')+(S.unread?' ('+S.unread+')':'')+'</button><button type="button" class="chip" onclick="markAllRead()"'+(S.unread?'':' disabled')+'>'+tr('n_markAll')+'</button></div></div>'
