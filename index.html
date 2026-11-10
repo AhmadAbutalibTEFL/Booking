@@ -147,7 +147,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .side-i .ic{font-size:18px;width:24px;text-align:center;flex:none}.side.col .lb{display:none}.side.col .side-i{justify-content:center;padding:10px 0}
 .dot{background:#ef4444;color:#fff;border-radius:99px;font-size:11px;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 5px;font-weight:700;display:inline-block}.dot[hidden]{display:none}
 .side-i .dot{margin-inline-start:auto}.side.col .dot{position:absolute;top:2px;inset-inline-end:4px;margin:0}
-.main{flex:1;min-width:0}.sidebk{display:none}.burger{display:none}
+.main{flex:1;min-width:0}.sidebk{display:none}.burger{display:none}.side-hd{display:none}
 .bell{position:relative}.bell .dot{position:absolute;top:-6px;inset-inline-end:-6px}
 .npanel{position:fixed;top:62px;inset-inline-end:12px;width:380px;max-width:calc(100vw - 24px);max-height:72vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.28);z-index:1800}
 .ni{display:flex;gap:10px;width:100%;padding:11px 12px;border:0;border-bottom:1px solid var(--line);background:transparent;text-align:start;font:inherit;font-size:14px;color:inherit;cursor:pointer;border-radius:0}
@@ -165,7 +165,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .tt2 .tt2-b.short{background:#2f80ed;border-color:#1f6bd6}.tt2 .tt2-b.dim{opacity:.22}.tt2 .tt2-b.hit{outline:3px solid #f59e0b;z-index:2}
 .tt2-now{position:absolute;inset-inline:0;height:2px;background:#ef4444;z-index:3;pointer-events:none}
 .tt2-legend .tt2-c{position:static;border:1px solid;border-radius:4px;padding:0}.tt2-legend .tt2-c.available{background:rgba(34,197,94,.17);border-color:rgba(34,197,94,.5)}.tt2-legend .tt2-c.jit{background:rgba(245,158,11,.28);border-color:#f59e0b}.tt2-legend .tt2-c.closed{background:rgba(128,132,160,.24);border:1px dashed #8a8fa8}.tt2-legend .tt2-b.short{background:#2f80ed;border-color:#1f6bd6}
-@media(max-width:820px){.burger{display:inline-block}.shell{display:block}.side{position:fixed;top:0;bottom:0;inset-inline-start:0;width:260px;border-radius:0;transform:translateX(-105%);transition:transform .2s;z-index:1500;overflow:auto;padding-top:12px}[dir=rtl] .side{transform:translateX(105%)}.side.open{transform:none!important}.side.col{width:260px}.side.col .lb{display:inline}.side.col .side-i{justify-content:flex-start;padding:10px}.side-tg{display:none}.sidebk.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1400}.npanel{top:56px}}
+@media(max-width:820px){.burger{display:inline-block}.shell{display:block}.side{position:fixed;top:0;bottom:0;inset-inline-start:0;width:260px;border-radius:0;transform:translateX(-105%);transition:transform .25s ease,visibility 0s .25s;visibility:hidden;overscroll-behavior:contain;border-inline-end:1px solid var(--line);z-index:1500;overflow:auto;padding-top:12px}[dir=rtl] .side{transform:translateX(105%)}.side.open{transform:none!important;visibility:visible;transition-delay:0s;box-shadow:0 0 40px rgba(0,0,0,.4)}.side.col{width:260px}.side.col .lb{display:inline}.side.col .side-i{justify-content:flex-start;padding:10px}.side-tg{display:none}.sidebk{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1400;opacity:0;pointer-events:none;transition:opacity .25s}.sidebk.show{opacity:1;pointer-events:auto}body.nav-lock{overflow:hidden}.side-hd{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 10px;margin-bottom:6px;border-bottom:1px solid var(--line)}.side-hd b{font-size:17px;color:var(--pri)}.side-x{width:36px;height:36px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--ink);font-size:18px;cursor:pointer;box-shadow:none}.side-x:hover{background:rgba(91,91,240,.1)}.npanel{top:56px}}
 @media print{.bar,.side,.seg,.chip,.btn,.calnav,.ttsearch,.site-footer,#panelRoot,.tt2-legend{display:none!important}.tt2-wrap{max-height:none;overflow:visible}}
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -239,6 +239,7 @@ const T = {
   cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a lesson on BookMyClass:',
   mine:'Your upcoming lessons',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this lesson?',late:'It’s too late to change this lesson online. Please message the teacher.',
   limit:'You’ve reached the limit of 5 upcoming lessons.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
+  nav_close:'Close menu',
   sd_tz:'Times are shown in your timezone ({z}).',sd_rules:'You can change or cancel a lesson here. If it is too late to change it online, you will be asked to message your teacher.',sd_next:'Next lesson',sd_past:'Past & cancelled lessons',sd_pastEmpty:'No past lessons yet.',sd_pastErr:'Couldn’t load your lesson history right now. Please try again later.',sd_more:'Show more',sd_less:'Show less',sd_confirmed:'Confirmed',sd_completed:'Completed',sd_cancelled:'Cancelled',
   homeTitle:'Book a new lesson',homeHint:'Open the booking link your teacher shared with you to view their schedule.',noSessions:'You have no upcoming lessons scheduled yet.',
   imTeacher:'I’m a teacher — set up my account',goHome:'My lessons',goDash:'Dashboard',
@@ -296,6 +297,7 @@ const T = {
   cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت حصة عبر BookMyClass:',
   mine:'حصصك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الحصة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
   limit:'وصلت للحد الأقصى: 5 حصص قادمة.',changing:'تغيير موعد حصة',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
+  nav_close:'إغلاق القائمة',
   sd_tz:'تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sd_rules:'يمكنك تغيير الحصة أو إلغاءها من هنا. إذا فات وقت التعديل عبر الموقع، فسيُطلب منك مراسلة المعلم.',sd_next:'الحصة القادمة',sd_past:'الحصص السابقة والملغاة',sd_pastEmpty:'لا توجد حصص سابقة بعد.',sd_pastErr:'تعذّر تحميل سجل حصصك حاليًا. يرجى المحاولة لاحقًا.',sd_more:'عرض المزيد',sd_less:'عرض أقل',sd_confirmed:'مؤكدة',sd_completed:'مكتملة',sd_cancelled:'ملغاة',
   homeTitle:'احجز حصة جديدة',homeHint:'افتح رابط الحجز الذي شاركه معك المعلم لعرض جدوله.',noSessions:'ليس لديك حصص قادمة مجدولة حاليًا.',
   imTeacher:'أنا معلم — إعداد حسابي',goHome:'حصصي',goDash:'لوحة التحكم',
@@ -446,7 +448,7 @@ function statsCard(){
   return '<div class="card"><h2>'+tr('tMe')+'</h2><div class="rw-stats">'+[[x.attended,'r_sAttended'],[x.no_shows,'r_sNoShow'],[x.upcoming,'r_sUpcoming'],[x.students,'r_sStudents']].map(([n,k])=>'<div><b>'+(n||0)+'</b><small>'+tr(k)+'</small></div>').join('')+'</div></div>';
 }
 function tabMe(){return flashHtml()+statsCard()+rewardsCard()}
-const NAV={link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites']};
+const NAV={link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings']};
 function notifWhen(iso){return iso?new Date(iso).toLocaleString(loc(),{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit',timeZone:S.me&&S.me.teacher?S.me.teacher.timezone:undefined}):''}
 function notifText(n){
   const d=n.data||{}, f=(k)=>tr(k).replace('{s}',d.student_name||'').replace('{w}',notifWhen(d.starts_at)).replace('{a}',d.actor_name||tr('n_someone')).replace('{c}',(d.changes||[]).map(c=>tr('n_ch_'+c)).join(', '));
@@ -529,6 +531,14 @@ function tabNotif(){
    +(list.length?'<div class="nlist">'+list.map(notifItem).join('')+'</div>':'<p class="mut" style="text-align:center;padding:24px">'+tr(f==='unread'?'n_noUnread':'n_empty')+'</p>')
    +(can&&perm!=='granted'&&perm!=='denied'?'<p><button type="button" class="btn g" style="width:auto" onclick="Notification.requestPermission().then(()=>render())">🔔 '+tr('n_desktop')+'</button></p>':'')
    +(perm==='granted'?'<p class="mut">✔ '+tr('n_desktopOn')+'</p>':'')+'<p class="mut" style="font-size:12px">'+tr('n_note')+'</p></div>';
+}
+function setNav(o){
+  S.navOpen=!!o;
+  const sd=document.querySelector('.side'), bk=document.querySelector('.sidebk'), bg=document.querySelector('.burger');
+  if(sd) sd.classList.toggle('open',S.navOpen); if(bk) bk.classList.toggle('show',S.navOpen);
+  document.body.classList.toggle('nav-lock',S.navOpen);
+  if(bg){bg.setAttribute('aria-expanded',String(S.navOpen)); if(!S.navOpen) bg.focus()}
+  if(S.navOpen){const x=document.querySelector('.side-x'); if(x) x.focus()}
 }
 function toggleNav(){ls.set('navCollapsed',ls.get('navCollapsed')==='1'?'0':'1'); render()}
 function icsEscape(t){return String(t||'').replace(/\\/g,'\\\\').replace(/\n/g,'\\n').replace(/,/g,'\\,').replace(/;/g,'\\;')}
@@ -1344,15 +1354,22 @@ function adminDashboard(){
 function viewDash(){
   const isT=!!S.me.teacher, isA=S.me.role==='admin';
   let tabs=isT?['link','calendar','bk','hours','types','notif','me','mine','prof']:[];
+  if(!isT&&!isA) tabs=['mine','notif','me','acct'];
   if(isA) tabs=isT?tabs.concat(['inv','admin']):['admin','notif','me','mine','inv'];
   if(!tabs.includes(S.tab)) S.tab=tabs[0];
   const col=ls.get('navCollapsed')==='1', rtl=lang==='ar';
-  const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
+  const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><div class="side-hd"><b>BookMyClass</b><button type="button" class="side-x" onclick="setNav(false)" aria-label="'+tr('nav_close')+'">✕</button></div><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
     +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'</nav>';
-  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:tabMe,mine:tabMine,prof:tabProfile,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
-  return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="S.navOpen=false;render()"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+content+'</section></div>';
+  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="setNav(false)"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+content+'</section></div>';
 }
 function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')+pastCard(false)}
+function tabStudent(){
+  let h=flashHtml()+minesCard();
+  h+='<div class="card ok"><div class="big">🔗</div><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut">'+tr('homeHint')+'</p>'+(S.mine.length?'':'<p class="mut">'+tr('noSessions')+'</p>')+'</div>';
+  return h+pastCard(true);
+}
+function tabAcct(){return flashHtml()+acctCard()+'<div class="card"><button class="btn g" onclick="S.reg=true;S.err=\'\';render()">'+tr('imTeacher')+'</button></div>'}
 function adminBanner(){
   if(!S.me||S.me.role!=='admin'||!S.t) return '';
   return '<div class="card" style="border:2px dashed var(--pri)"><div class="row" style="justify-content:space-between"><div><b>'+tr('m_adminView')+'</b> <span class="badge">'+(S.t.is_active===false?tr('m_pagePaused'):tr('m_pageLive'))+'</span></div><div class="row"><button type="button" class="chip" onclick="adminToggleTeacher(\''+S.t.id+'\','+(S.t.is_active===false)+')">'+tr(S.t.is_active===false?'m_activate':'m_deactivate')+'</button><button type="button" class="chip" onclick="S.tab=\'admin\';nav(null)">'+tr('m_backAdmin')+'</button></div></div></div>';
@@ -1452,7 +1469,7 @@ function render(){
   if(S.user&&S.slug) b+='<button onclick="nav(null)">'+tr(S.me&&S.me.teacher?'goDash':'goHome')+'</button> ';
   b+='<button onclick="S.user?signOut():signIn()">'+tr(S.user?'out':'in')+'</button>';
   if(S.user&&S.me){b='<button type="button" class="bell" aria-label="'+tr('nav_notif')+'" onclick="toggleBell()" aria-expanded="'+!!S.bellOpen+'">🔔<span class="dot" id="bellDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span></button> '+b;}
-  if(S.user&&S.me&&!S.slug&&(S.me.teacher||S.me.role==='admin')&&!S.reg) b='<button type="button" class="burger" aria-label="'+tr('nav_main')+'" onclick="S.navOpen=!S.navOpen;render()">☰</button> '+b;
+  if(S.user&&S.me&&!S.slug&&!S.reg) b='<button type="button" class="burger" aria-label="'+tr('nav_main')+'" aria-expanded="'+!!S.navOpen+'" onclick="setNav(!S.navOpen)">☰</button> '+b;
   $('#btns').innerHTML=b;
   const languageToggle=$('#languageToggle'); if(languageToggle) languageToggle.addEventListener('click',()=>setLang(lang==='ar'?'en':'ar'));
   $('#footNote').textContent=tr('footNote');
@@ -1460,7 +1477,8 @@ function render(){
   $('#footTerms').textContent=tr('footTerms');
 
   const dash=!S.slug&&S.user&&S.me&&(S.me.teacher||S.me.role==='admin')&&!S.reg;
-  A.className = dash ? 'wide' : '';
+  const isStud=!S.slug&&S.user&&S.me&&!dash&&!S.reg;
+  A.className = (dash||isStud) ? 'wide' : '';
   $('#h1').textContent = S.slug&&S.t ? tr('bookWith')+' '+S.t.display_name : dash ? tr('dashTitle') : tr('title');
   $('#sub').textContent = S.slug ? '' : dash ? (S.me.teacher?S.me.teacher.display_name:tr('tAdmin')) : tr('sub');
   if(SB_KEY.startsWith('PASTE')){A.innerHTML='<div class="card err">'+tr('cfg')+'</div>';return}
@@ -1468,10 +1486,10 @@ function render(){
   A.innerHTML = S.slug ? viewBook()
     : !S.user ? viewLanding()
     : !S.me ? '<div class="card mut">…</div>'
-    : dash ? viewDash()
+    : (dash||isStud) ? viewDash()
     : viewHome();
-  renderModal(); renderPanel(); updateBadges(); applyTtSearch();
-  document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':dash&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); document.body.classList.toggle('nav-lock',!!S.navOpen);
+  document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':(dash||isStud)&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
 }
 
 async function init(){
@@ -1517,7 +1535,7 @@ window.addEventListener('online',()=>{const d=document.getElementById('offBar');
 document.addEventListener('click',e=>{if(S.bellOpen&&!e.target.closest('.npanel,.bell')){S.bellOpen=false;render()}});
 const _signOut=signOut; signOut=async function(){stopNotifs();S.rw=null;S.rwErr=false;S.rwShown=null;S.tstats=null;S.pastKey=null;S.past=[];return _signOut.apply(this,arguments)};
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){if(S.modal)closeModal(); else if(S.bellOpen){S.bellOpen=false;render()} else if(S.navOpen){S.navOpen=false;render()}}
+  if(e.key==='Escape'){if(S.modal)closeModal(); else if(S.bellOpen){S.bellOpen=false;render()} else if(S.navOpen){setNav(false)}}
   if(e.key==='Tab'&&S.modal){const f=[...document.querySelectorAll('#modalRoot input,#modalRoot select,#modalRoot textarea,#modalRoot button:not([disabled]),#modalRoot a[href]')]; if(f.length){const a=document.activeElement,i=f.indexOf(a); if(e.shiftKey&&(i<=0)){e.preventDefault();f[f.length-1].focus()} else if(!e.shiftKey&&(i===f.length-1||i<0)){e.preventDefault();f[0].focus()}}}
 });
 render(); init();
