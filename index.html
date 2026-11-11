@@ -115,7 +115,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 @media(max-width:640px){.tt2{min-width:660px}.tt2-wrap{max-height:70vh}}
 .seg{display:inline-flex;gap:2px;background:rgba(255,255,255,.18);border-radius:20px;padding:2px}.bar .seg button{padding:5px 9px;background:transparent;font-size:14px}.bar .seg button[aria-pressed=true]{background:rgba(255,255,255,.38)}.btn.d:disabled{opacity:.5;cursor:not-allowed}
 .rw-av{display:inline-flex;align-items:center;justify-content:center;width:var(--s);height:var(--s);font-size:calc(var(--s)*.55);border-radius:50%;background:var(--bg);border:3px solid var(--line);flex:none}
-.rw-av.fr_gold{border-color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.35),0 0 18px rgba(245,197,66,.6)}
+.rw-av.fr_rank1{border-color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.45),0 0 22px rgba(245,197,66,.8)}.rw-av.fr_rank3{border-color:#c0c6d4;box-shadow:0 0 0 3px rgba(192,198,212,.4),0 0 16px rgba(192,198,212,.7)}.rw-av.fr_rank10{border-color:#cd7f32;box-shadow:0 0 0 3px rgba(205,127,50,.35),0 0 12px rgba(205,127,50,.55)}.lb-n{display:inline-block;min-width:34px;font-weight:800;font-variant-numeric:tabular-nums}.rw-av.fr_gold{border-color:#f5c542;box-shadow:0 0 0 3px rgba(245,197,66,.35),0 0 18px rgba(245,197,66,.6)}
 .rw-av.fr_rainbow{border:3px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,conic-gradient(red,orange,yellow,green,cyan,blue,violet,red) border-box}
 .rw-av.fr_neon{border-color:#b388ff;box-shadow:0 0 0 2px #b388ff,0 0 20px #7c4dff,inset 0 0 12px rgba(124,77,255,.5);animation:glow 2s ease-in-out infinite alternate}
 @keyframes glow{to{box-shadow:0 0 0 2px #e0c3ff,0 0 32px #b388ff,inset 0 0 16px rgba(179,136,255,.7)}}
@@ -239,6 +239,7 @@ const T = {
   cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a lesson on BookMyClass:',
   mine:'Your upcoming lessons',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this lesson?',late:'It’s too late to change this lesson online. Please message the teacher.',
   limit:'You’ve reached the limit of 5 upcoming lessons.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
+  nav_rank:'Leaderboard',lb_title:'Teacher leaderboard',lb_month:'This month',lb_all:'All time',lb_you:'You',lb_rank:'Your rank',lb_of:'of {n} ranked teachers',lb_score:'pts',lb_lessons:'lessons',lb_rules:'10 points for each attended lesson (up to 8 lessons per day count). Only visible to teachers. Frames for your avatar: #1 gold, top 3 silver, top 10 bronze, based on this month.',lb_show:'Show me on the leaderboard',lb_hidden:'You are hidden from the leaderboard, so others cannot see you and no rank frame is applied.',lb_none:'No ranked teachers yet. Points start after lessons are marked as attended.',lb_unranked:'You have no points yet this period.',lb_setup:'The leaderboard is not set up on the server yet. Run the leaderboard migration in Supabase, then reload.',
   ttm_hint:'Tip: drag a lesson onto a free green slot to move it. On a phone, tap a lesson, then Reschedule.',ttm_title:'Move this lesson?',ttm_from:'From',ttm_to:'To',ttm_sub:'Availability and booking rules are re-checked before anything is saved.',ttm_btn:'Move lesson',
   nav_close:'Close menu',
   sd_tz:'Times are shown in your timezone ({z}).',sd_rules:'You can change or cancel a lesson here. If it is too late to change it online, you will be asked to message your teacher.',sd_next:'Next lesson',sd_past:'Past & cancelled lessons',sd_pastEmpty:'No past lessons yet.',sd_pastErr:'Couldn’t load your lesson history right now. Please try again later.',sd_more:'Show more',sd_less:'Show less',sd_confirmed:'Confirmed',sd_completed:'Completed',sd_cancelled:'Cancelled',
@@ -298,6 +299,7 @@ const T = {
   cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت حصة عبر BookMyClass:',
   mine:'حصصك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الحصة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
   limit:'وصلت للحد الأقصى: 5 حصص قادمة.',changing:'تغيير موعد حصة',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
+  nav_rank:'لوحة الصدارة',lb_title:'لوحة صدارة المعلمين',lb_month:'هذا الشهر',lb_all:'كل الوقت',lb_you:'أنت',lb_rank:'ترتيبك',lb_of:'من {n} معلمًا مصنفًا',lb_score:'نقطة',lb_lessons:'حصص',lb_rules:'10 نقاط لكل حصة حضرها الطالب (يُحتسب حتى 8 حصص يوميًا). تظهر للمعلمين فقط. إطارات صورتك: المركز الأول ذهبي، أول 3 فضي، أول 10 برونزي، حسب هذا الشهر.',lb_show:'أظهرني في لوحة الصدارة',lb_hidden:'أنت مخفي من لوحة الصدارة، فلا يراك الآخرون ولا يُطبَّق إطار الترتيب.',lb_none:'لا يوجد معلمون مصنفون بعد. تبدأ النقاط بعد تسجيل حضور الحصص.',lb_unranked:'ليس لديك نقاط في هذه الفترة بعد.',lb_setup:'لوحة الصدارة غير مفعّلة على الخادم بعد. شغّل ملف الترحيل في Supabase ثم أعد تحميل الصفحة.',
   ttm_hint:'نصيحة: اسحب الحصة إلى فترة خضراء فارغة لنقلها. على الجوال: اضغط الحصة ثم «إعادة الجدولة».',ttm_title:'نقل هذه الحصة؟',ttm_from:'من',ttm_to:'إلى',ttm_sub:'سيُعاد التحقق من التوفر وقواعد الحجز قبل الحفظ.',ttm_btn:'نقل الحصة',
   nav_close:'إغلاق القائمة',
   sd_tz:'تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sd_rules:'يمكنك تغيير الحصة أو إلغاءها من هنا. إذا فات وقت التعديل عبر الموقع، فسيُطلب منك مراسلة المعلم.',sd_next:'الحصة القادمة',sd_past:'الحصص السابقة والملغاة',sd_pastEmpty:'لا توجد حصص سابقة بعد.',sd_pastErr:'تعذّر تحميل سجل حصصك حاليًا. يرجى المحاولة لاحقًا.',sd_more:'عرض المزيد',sd_less:'عرض أقل',sd_confirmed:'مؤكدة',sd_completed:'مكتملة',sd_cancelled:'ملغاة',
@@ -387,7 +389,7 @@ async function loadRewards(){
 function itemName(i){return lang==='ar'?i.name_ar:i.name}
 function avatarHtml(p,size){
   const items=(S.rw&&S.rw.items)||[], av=items.find(i=>i.id===(p&&p.avatar))||items.find(i=>i.id==='av_smile');
-  return '<span class="rw-av '+esc((p&&p.frame)||'')+'" style="--s:'+(size||64)+'px" aria-hidden="true">'+(av?av.emoji:'🙂')+'</span>';
+  return '<span class="rw-av '+esc((p&&p.frame)||(S.me&&S.me.teacher&&S.lbTier)||'')+'" style="--s:'+(size||64)+'px" aria-hidden="true">'+(av?av.emoji:'🙂')+'</span>';
 }
 function rewardsCard(){
   if(S.rwErr) return '';
@@ -426,6 +428,39 @@ async function equipItem(kind,id){
   if(error){flash(error.message,true);return}
   await loadRewards();
 }
+// ---- teacher leaderboard (private perk: rank + rank-earned avatar frames); server RPC is the authority ----
+const rankTier=r=>!r?'':r===1?'fr_rank1':r<=3?'fr_rank3':r<=10?'fr_rank10':'';
+async function loadLeaderboard(silent){
+  if(!S.me||!S.me.teacher||S.lbLoading) return; S.lbLoading=true;
+  const per=S.lbPeriod||'month';
+  const {data,error}=await sb.rpc('get_teacher_leaderboard',{p_period:per}); S.lbLoading=false;
+  if(error){S.lbErr=error.message||'error'; S.lb=null; if(!silent) render(); return}
+  S.lbErr=''; S.lb=data;
+  if(per==='month') S.lbTier=data&&data.me&&data.me.visible!==false?rankTier(data.me.rank):'';
+  if(!silent||!S.modal) render();
+}
+function setLbPeriod(p){S.lbPeriod=p; S.lb=null; S.lbErr=''; loadLeaderboard()}
+async function setLbVisible(show){
+  const {error}=await sb.rpc('set_my_leaderboard_visibility',{p_show:!!show});
+  if(error){flash(error.message,true);return}
+  S.lbPeriod='month'; S.lb=null; S.lbTier=''; await loadLeaderboard();
+}
+function tabRank(){
+  if(S.lbErr) return flashHtml()+'<div class="card"><h2>🏅 '+tr('lb_title')+'</h2><p class="mut">'+tr('lb_setup')+'</p></div>';
+  if(!S.rw&&!S.rwLoading&&!S.rwErr) setTimeout(loadRewards,0);
+  if(!S.lb){ if(!S.lbLoading) setTimeout(()=>loadLeaderboard(),0); return flashHtml()+'<div class="card mut" role="status">'+tr('r_loading')+'</div>'; }
+  const d=S.lb, me=d.me||{}, per=S.lbPeriod||'month', rows=d.rows||[];
+  let h=flashHtml()+'<div class="card"><h2>🏅 '+tr('lb_title')+'</h2><div class="row" style="gap:8px;margin-bottom:10px">'
+    +'<button type="button" class="chip'+(per==='month'?' on':'')+'" onclick="setLbPeriod(\'month\')">'+tr('lb_month')+'</button>'
+    +'<button type="button" class="chip'+(per==='all'?' on':'')+'" onclick="setLbPeriod(\'all\')">'+tr('lb_all')+'</button></div>';
+  if(me.visible===false) h+='<p class="mut">'+tr('lb_hidden')+'</p>';
+  else if(me.rank) h+='<div class="row" style="align-items:center;gap:12px">'+avatarHtml(S.rw&&S.rw.profile,56)+'<div><b style="font-size:20px">#'+me.rank+'</b> <span class="mut">'+tr('lb_of').replace('{n}',d.total||rows.length)+'</span><br><span class="mut">'+me.score+' '+tr('lb_score')+' · '+me.lessons+' '+tr('lb_lessons')+'</span></div></div>';
+  else h+='<p class="mut">'+tr('lb_unranked')+'</p>';
+  h+='<label class="mut" style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:13px"><input type="checkbox" '+(me.visible!==false?'checked ':'')+'onchange="setLbVisible(this.checked)"> '+tr('lb_show')+'</label>'
+    +'<p class="mut" style="font-size:12px;margin:8px 0 0">'+tr('lb_rules')+'</p></div>';
+  h+='<div class="card">'+(rows.length?rows.map(r=>'<div class="bk"'+(r.is_me?' style="outline:2px solid var(--pri)"':'')+'><div style="display:flex;align-items:center;gap:10px"><span class="lb-n">#'+r.rank+'</span><span class="rw-av '+rankTier(per==='month'?r.rank:0)+'" style="--s:34px" aria-hidden="true">'+esc((r.name||'?').trim().charAt(0).toUpperCase())+'</span><b>'+esc(r.name||'')+'</b>'+(r.is_me?'<span class="badge">'+tr('lb_you')+'</span>':'')+'</div><div style="text-align:end"><b>'+r.score+'</b> <span class="mut">'+tr('lb_score')+'</span><br><small class="mut">'+r.lessons+' '+tr('lb_lessons')+'</small></div></div>').join(''):'<p class="mut">'+tr('lb_none')+'</p>')+'</div>';
+  return h;
+}
 async function loadPast(){
   if(S.pastLoading||!S.me||!S.me.teacher) return; S.pastLoading=true; const now=Date.now();
   const {data}=await sb.from('bookings').select('id,student_name,starts_at,booker_id').eq('teacher_id',S.me.teacher.id).eq('status','confirmed').is('attendance',null)
@@ -450,7 +485,7 @@ function statsCard(){
   return '<div class="card"><h2>'+tr('tMe')+'</h2><div class="rw-stats">'+[[x.attended,'r_sAttended'],[x.no_shows,'r_sNoShow'],[x.upcoming,'r_sUpcoming'],[x.students,'r_sStudents']].map(([n,k])=>'<div><b>'+(n||0)+'</b><small>'+tr(k)+'</small></div>').join('')+'</div></div>';
 }
 function tabMe(){return flashHtml()+statsCard()+rewardsCard()}
-const NAV={link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings']};
+const NAV={link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings'],rank:['🏅','nav_rank']};
 function notifWhen(iso){return iso?new Date(iso).toLocaleString(loc(),{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit',timeZone:S.me&&S.me.teacher?S.me.teacher.timezone:undefined}):''}
 function notifText(n){
   const d=n.data||{}, f=(k)=>tr(k).replace('{s}',d.student_name||'').replace('{w}',notifWhen(d.starts_at)).replace('{a}',d.actor_name||tr('n_someone')).replace('{c}',(d.changes||[]).map(c=>tr('n_ch_'+c)).join(', '));
@@ -633,7 +668,7 @@ async function loadMe(){
     sb.rpc('get_my_teacher')]);
   if(p.data&&p.data.deleted_at){try{await sb.rpc('restore_my_profile')}catch(e){}}
   S.me = {role:(p.data&&p.data.role)||'student', teacher:(t.data&&t.data[0])||null};
-  if(S.me.teacher) await loadDash();
+  if(S.me.teacher){ await loadDash(); loadLeaderboard(true); }
 }
 async function loadDash(){
   S.ttKey=null; S.pastKey=null; S.tstats=null;
@@ -1374,14 +1409,14 @@ function adminDashboard(){
 
 function viewDash(){
   const isT=!!S.me.teacher, isA=S.me.role==='admin';
-  let tabs=isT?['link','calendar','bk','hours','types','notif','me','mine','prof']:[];
+  let tabs=isT?['link','calendar','bk','hours','types','notif','me','rank','mine','prof']:[];
   if(!isT&&!isA) tabs=['mine','notif','me','acct'];
   if(isA) tabs=isT?tabs.concat(['inv','admin']):['admin','notif','me','mine','inv'];
   if(!tabs.includes(S.tab)) S.tab=tabs[0];
   const col=ls.get('navCollapsed')==='1', rtl=lang==='ar';
   const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><div class="side-hd"><b>BookMyClass</b><button type="button" class="side-x" onclick="setNav(false)" aria-label="'+tr('nav_close')+'">✕</button></div><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
     +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'</nav>';
-  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="setNav(false)"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+content+'</section></div>';
 }
 function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')+pastCard(false)}
