@@ -162,7 +162,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .tt2 .tt2-c{position:absolute;inset-inline:2px;width:auto;margin:0;box-sizing:border-box;border-radius:6px;border:1px solid rgba(34,197,94,.5);background:rgba(34,197,94,.17);cursor:pointer;font:inherit;font-size:11px;color:var(--mut);padding:0 6px;text-align:start;overflow:hidden;line-height:1.2}
 .tt2 .tt2-c:hover:not(:disabled){background:rgba(34,197,94,.32)}.tt2 .tt2-c.jit{background:rgba(245,158,11,.28);border-color:#f59e0b}.tt2 .tt2-c.closed{background:rgba(128,132,160,.24);border:1px dashed #8a8fa8}.tt2 .tt2-c.past{opacity:.45;cursor:default}
 .tt2 .tt2-c.jit::after,.tt2 .tt2-c.closed::after{content:"";position:absolute;top:0;inset-inline-start:0;border-style:solid;border-width:9px 9px 0 0;border-color:#f59e0b transparent transparent transparent}.tt2 .tt2-c.closed::after{border-top-color:#ef4444}
-.tt2 .tt2-b.short{background:#2f80ed;border-color:#1f6bd6}.tt2 .tt2-b.dim{opacity:.22}.tt2 .tt2-b.hit{outline:3px solid #f59e0b;z-index:2}
+.tt2 .tt2-b[draggable=true]{cursor:grab}.tt2 .tt2-b.dragging{opacity:.4}.tt2 .tt2-b:focus-visible{outline:2px solid #fff;outline-offset:-3px}.tt2.ttdrag .tt2-c:not(.past):not(.closed){outline:2px dashed rgba(91,91,240,.55);outline-offset:-2px}.tt2 .tt2-c.over{background:rgba(91,91,240,.35)!important;outline:2px solid var(--pri)!important}.tt-hint{font-size:12px;margin:6px 2px}.tt2 .tt2-b.short{background:#2f80ed;border-color:#1f6bd6}.tt2 .tt2-b.dim{opacity:.22}.tt2 .tt2-b.hit{outline:3px solid #f59e0b;z-index:2}
 .tt2-now{position:absolute;inset-inline:0;height:2px;background:#ef4444;z-index:3;pointer-events:none}
 .tt2-legend .tt2-c{position:static;border:1px solid;border-radius:4px;padding:0}.tt2-legend .tt2-c.available{background:rgba(34,197,94,.17);border-color:rgba(34,197,94,.5)}.tt2-legend .tt2-c.jit{background:rgba(245,158,11,.28);border-color:#f59e0b}.tt2-legend .tt2-c.closed{background:rgba(128,132,160,.24);border:1px dashed #8a8fa8}.tt2-legend .tt2-b.short{background:#2f80ed;border-color:#1f6bd6}
 @media(max-width:820px){.burger{display:inline-block}.shell{display:block}.side{position:fixed;top:0;bottom:0;inset-inline-start:0;width:260px;border-radius:0;transform:translateX(-105%);transition:transform .25s ease,visibility 0s .25s;visibility:hidden;overscroll-behavior:contain;border-inline-end:1px solid var(--line);z-index:1500;overflow:auto;padding-top:12px}[dir=rtl] .side{transform:translateX(105%)}.side.open{transform:none!important;visibility:visible;transition-delay:0s;box-shadow:0 0 40px rgba(0,0,0,.4)}.side.col{width:260px}.side.col .lb{display:inline}.side.col .side-i{justify-content:flex-start;padding:10px}.side-tg{display:none}.sidebk{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1400;opacity:0;pointer-events:none;transition:opacity .25s}.sidebk.show{opacity:1;pointer-events:auto}body.nav-lock{overflow:hidden}.side-hd{display:flex;align-items:center;justify-content:space-between;padding:2px 4px 10px;margin-bottom:6px;border-bottom:1px solid var(--line)}.side-hd b{font-size:17px;color:var(--pri)}.side-x{width:36px;height:36px;padding:0;border:0;border-radius:10px;background:transparent;color:var(--ink);font-size:18px;cursor:pointer;box-shadow:none}.side-x:hover{background:rgba(91,91,240,.1)}.npanel{top:56px}}
@@ -239,6 +239,7 @@ const T = {
   cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a lesson on BookMyClass:',
   mine:'Your upcoming lessons',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this lesson?',late:'It’s too late to change this lesson online. Please message the teacher.',
   limit:'You’ve reached the limit of 5 upcoming lessons.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
+  ttm_hint:'Tip: drag a lesson onto a free green slot to move it. On a phone, tap a lesson, then Reschedule.',ttm_title:'Move this lesson?',ttm_from:'From',ttm_to:'To',ttm_sub:'Availability and booking rules are re-checked before anything is saved.',ttm_btn:'Move lesson',
   nav_close:'Close menu',
   sd_tz:'Times are shown in your timezone ({z}).',sd_rules:'You can change or cancel a lesson here. If it is too late to change it online, you will be asked to message your teacher.',sd_next:'Next lesson',sd_past:'Past & cancelled lessons',sd_pastEmpty:'No past lessons yet.',sd_pastErr:'Couldn’t load your lesson history right now. Please try again later.',sd_more:'Show more',sd_less:'Show less',sd_confirmed:'Confirmed',sd_completed:'Completed',sd_cancelled:'Cancelled',
   homeTitle:'Book a new lesson',homeHint:'Open the booking link your teacher shared with you to view their schedule.',noSessions:'You have no upcoming lessons scheduled yet.',
@@ -297,6 +298,7 @@ const T = {
   cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت حصة عبر BookMyClass:',
   mine:'حصصك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الحصة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
   limit:'وصلت للحد الأقصى: 5 حصص قادمة.',changing:'تغيير موعد حصة',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
+  ttm_hint:'نصيحة: اسحب الحصة إلى فترة خضراء فارغة لنقلها. على الجوال: اضغط الحصة ثم «إعادة الجدولة».',ttm_title:'نقل هذه الحصة؟',ttm_from:'من',ttm_to:'إلى',ttm_sub:'سيُعاد التحقق من التوفر وقواعد الحجز قبل الحفظ.',ttm_btn:'نقل الحصة',
   nav_close:'إغلاق القائمة',
   sd_tz:'تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sd_rules:'يمكنك تغيير الحصة أو إلغاءها من هنا. إذا فات وقت التعديل عبر الموقع، فسيُطلب منك مراسلة المعلم.',sd_next:'الحصة القادمة',sd_past:'الحصص السابقة والملغاة',sd_pastEmpty:'لا توجد حصص سابقة بعد.',sd_pastErr:'تعذّر تحميل سجل حصصك حاليًا. يرجى المحاولة لاحقًا.',sd_more:'عرض المزيد',sd_less:'عرض أقل',sd_confirmed:'مؤكدة',sd_completed:'مكتملة',sd_cancelled:'ملغاة',
   homeTitle:'احجز حصة جديدة',homeHint:'افتح رابط الحجز الذي شاركه معك المعلم لعرض جدوله.',noSessions:'ليس لديك حصص قادمة مجدولة حاليًا.',
@@ -867,6 +869,25 @@ async function stopResched(){
   if(wasTeacher){ S.slug=null; await loadDash(); render(); }
   else { await nav(f); }
 }
+// ---- drag-and-drop rescheduling (teacher calendar). reschedule_booking stays the authority: it re-validates everything.
+let ttDragId=null;
+const ttCell=e=>{const c=ttDragId&&e.target.closest&&e.target.closest('.tt2-c[data-s]'); return c&&!c.disabled&&!c.classList.contains('closed')?c:null};
+document.addEventListener('dragstart',e=>{const b=e.target.closest&&e.target.closest('.tt2-b[draggable=true]'); if(!b) return; ttDragId=b.dataset.id; if(e.dataTransfer){e.dataTransfer.effectAllowed='move'; try{e.dataTransfer.setData('text/plain',ttDragId)}catch(_){}} b.classList.add('dragging'); const g=document.querySelector('.tt2'); if(g) g.classList.add('ttdrag')});
+document.addEventListener('dragend',()=>{ttDragId=null; document.querySelectorAll('.tt2-b.dragging,.tt2-c.over').forEach(x=>x.classList.remove('dragging','over')); const g=document.querySelector('.tt2'); if(g) g.classList.remove('ttdrag')});
+document.addEventListener('dragover',e=>{const c=ttCell(e); document.querySelectorAll('.tt2-c.over').forEach(x=>{if(x!==c) x.classList.remove('over')}); if(c){e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='move'; c.classList.add('over')}});
+document.addEventListener('drop',e=>{const c=ttCell(e); if(!c) return; e.preventDefault(); const id=ttDragId; ttDragId=null; ttAskMove(id,c.dataset.s)});
+function ttAskMove(id,iso){
+  const b=allBk().find(x=>x.id===id); if(!b||Date.parse(iso)===Date.parse(b.starts_at)) return;
+  S.modal={type:'ttmove',booking:b,to:iso}; render();
+}
+async function ttMoveDo(scope){
+  const m=S.modal; if(!m||m.type!=='ttmove') return; const b=m.booking;
+  S.modal=null; render();
+  const {error}=await sb.rpc('reschedule_booking',{p_booking:b.id,p_starts:new Date(m.to).toISOString(),p_scope:scope});
+  await loadDash();   // refresh from the server either way, so a failed move shows the booking back in its original place
+  if(error){const em=(error.message||'').toLowerCase(); flash(tr(em.includes('too late')?'late':em.includes('too soon')?'tooSoon':'taken'),true); return}
+  flash(tr('saved'),false);
+}
 async function doResched(){
   const scope=S.rsScope||'single';
   const wasTeacher=S.rsAsTeacher;
@@ -1208,7 +1229,7 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
   let from=480,to=1200; if(mins.length){from=Math.floor(Math.min(...mins)/60)*60; to=Math.min(1440,Math.max(from+60,Math.ceil(Math.max(...mins)/60)*60));}
   const px=m=>(m-from)/30*H, hgt=(a,b)=>Math.max(22,(b-a)/30*H-2);
   const wd=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,weekday:'short'}), dn=d=>d.date.toLocaleDateString(loc(),{timeZone:tz,day:'numeric'});
-  let h='<div class="tt2-wrap"><div class="tt2" style="grid-template-columns:54px repeat(7,minmax(98px,1fr))"><div class="tt2-h tt2-t"></div>';
+  let h='<p class="mut tt-hint">'+tr('ttm_hint')+'</p><div class="tt2-wrap"><div class="tt2" style="grid-template-columns:54px repeat(7,minmax(98px,1fr))"><div class="tt2-h tt2-t"></div>';
   days.forEach(d=>h+='<div class="tt2-h'+(d.key===todayKey?' today':'')+'"><span class="dn">'+dn(d)+'</span><span class="dw">'+wd(d)+'</span></div>');
   h+='<div class="tt2-times" style="height:'+px(to)+'px">';
   for(let m=from;m<to;m+=30) h+='<span style="top:'+px(m)+'px">'+String(Math.floor(m/60)).padStart(2,'0')+':'+(m%60?'30':'00')+'</span>';
@@ -1220,11 +1241,11 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
       if(bks.some(x=>x.a<ce&&x.u>cs)) continue;
       const st=ov.some(o=>o.k==='closed'&&o.t>=cs&&o.t<ce)?'closed':ov.some(o=>o.k==='jit'&&o.t>=cs&&o.t<ce)?'jit':'available', past=ce<=now;
       const lab=wd(d)+' '+dn(d)+' '+fmt24(cs)+' – '+(st==='closed'?tr('m_lClosed'):st==='jit'?tr('m_lJit'):tr('m_lAvail'));
-      h+='<button type="button" class="tt2-c '+st+(past?' past':'')+'" style="top:'+px(m)+'px;height:'+(H-2)+'px" aria-label="'+esc(lab)+'"'+(past?' disabled':' onclick="openSlotMenu(\''+new Date(cs).toISOString()+'\',\''+st+'\')"')+'><span>'+fmt24(cs)+'</span></button>';
+      h+='<button type="button" class="tt2-c '+st+(past?' past':'')+'" data-s="'+new Date(cs).toISOString()+'" style="top:'+px(m)+'px;height:'+(H-2)+'px" aria-label="'+esc(lab)+'"'+(past?' disabled':' onclick="openSlotMenu(\''+new Date(cs).toISOString()+'\',\''+st+'\')"')+'><span>'+fmt24(cs)+'</span></button>';
     }});
     bks.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>{
       const t0=tzMin(x.a,tz), pr=parsePhone(x.b.contact_phone), long=(x.e-x.a)/6e4>30;
-      h+='<button type="button" class="tt2-b '+(long?'long':'short')+'" data-q="'+esc((x.b.student_name+' '+(x.b.contact_phone||'')).toLowerCase())+'" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(wd(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+(x.b.attendance==='attended'?' · ✔':x.b.attendance==='no_show'?' · ✖':'')+'</small></button>';
+      h+='<div role="button" tabindex="0" class="tt2-b '+(long?'long':'short')+'"'+(x.a>now?' draggable="true"':'')+' data-id="'+x.b.id+'" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}" data-q="'+esc((x.b.student_name+' '+(x.b.contact_phone||'')).toLowerCase())+'" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(wd(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+(x.b.attendance==='attended'?' · ✔':x.b.attendance==='no_show'?' · ✖':'')+'</small></div>';
     });
     if(d.key===todayKey&&tzMin(now,tz)>=from&&tzMin(now,tz)<to) h+='<div class="tt2-now" style="top:'+px(tzMin(now,tz))+'px"></div>';
     h+='</div>';
@@ -1420,6 +1441,9 @@ function renderModal(){
     const asT=m.asTeacher?'true':'false';
     h=wrap(tr('reschedModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('reschedModalSub')+'</p><div class="stack">'
       +bt('btn',"startResched('"+b.id+"','single',"+asT+")",tr('reschedOne'))+bt('btn g',"startResched('"+b.id+"','future',"+asT+")",tr('reschedFuture'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  } else if(m.type==='ttmove'){
+    h=wrap(tr('ttm_title'),'<p class="mut" style="margin:0"><b>'+esc(b.student_name)+'</b></p><p class="mut" style="margin:6px 0 0">'+tr('ttm_from')+': '+fFt(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:4px 0 0">'+tr('ttm_to')+': '+fFt(Date.parse(m.to))+'</p><p class="mut" style="margin:8px 0 0;font-size:13px">'+tr('ttm_sub')+'</p><div class="stack">'
+      +bt('btn',"ttMoveDo('single')",tr(b.series_id?'reschedOne':'ttm_btn'))+(b.series_id?bt('btn g',"ttMoveDo('future')",tr('reschedFuture')):'')+bt('chip','closeModal()',tr('back'))+'</div>');
   } else if(m.type==='slotMenu'){
     const ms=Date.parse(m.iso), st=m.state;
     h=wrap(fFt(ms),'<p class="mut" style="margin:0">'+(st==='closed'?tr('m_lClosed'):st==='jit'?tr('m_lJit'):tr('m_lAvail'))+'</p><p class="mut" style="margin:6px 0 0;font-size:13px">'+tr(st==='closed'?'m_closedHint':st==='jit'?'m_jitOnHint':'m_jitHint')+'</p><div class="stack">'
