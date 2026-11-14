@@ -5,7 +5,15 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://crtxvqamgksiigfpmxvg.supabase.co wss://crtxvqamgksiigfpmxvg.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#5b5bf0">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%235b5bf0%27/%3E%3Ctext x=%2750%27 y=%2770%27 font-size=%2762%27 text-anchor=%27middle%27%3E%F0%9F%93%85%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BookMyClass">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="BookMyClass connects students and parents with independent teachers to schedule one-off and weekly recurring lessons online.">
 <title>BookMyClass — Online Lesson Booking & Scheduling</title>
 <style>
@@ -155,7 +163,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .ni.unread{background:rgba(91,91,240,.1)}.ni:hover{background:rgba(91,91,240,.16)}.ni .u{width:8px;height:8px;border-radius:50%;background:var(--pri);margin-top:7px;flex:none}
 .nlist{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:10px}
 .skip{position:absolute;inset-inline-start:-9999px;top:0;background:#000;color:#fff;padding:8px 12px;z-index:3000}.skip:focus{inset-inline-start:8px}
-.offline{position:fixed;top:0;inset-inline:0;background:#b00020;color:#fff;text-align:center;padding:6px;z-index:3000;font-size:13px}
+.pwa-bar{position:fixed;inset-inline:12px;bottom:12px;max-width:460px;margin-inline:auto;z-index:2500;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 14px;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.25);font-size:14px}.pwa-bar .pwa-a{display:flex;gap:8px;margin-inline-start:auto}.offline{position:fixed;top:0;inset-inline:0;background:#b00020;color:#fff;text-align:center;padding:6px;z-index:3000;font-size:13px}
 .ttsearch{max-width:340px;width:100%}.datejump{width:auto;padding:6px 8px}
 .tt2-h{line-height:1.1}.tt2-h .dn{display:block;font-size:18px;font-weight:800}.tt2-h .dw{font-size:11px;color:var(--mut);font-weight:600}
 .tt2-h.today{box-shadow:inset 0 -3px 0 var(--pri);color:var(--pri)}
@@ -240,6 +248,7 @@ const T = {
   cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a lesson on BookMyClass:',
   mine:'Your upcoming lessons',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this lesson?',late:'It’s too late to change this lesson online. Please message the teacher.',
   limit:'You’ve reached the limit of 5 upcoming lessons.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
+  pwa_install:'Install BookMyClass for quick access and a full-screen app.',pwa_install_btn:'Install',pwa_later:'Not now',pwa_ios:'To install on iPhone or iPad: tap the Share button, then “Add to Home Screen”.',pwa_ok:'Got it',pwa_update:'A new version is available.',pwa_reload:'Reload',
   nav_sched:'My schedule',sc_hint:'Tap a lesson to see details, change it or cancel it. Times are shown in your timezone ({z}).',sc_up:'Upcoming',sc_past:'Past',sc_empty:'No lessons this week.',sc_week:'Week',
   nav_rank:'Leaderboard',lb_title:'Teacher leaderboard',lb_month:'This month',lb_all:'All time',lb_you:'You',lb_rank:'Your rank',lb_of:'of {n} ranked teachers',lb_score:'pts',lb_lessons:'lessons',lb_rules:'10 points for each attended lesson (up to 8 lessons per day count). Only visible to teachers. Frames for your avatar: #1 gold, top 3 silver, top 10 bronze, based on this month.',lb_show:'Show me on the leaderboard',lb_hidden:'You are hidden from the leaderboard, so others cannot see you and no rank frame is applied.',lb_none:'No ranked teachers yet. Points start after lessons are marked as attended.',lb_unranked:'You have no points yet this period.',lb_setup:'The leaderboard is not set up on the server yet. Run the leaderboard migration in Supabase, then reload.',
   ttm_hint:'Tip: drag a lesson onto a free green slot to move it. On a phone, tap a lesson, then Reschedule.',ttm_title:'Move this lesson?',ttm_from:'From',ttm_to:'To',ttm_sub:'Availability and booking rules are re-checked before anything is saved.',ttm_btn:'Move lesson',
@@ -301,6 +310,7 @@ const T = {
   cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت حصة عبر BookMyClass:',
   mine:'حصصك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الحصة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
   limit:'وصلت للحد الأقصى: 5 حصص قادمة.',changing:'تغيير موعد حصة',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
+  pwa_install:'ثبّت BookMyClass للوصول السريع وتجربة بملء الشاشة.',pwa_install_btn:'تثبيت',pwa_later:'ليس الآن',pwa_ios:'للتثبيت على آيفون أو آيباد: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».',pwa_ok:'حسنًا',pwa_update:'يتوفر إصدار جديد.',pwa_reload:'إعادة التحميل',
   nav_sched:'جدولي',sc_hint:'اضغط على حصة لعرض التفاصيل أو تغييرها أو إلغائها. تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sc_up:'قادمة',sc_past:'سابقة',sc_empty:'لا توجد حصص هذا الأسبوع.',sc_week:'الأسبوع',
   nav_rank:'لوحة الصدارة',lb_title:'لوحة صدارة المعلمين',lb_month:'هذا الشهر',lb_all:'كل الوقت',lb_you:'أنت',lb_rank:'ترتيبك',lb_of:'من {n} معلمًا مصنفًا',lb_score:'نقطة',lb_lessons:'حصص',lb_rules:'10 نقاط لكل حصة حضرها الطالب (يُحتسب حتى 8 حصص يوميًا). تظهر للمعلمين فقط. إطارات صورتك: المركز الأول ذهبي، أول 3 فضي، أول 10 برونزي، حسب هذا الشهر.',lb_show:'أظهرني في لوحة الصدارة',lb_hidden:'أنت مخفي من لوحة الصدارة، فلا يراك الآخرون ولا يُطبَّق إطار الترتيب.',lb_none:'لا يوجد معلمون مصنفون بعد. تبدأ النقاط بعد تسجيل حضور الحصص.',lb_unranked:'ليس لديك نقاط في هذه الفترة بعد.',lb_setup:'لوحة الصدارة غير مفعّلة على الخادم بعد. شغّل ملف الترحيل في Supabase ثم أعد تحميل الصفحة.',
   ttm_hint:'نصيحة: اسحب الحصة إلى فترة خضراء فارغة لنقلها. على الجوال: اضغط الحصة ثم «إعادة الجدولة».',ttm_title:'نقل هذه الحصة؟',ttm_from:'من',ttm_to:'إلى',ttm_sub:'سيُعاد التحقق من التوفر وقواعد الحجز قبل الحفظ.',ttm_btn:'نقل الحصة',
@@ -1588,7 +1598,7 @@ function render(){
     : !S.me ? '<div class="card mut">…</div>'
     : (dash||isStud) ? viewDash()
     : viewHome();
-  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); document.body.classList.toggle('nav-lock',!!S.navOpen);
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh();
   document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':(dash||isStud)&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
 }
 
@@ -1632,6 +1642,47 @@ const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments
 const _setTab=setTab; setTab=function(t){S.navOpen=false;S.bellOpen=false;return _setTab.apply(this,arguments)};
 window.addEventListener('offline',()=>{if(!document.getElementById('offBar')){const d=document.createElement('div');d.id='offBar';d.className='offline';d.setAttribute('role','alert');d.textContent=tr('m_offline');document.body.appendChild(d)}});
 window.addEventListener('online',()=>{const d=document.getElementById('offBar');if(d)d.remove()});
+// ---- PWA: install prompt, iOS guidance, safe service-worker updates. The worker never caches pages or API data. ----
+const PWA_KEY='bmc_pwa_dismissed', PWA_DELAY=10000;
+const pwaStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+const pwaIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let pwaEvt=null, pwaWaiting=null, pwaReloading=false;
+function pwaDismissed(){try{return Date.now()-(+localStorage.getItem(PWA_KEY)||0)<30*864e5}catch(e){return false}}
+function pwaBar(kind){
+  let b=document.getElementById('pwaBar'); if(!b){b=document.createElement('div'); b.id='pwaBar'; b.className='pwa-bar'; b.setAttribute('role','region'); document.body.appendChild(b)}
+  b._k=kind;
+  const t=kind==='update'?tr('pwa_update'):kind==='ios'?tr('pwa_ios'):tr('pwa_install');
+  const a=kind==='update'?'<button type="button" class="btn" onclick="pwaReload()">'+tr('pwa_reload')+'</button>'
+    :kind==='ios'?'<button type="button" class="chip" onclick="pwaDismiss()">'+tr('pwa_ok')+'</button>'
+    :'<button type="button" class="btn" onclick="pwaInstall()">'+tr('pwa_install_btn')+'</button><button type="button" class="chip" onclick="pwaDismiss()">'+tr('pwa_later')+'</button>';
+  b.setAttribute('aria-label','BookMyClass'); b.innerHTML='<span>'+t+'</span><span class="pwa-a">'+a+'</span>';
+}
+function pwaRemove(){const b=document.getElementById('pwaBar'); if(b) b.remove()}
+function pwaDismiss(){try{localStorage.setItem(PWA_KEY,String(Date.now()))}catch(e){} pwaRemove()}
+async function pwaInstall(){
+  if(!pwaEvt){pwaRemove();return}
+  const e=pwaEvt; pwaEvt=null; pwaRemove(); e.prompt();
+  try{const c=await e.userChoice; if(c&&c.outcome!=='accepted') pwaDismiss()}catch(_){}
+}
+function pwaMaybeShow(){
+  if(pwaStandalone()||pwaDismissed()||(document.getElementById('pwaBar')&&document.getElementById('pwaBar')._k==='update')) return;
+  if(pwaEvt) pwaBar('install'); else if(pwaIOS()) pwaBar('ios');
+}
+function pwaReload(){if(pwaWaiting) pwaWaiting.postMessage('SKIP_WAITING'); else location.reload()}
+function pwaRefresh(){const b=document.getElementById('pwaBar'); if(b&&b._k) pwaBar(b._k)}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault(); pwaEvt=e; setTimeout(pwaMaybeShow,PWA_DELAY)});
+window.addEventListener('appinstalled',()=>{pwaEvt=null; pwaDismiss()});
+if(pwaIOS()) setTimeout(pwaMaybeShow,PWA_DELAY);
+if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').then(reg=>{
+    const watch=w=>w&&w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){pwaWaiting=w; pwaBar('update')}});
+    if(reg.waiting&&navigator.serviceWorker.controller){pwaWaiting=reg.waiting; pwaBar('update')}
+    reg.addEventListener('updatefound',()=>watch(reg.installing));
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible') reg.update().catch(()=>{})});
+  }).catch(e=>console.warn('Service worker not registered',e)));
+  const pwaHadCtl=!!navigator.serviceWorker.controller;   // first install must not trigger a reload
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!pwaHadCtl||pwaReloading) return; pwaReloading=true; location.reload()});
+}
 document.addEventListener('click',e=>{if(S.bellOpen&&!e.target.closest('.npanel,.bell')){S.bellOpen=false;render()}});
 const _signOut=signOut; signOut=async function(){stopNotifs();S.rw=null;S.rwErr=false;S.rwShown=null;S.tstats=null;S.pastKey=null;S.past=[];return _signOut.apply(this,arguments)};
 document.addEventListener('keydown',e=>{
@@ -1642,4 +1693,3 @@ render(); init();
 </script>
 </body>
 </html>
-
