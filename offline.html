@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#5b5bf0">
+<title>BookMyClass – Offline</title>
+<style>
+:root{--bg:#f3f5ff;--card:#fff;--ink:#1d2340;--mut:#6b7194;--pri:#5b5bf0;--line:#e1e5f6;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#12142a;--card:#1c1f3d;--ink:#eef0ff;--mut:#9aa0c8;--line:#2d315a}}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;padding:16px;box-sizing:border-box}
+.c{max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 24px;text-align:center}
+img{width:72px;height:72px;border-radius:16px}
+h1{font-size:20px;margin:14px 0 6px}p{color:var(--mut);line-height:1.55;margin:6px 0}
+button{margin-top:16px;border:0;border-radius:10px;background:var(--pri);color:#fff;font:inherit;font-weight:600;padding:10px 22px;cursor:pointer}
+.ar{direction:rtl;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<main class="c" role="main">
+  <img src="/icons/icon-192.png" alt="" width="72" height="72">
+  <h1>You’re offline</h1>
+  <p>BookMyClass needs an internet connection to show, book, change or cancel lessons.</p>
+  <p><b>Nothing was booked or changed while you were offline.</b> Reconnect and try again.</p>
+  <div class="ar" lang="ar" dir="rtl">
+    <h1>لا يوجد اتصال بالإنترنت</h1>
+    <p>يحتاج BookMyClass إلى اتصال بالإنترنت لعرض الحصص أو حجزها أو تعديلها أو إلغائها.</p>
+    <p><b>لم يتم حجز أو تغيير أي شيء أثناء انقطاع الاتصال.</b> أعد الاتصال ثم حاول مرة أخرى.</p>
+  </div>
+  <button type="button" onclick="location.reload()">Try again / إعادة المحاولة</button>
+</main>
+</body>
+</html>
