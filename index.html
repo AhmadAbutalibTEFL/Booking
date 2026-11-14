@@ -191,6 +191,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
     </a>
     <div class="bar-right">
       <span id="who" style="font-size:13px;opacity:.92"></span>
+      <button type="button" id="pwaInstallBtn" onclick="pwaInstallClick()" hidden>Install app</button>
       <span id="btns" class="row"></span>
     </div>
   </div>
@@ -248,7 +249,7 @@ const T = {
   cfg:'Setup needed: add your Supabase key in index.html.',hi:'Signed in as',waMsg:'Hello! I booked a lesson on BookMyClass:',
   mine:'Your upcoming lessons',resched:'Change time',cancel:'Cancel',confirmCancel:'Cancel this lesson?',late:'It’s too late to change this lesson online. Please message the teacher.',
   limit:'You’ve reached the limit of 5 upcoming lessons.',changing:'Changing the time for',confirmNew:'Confirm new time',back:'Never mind',
-  pwa_install:'Install BookMyClass for quick access and a full-screen app.',pwa_install_btn:'Install',pwa_later:'Not now',pwa_ios:'To install on iPhone or iPad: tap the Share button, then “Add to Home Screen”.',pwa_ok:'Got it',pwa_update:'A new version is available.',pwa_reload:'Reload',
+  pwa_btn:'Install app',pwa_ios:'To install on iPhone or iPad: tap the Share button, then “Add to Home Screen”.',pwa_ok:'Got it',pwa_update:'A new version is available.',pwa_reload:'Reload',
   nav_sched:'My schedule',sc_hint:'Tap a lesson to see details, change it or cancel it. Times are shown in your timezone ({z}).',sc_up:'Upcoming',sc_past:'Past',sc_empty:'No lessons this week.',sc_week:'Week',
   nav_rank:'Leaderboard',lb_title:'Teacher leaderboard',lb_month:'This month',lb_all:'All time',lb_you:'You',lb_rank:'Your rank',lb_of:'of {n} ranked teachers',lb_score:'pts',lb_lessons:'lessons',lb_rules:'10 points for each attended lesson (up to 8 lessons per day count). Only visible to teachers. Frames for your avatar: #1 gold, top 3 silver, top 10 bronze, based on this month.',lb_show:'Show me on the leaderboard',lb_hidden:'You are hidden from the leaderboard, so others cannot see you and no rank frame is applied.',lb_none:'No ranked teachers yet. Points start after lessons are marked as attended.',lb_unranked:'You have no points yet this period.',lb_setup:'The leaderboard is not set up on the server yet. Run the leaderboard migration in Supabase, then reload.',
   ttm_hint:'Tip: drag a lesson onto a free green slot to move it. On a phone, tap a lesson, then Reschedule.',ttm_title:'Move this lesson?',ttm_from:'From',ttm_to:'To',ttm_sub:'Availability and booking rules are re-checked before anything is saved.',ttm_btn:'Move lesson',
@@ -310,7 +311,7 @@ const T = {
   cfg:'مطلوب إعداد: أضف مفتاح Supabase في index.html.',hi:'مسجل الدخول باسم',waMsg:'مرحبًا! لقد حجزت حصة عبر BookMyClass:',
   mine:'حصصك القادمة',resched:'تغيير الموعد',cancel:'إلغاء',confirmCancel:'هل تريد إلغاء هذه الحصة؟',late:'فات وقت التعديل عبر الموقع. يرجى مراسلة المعلم.',
   limit:'وصلت للحد الأقصى: 5 حصص قادمة.',changing:'تغيير موعد حصة',confirmNew:'تأكيد الموعد الجديد',back:'تراجع',
-  pwa_install:'ثبّت BookMyClass للوصول السريع وتجربة بملء الشاشة.',pwa_install_btn:'تثبيت',pwa_later:'ليس الآن',pwa_ios:'للتثبيت على آيفون أو آيباد: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».',pwa_ok:'حسنًا',pwa_update:'يتوفر إصدار جديد.',pwa_reload:'إعادة التحميل',
+  pwa_btn:'تثبيت التطبيق',pwa_ios:'للتثبيت على آيفون أو آيباد: اضغط زر المشاركة ثم «إضافة إلى الشاشة الرئيسية».',pwa_ok:'حسنًا',pwa_update:'يتوفر إصدار جديد.',pwa_reload:'إعادة التحميل',
   nav_sched:'جدولي',sc_hint:'اضغط على حصة لعرض التفاصيل أو تغييرها أو إلغائها. تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sc_up:'قادمة',sc_past:'سابقة',sc_empty:'لا توجد حصص هذا الأسبوع.',sc_week:'الأسبوع',
   nav_rank:'لوحة الصدارة',lb_title:'لوحة صدارة المعلمين',lb_month:'هذا الشهر',lb_all:'كل الوقت',lb_you:'أنت',lb_rank:'ترتيبك',lb_of:'من {n} معلمًا مصنفًا',lb_score:'نقطة',lb_lessons:'حصص',lb_rules:'10 نقاط لكل حصة حضرها الطالب (يُحتسب حتى 8 حصص يوميًا). تظهر للمعلمين فقط. إطارات صورتك: المركز الأول ذهبي، أول 3 فضي، أول 10 برونزي، حسب هذا الشهر.',lb_show:'أظهرني في لوحة الصدارة',lb_hidden:'أنت مخفي من لوحة الصدارة، فلا يراك الآخرون ولا يُطبَّق إطار الترتيب.',lb_none:'لا يوجد معلمون مصنفون بعد. تبدأ النقاط بعد تسجيل حضور الحصص.',lb_unranked:'ليس لديك نقاط في هذه الفترة بعد.',lb_setup:'لوحة الصدارة غير مفعّلة على الخادم بعد. شغّل ملف الترحيل في Supabase ثم أعد تحميل الصفحة.',
   ttm_hint:'نصيحة: اسحب الحصة إلى فترة خضراء فارغة لنقلها. على الجوال: اضغط الحصة ثم «إعادة الجدولة».',ttm_title:'نقل هذه الحصة؟',ttm_from:'من',ttm_to:'إلى',ttm_sub:'سيُعاد التحقق من التوفر وقواعد الحجز قبل الحفظ.',ttm_btn:'نقل الحصة',
@@ -1642,37 +1643,38 @@ const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments
 const _setTab=setTab; setTab=function(t){S.navOpen=false;S.bellOpen=false;return _setTab.apply(this,arguments)};
 window.addEventListener('offline',()=>{if(!document.getElementById('offBar')){const d=document.createElement('div');d.id='offBar';d.className='offline';d.setAttribute('role','alert');d.textContent=tr('m_offline');document.body.appendChild(d)}});
 window.addEventListener('online',()=>{const d=document.getElementById('offBar');if(d)d.remove()});
-// ---- PWA: install prompt, iOS guidance, safe service-worker updates. The worker never caches pages or API data. ----
-const PWA_KEY='bmc_pwa_dismissed', PWA_DELAY=10000;
+// ---- PWA: install button in the top bar, iOS guidance, safe service-worker updates. The worker never caches pages or API data. ----
 const pwaStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
 const pwaIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let pwaEvt=null, pwaWaiting=null, pwaReloading=false;
-function pwaDismissed(){try{return Date.now()-(+localStorage.getItem(PWA_KEY)||0)<30*864e5}catch(e){return false}}
+function pwaUpdateBtn(){
+  const b=document.getElementById('pwaInstallBtn'); if(!b) return;
+  b.textContent=tr('pwa_btn');
+  b.hidden=pwaStandalone()||(!pwaEvt&&!pwaIOS());
+}
 function pwaBar(kind){
   let b=document.getElementById('pwaBar'); if(!b){b=document.createElement('div'); b.id='pwaBar'; b.className='pwa-bar'; b.setAttribute('role','region'); document.body.appendChild(b)}
   b._k=kind;
-  const t=kind==='update'?tr('pwa_update'):kind==='ios'?tr('pwa_ios'):tr('pwa_install');
+  const t=kind==='update'?tr('pwa_update'):tr('pwa_ios');
   const a=kind==='update'?'<button type="button" class="btn" onclick="pwaReload()">'+tr('pwa_reload')+'</button>'
-    :kind==='ios'?'<button type="button" class="chip" onclick="pwaDismiss()">'+tr('pwa_ok')+'</button>'
-    :'<button type="button" class="btn" onclick="pwaInstall()">'+tr('pwa_install_btn')+'</button><button type="button" class="chip" onclick="pwaDismiss()">'+tr('pwa_later')+'</button>';
+    :'<button type="button" class="chip" onclick="pwaDismiss()">'+tr('pwa_ok')+'</button>';
   b.setAttribute('aria-label','BookMyClass'); b.innerHTML='<span>'+t+'</span><span class="pwa-a">'+a+'</span>';
 }
 function pwaRemove(){const b=document.getElementById('pwaBar'); if(b) b.remove()}
-function pwaDismiss(){try{localStorage.setItem(PWA_KEY,String(Date.now()))}catch(e){} pwaRemove()}
-async function pwaInstall(){
-  if(!pwaEvt){pwaRemove();return}
-  const e=pwaEvt; pwaEvt=null; pwaRemove(); e.prompt();
-  try{const c=await e.userChoice; if(c&&c.outcome!=='accepted') pwaDismiss()}catch(_){}
-}
-function pwaMaybeShow(){
-  if(pwaStandalone()||pwaDismissed()||(document.getElementById('pwaBar')&&document.getElementById('pwaBar')._k==='update')) return;
-  if(pwaEvt) pwaBar('install'); else if(pwaIOS()) pwaBar('ios');
+function pwaDismiss(){pwaRemove()}
+async function pwaInstallClick(){
+  if(pwaEvt){
+    const e=pwaEvt; pwaEvt=null; e.prompt();
+    try{await e.userChoice}catch(_){}
+    pwaUpdateBtn(); return
+  }
+  if(pwaIOS()&&!(document.getElementById('pwaBar')&&document.getElementById('pwaBar')._k==='update')) pwaBar('ios');
 }
 function pwaReload(){if(pwaWaiting) pwaWaiting.postMessage('SKIP_WAITING'); else location.reload()}
-function pwaRefresh(){const b=document.getElementById('pwaBar'); if(b&&b._k) pwaBar(b._k)}
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault(); pwaEvt=e; setTimeout(pwaMaybeShow,PWA_DELAY)});
-window.addEventListener('appinstalled',()=>{pwaEvt=null; pwaDismiss()});
-if(pwaIOS()) setTimeout(pwaMaybeShow,PWA_DELAY);
+function pwaRefresh(){const b=document.getElementById('pwaBar'); if(b&&b._k) pwaBar(b._k); pwaUpdateBtn()}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault(); pwaEvt=e; pwaUpdateBtn()});
+window.addEventListener('appinstalled',()=>{pwaEvt=null; pwaRemove(); pwaUpdateBtn()});
+pwaUpdateBtn();
 if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
   window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').then(reg=>{
     const watch=w=>w&&w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller){pwaWaiting=w; pwaBar('update')}});
