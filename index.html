@@ -389,7 +389,7 @@ function policyAnchor(createdMs,firstStartMs){
   if(!isNaN(createdMs)) return createdMs<ps?ps:firstStartMs;  // existing series: fresh block from activation
   return firstStartMs<ps?ps:firstStartMs;                      // fallback when created_at unreadable
 }
-function blockEndKey(anchor){return anchor==null||isNaN(anchor)?null:new Date(anchor+POLICY.blockDays*864e5).toLocaleDateString('en-CA');}
+function blockEndKey(anchor){return anchor==null||isNaN(anchor)?null:new Date(anchor+(POLICY.blockDays-1)*864e5).toLocaleDateString('en-CA');} // block = [anchor, anchor+27] inclusive = exactly 4 weekly lessons; matches ends_on
 function noShowStreak(rows){
   const v=rows.filter(b=>b.starts_at).sort((a,b)=>Date.parse(b.starts_at)-Date.parse(a.starts_at));
   let n=0; for(const b of v){ if(b.attendance==='no_show') n++; else break; } // unmarked or attended breaks the run
