@@ -18,9 +18,11 @@ old unguarded function answering the webhook.
    never in this repo).
 2. Supabase dashboard > Edge Functions > Secrets: add `WEBHOOK_SECRET`
    with that value.
-3. Add the same value as an HTTP header on the database webhook that calls
-   this function (Dashboard > Database > Webhooks > Edit > HTTP Headers).
-   The current no-auth function ignores extra headers, so nothing breaks yet.
+3. Add the same value as a NEW custom HTTP header named
+   `x-bmc-webhook-secret` on the database webhook that calls this function
+   (Dashboard > Integrations > Webhooks > Edit > HTTP Headers). Do NOT touch
+   the existing apikey header - it stays as-is and keeps working. The current
+   no-auth function ignores extra headers, so nothing breaks yet.
 4. Deploy this `index.ts` to the function: `supabase functions deploy
    clever-action --project-ref crtxvqamgksiigfpmxvg`. From now on, calls
    without the header get HTTP 401 and change nothing.

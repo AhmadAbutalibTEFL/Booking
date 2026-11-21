@@ -336,13 +336,16 @@ async function sendBrevo(to: string, name: string, mail: { subject: string; html
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
 // Caller check: the database webhook authenticates with a DEDICATED random token
-// sent on the apikey header (it is NOT a project API key). Verify JWT stays OFF
-// for this function (the webhook sends no user JWT), so this check is the
-// endpoint's only gate - do not remove it.
+// sent on a CUSTOM header, x-bmc-webhook-secret. The webhook's existing apikey
+// header (the project key the gateway already accepts) is deliberately left
+// untouched by this design, so activation never moves a working credential.
+// Verify JWT stays OFF for this function (the webhook sends no user JWT), so
+// this check is the endpoint's only gate - do not remove it.
 // The token exists in exactly two places: this function's WEBHOOK_SECRET env var
-// (Project Settings > Edge Functions > Secrets) and the webhook's apikey header
-// (Database > Webhooks). No project API key is accepted here, so a leaked project
-// key cannot be used to trigger emails. Fail closed: missing env or header -> 401.
+// (Project Settings > Edge Functions > Secrets) and the webhook's
+// x-bmc-webhook-secret header (Integrations > Webhooks). No project API key is
+// accepted here, so a leaked project key cannot be used to trigger emails.
+// Fail closed: missing env or header -> 401.
 // Compared via SHA-256 digests so the comparison is constant-time.
 async function isWebhookCaller(k: string): Promise<boolean> {
   try {
@@ -365,7 +368,7 @@ async function isWebhookCaller(k: string): Promise<boolean> {
 }
 
 Deno.serve(async (req) => {
-  const presentedKey = req.headers.get("apikey") ?? "";
+  const presentedKey = req.headers.get("x-bmc-webhook-secret") ?? "";
   if (!presentedKey || !(await isWebhookCaller(presentedKey))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
