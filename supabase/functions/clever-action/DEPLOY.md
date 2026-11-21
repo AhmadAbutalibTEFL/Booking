@@ -1,14 +1,16 @@
-# Booking-notifications edge function: source + auth guard
+# clever-action edge function (booking notifications): source + auth guard
 
-This directory puts the booking-notifications Edge Function under version
-control for the first time (the repo previously had no function source; see
+This directory puts the clever-action Edge Function (the one that sends
+booking notifications) under version control for the first time (the repo previously had no function source; see
 supabase/README.md). `index.ts` is the live function's code with ONE change:
 a WEBHOOK_SECRET header check at the top. Today the function answers any
 unauthenticated call; after this deploy it only answers calls carrying the
 secret header.
 
-If the dashboard function has a different name than this directory, rename
-the directory to match - the code is identical either way.
+The live function slug is clever-action, confirmed through the Management
+API, and the database webhook calls functions/v1/clever-action. Deploys must
+replace THAT function in place: deploying under any other slug would leave the
+old unguarded function answering the webhook.
 
 ## Deploy order (safe: the live function tolerates the new header at every step)
 
@@ -19,8 +21,9 @@ the directory to match - the code is identical either way.
 3. Add the same value as an HTTP header on the database webhook that calls
    this function (Dashboard > Database > Webhooks > Edit > HTTP Headers).
    The current no-auth function ignores extra headers, so nothing breaks yet.
-4. Deploy this `index.ts` to the function. From now on, calls without the
-   header get HTTP 401 and change nothing.
+4. Deploy this `index.ts` to the function: `supabase functions deploy
+   clever-action --project-ref crtxvqamgksiigfpmxvg`. From now on, calls
+   without the header get HTTP 401 and change nothing.
 5. Make a test booking and confirm notifications still arrive.
 
 Rollback: re-deploy the previous function code (preserved separately by
