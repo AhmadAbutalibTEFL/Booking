@@ -147,6 +147,9 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 @keyframes fadeout{to{opacity:0;transform:translateY(10px)}}
 .rw-item .chip:disabled{opacity:.5;cursor:not-allowed}
 @media(prefers-reduced-motion:reduce){.rw-av,.rw-bar i,.rw-bdg.on,.pts-pop,.rw-toast{animation:none!important}}
+.mspin{display:inline-block;width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--pri);border-radius:50%;margin-inline-end:7px;vertical-align:-2px;animation:mspin .8s linear infinite}
+@keyframes mspin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.mspin{animation:none}}
 .shell{display:flex;gap:16px;align-items:flex-start}
 .side{flex:none;width:226px;position:sticky;top:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px;display:flex;flex-direction:column;gap:2px;transition:width .18s ease;z-index:20}
 .side.col{width:58px}
@@ -294,6 +297,7 @@ const T = {
   calendarHint:'Times use your teacher timezone. Green shows available start times; purple shows booked lessons.',
   available:'Available',unavailable:'Unavailable',weeklyBadge:'Weekly',removeBooking:'Cancel',noBookingsDay:'No booked lessons',noFreeSlots:'No free start times',
   cancelModalTitle:'Cancel lesson',cancelModalSub:'Choose which lessons to cancel:',
+  m_working:'Working…',m_refreshErr:'The change was saved, but the view could not be updated. Check your connection, then retry the refresh.',m_retry:'Retry refresh',m_continue:'Continue anyway',m_refreshWarn:'Saved. The list may be out of date, reopen this page to refresh.',m_unknownWrite:'The connection dropped while saving. The page was refreshed - please check whether the change applied before trying again.',
   cancelOne:'Cancel this lesson only',cancelFuture:'Cancel this and all future lessons',cancelAll:'Cancel entire recurring series',
   reschedModalTitle:'Reschedule lesson',reschedModalSub:'Choose how to reschedule this recurring lesson:',
   reschedOne:'Move this lesson only',reschedFuture:'Move this and all future weekly lessons',
@@ -356,6 +360,7 @@ const T = {
   calendarHint:'الأوقات معروضة حسب المنطقة الزمنية للمعلم. الأخضر يوضح أوقات البداية المتاحة، والبنفسجي يوضح الحصص المحجوزة.',
   available:'متاح',unavailable:'غير متاح',weeklyBadge:'أسبوعي',removeBooking:'إلغاء الحصة',noBookingsDay:'لا توجد حصص محجوزة',noFreeSlots:'No free start times',
   cancelModalTitle:'إلغاء الحصة',cancelModalSub:'اختر نطاق الإلغاء:',
+  m_working:'جارٍ التنفيذ…',m_refreshErr:'تم حفظ التغيير، لكن تعذّر تحديث العرض. تحقق من الاتصال ثم أعد تحميل البيانات.',m_retry:'إعادة التحميل',m_continue:'متابعة',m_refreshWarn:'تم الحفظ. قد تكون القائمة غير محدّثة، أعد فتح الصفحة للتحديث.',m_unknownWrite:'انقطع الاتصال أثناء الحفظ. تم تحديث الصفحة، فتحقق مما إذا كان التغيير قد تم قبل المحاولة مرة أخرى.',
   cancelOne:'إلغاء هذه الحصة فقط',cancelFuture:'إلغاء هذه الحصة وجميع الحصص القادمة',cancelAll:'إلغاء السلسلة الأسبوعية بالكامل',
   reschedModalTitle:'تغيير موعد الحصة',reschedModalSub:'اختر نطاق تعديل الموعد لهذه السلسلة الأسبوعية:',
   reschedOne:'تغيير موعد هذه الحصة فقط',reschedFuture:'تغيير موعد هذه الحصة وجميع الحصص القادمة',
@@ -369,7 +374,7 @@ const S = {
   ready:false,user:null,me:null,slug:null,t:null,bad:false,types:[],ty:null,rules:[],exc:[],busy:[],slots:{},day:null,slot:null,done:null,err:'',msg:'',
   mine:[],minePast:[],minePastErr:false,pastAll:false,rs:null,rsScope:'single',rsFrom:null,rsAsTeacher:false,loaded:null,loading:false,booking:false,reg:false,
   tab:'link',calMode:'week',calendarOffset:0,dayOffset:0,modal:null,
-  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{},notifs:[],unread:0,bellOpen:false,navOpen:false,notifLoaded:false,notifErr:false,nFilter:'all',ttOv:[],ttQ:'',rw:null,rwErr:false,rwLoading:false,rwShown:null,tstats:null,past:[],pastKey:null,slotState:{},ttPast:[],ttCancelled:[],ttKey:null,ttLoading:null,ttType:null,ttErr:false
+  invites:[],wk:{},dTypes:[],dExc:[],dRules:[],dBk:[],teacherBooking:false,adminData:null,adminLoading:false,slotOverrides:{},notifs:[],unread:0,bellOpen:false,navOpen:false,notifLoaded:false,notifErr:false,nFilter:'all',ttOv:[],ttQ:'',rw:null,rwErr:false,rwLoading:false,rwShown:null,tstats:null,past:[],pastKey:null,slotState:{},ttPast:[],ttCancelled:[],ttKey:null,ttLoading:null,ttType:null,ttErr:false,_dashSeq:0,_bookSeq:0,_ttDays:null,_ttTz:null
 };
 const $ = s => document.querySelector(s), tr = k => T[lang][k] || k;
 const loc = () => lang === 'ar' ? 'ar' : 'en';
@@ -502,22 +507,31 @@ function tabRank(){
   h+='<div class="card">'+(rows.length?rows.map(r=>'<div class="bk"'+(r.is_me?' style="outline:2px solid var(--pri)"':'')+'><div style="display:flex;align-items:center;gap:10px"><span class="lb-n">#'+r.rank+'</span><span class="rw-av '+rankTier(per==='month'?r.rank:0)+'" style="--s:34px" aria-hidden="true">'+esc((r.name||'?').trim().charAt(0).toUpperCase())+'</span><b>'+esc(r.name||'')+'</b>'+(r.is_me?'<span class="badge">'+tr('lb_you')+'</span>':'')+'</div><div style="text-align:end"><b>'+r.score+'</b> <span class="mut">'+tr('lb_score')+'</span><br><small class="mut">'+r.lessons+' '+tr('lb_lessons')+'</small></div></div>').join(''):'<p class="mut">'+tr('lb_none')+'</p>')+'</div>';
   return h;
 }
-async function loadPast(){
-  if(S.pastLoading||!S.me||!S.me.teacher) return; S.pastLoading=true; const now=Date.now();
-  const {data}=await sb.from('bookings').select('id,student_name,starts_at,booker_id').eq('teacher_id',S.me.teacher.id).eq('status','confirmed').is('attendance',null)
+async function loadPast(force){
+  if(S.pastLoading||!S.me||!S.me.teacher) return; if(!force&&S.pastKey==='ok') return; S.pastLoading=true; const now=Date.now();
+  const {data,error}=await sb.from('bookings').select('id,student_name,starts_at,booker_id').eq('teacher_id',S.me.teacher.id).eq('status','confirmed').is('attendance',null)
     .lt('starts_at',new Date(now).toISOString()).gte('starts_at',new Date(now-14*864e5).toISOString()).order('starts_at',{ascending:false});
-  S.pastLoading=false; S.past=data||[]; S.pastKey='ok'; render();
+  S.pastLoading=false; if(error){console.warn('loadPast failed',error); render(); return;}
+  S.past=data||[]; S.pastKey='ok'; render();
 }
+// Refetch derived views in place: current data stays visible until the new data lands.
+function refreshTstats(){ if(!S.me||!S.me.teacher) return; sb.rpc('get_teacher_stats').then(({data,error})=>{ if(!error&&data){S.tstats=data; render();} }); }
+function refreshTimetable(){ if(S._ttDays) loadTimetable(S._ttDays,S._ttTz,true); }
 function markCard(){
   if(!S.me||!S.me.teacher) return '';
   if(S.pastKey!=='ok'){ if(!S.pastLoading) setTimeout(loadPast,0); return ''; }
   if(!S.past.length) return '';
-  return '<div class="card"><h2>'+tr('r_toMark')+' ('+S.past.length+')</h2><p class="mut">'+tr('r_markHint')+'</p>'+S.past.slice(0,8).map(b=>'<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+'</span></div><div class="row"><button type="button" class="chip" onclick="markAtt(\''+b.id+'\',\'attended\')">✔ '+tr('r_attended')+'</button><button type="button" class="chip danger" onclick="markAtt(\''+b.id+'\',\'no_show\')">✖ '+tr('r_noShow')+'</button></div></div>').join('')+'</div>';
+  return '<div class="card"><h2>'+tr('r_toMark')+' ('+S.past.length+')</h2><p class="mut">'+tr('r_markHint')+'</p>'+S.past.slice(0,8).map(b=>'<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+'</span></div><div class="row"><button type="button" class="chip" onclick="markAtt(\''+b.id+'\',\'attended\',this)">✔ '+tr('r_attended')+'</button><button type="button" class="chip danger" onclick="markAtt(\''+b.id+'\',\'no_show\',this)">✖ '+tr('r_noShow')+'</button></div></div>').join('')+'</div>';
 }
-async function markAtt(id,st){
-  const {error}=await sb.rpc('mark_attendance',{p_booking:id,p_status:st});
-  if(error){flash(error.message,true);return}
-  S.pastKey=null; S.tstats=null; flash(st==='attended'?tr('r_markedAtt'):tr('r_markedNo'),false);
+async function markAtt(id,st,el){
+  if(el&&el.disabled) return;
+  if(el){el.disabled=true; el.setAttribute('aria-busy','true');}
+  let error, unknown=false;
+  try{ ({error}=await sb.rpc('mark_attendance',{p_booking:id,p_status:st})); }catch(e){ unknown=true; }
+  if(unknown){ loadPast(true); refreshTstats(); flash(tr('m_unknownWrite'),true); return; }
+  if(error){if(el){el.disabled=false;el.removeAttribute('aria-busy');} flash(error.message,true);return}
+  // refresh the affected panels in place instead of blanking them first
+  loadPast(true); refreshTstats(); flash(st==='attended'?tr('r_markedAtt'):tr('r_markedNo'),false);
 }
 function statsCard(){
   if(!S.me||!S.me.teacher) return '';
@@ -629,8 +643,10 @@ function icsFromDone(){const d=S.done; if(!d) return; downloadIcs(new Date(d.sta
 function icsFor(id){const b=allBk().find(x=>x.id===id); if(!b) return; downloadIcs(b.starts_at,b.ends_at,tr('m_lesson')+' – '+b.student_name,b.notes||'',b.meeting_url)}
 function allBk(){const m=new Map(); (S.dBk||[]).concat(S.ttPast||[]).forEach(b=>{if(!m.has(b.id)) m.set(b.id,b)}); return [...m.values()]}
 async function markAttMenu(id,st){
-  S.modal=null; const {error}=await sb.rpc('mark_attendance',{p_booking:id,p_status:st}); if(error){flash(error.message,true);return}
-  S.ttKey=null; S.pastKey=null; S.tstats=null; flash(st==='attended'?tr('r_markedAtt'):tr('r_markedNo'),false);
+  await runMutation(
+    ()=>sb.rpc('mark_attendance',{p_booking:id,p_status:st}).then(r=>r.error),
+    async()=>{loadPast(true); refreshTstats(); refreshTimetable();},
+    st==='attended'?tr('r_markedAtt'):tr('r_markedNo'));
 }
   function syncContext(){
   if(!S.user) return Promise.resolve();
@@ -712,7 +728,10 @@ async function loadMe(){
   if(S.me.teacher){ await loadDash(); loadLeaderboard(true); }
 }
 async function loadDash(){
-  S.ttKey=null; S.pastKey=null; S.tstats=null;
+  // Load fresh data first, then swap it in atomically: the visible grid is never
+  // blanked while reloading. A stale or overlapping load is dropped instead of
+  // overwriting a newer view.
+  const seq=(S._dashSeq=(S._dashSeq||0)+1);
   const id=S.me.teacher.id, today=new Date().toISOString().slice(0,10), now=new Date().toISOString();
   const bq = cols => sb.from('bookings').select(cols).eq('teacher_id',id).eq('status','confirmed').gte('starts_at',now).order('starts_at');
   try{await sb.rpc('maintain_my_recurring_bookings')}catch(e){console.warn('Recurring schedule refresh failed',e)}
@@ -721,11 +740,15 @@ async function loadDash(){
     sb.from('availability_rules').select('*').eq('teacher_id',id).order('start_time'),
     sb.from('availability_exceptions').select('*').eq('teacher_id',id).gte('on_date',today).order('on_date'),
     bq('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)')]);
+  if(seq!==S._dashSeq) return false;
+  if(a.error||b.error||c.error){console.warn('loadDash failed',a.error||b.error||c.error); return false;}
+  let bk=d;
+  if(bk.error) bk=await bq('id,student_name,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)');
+  if(seq!==S._dashSeq) return false;
+  if(bk.error){console.warn('loadDash bookings failed',bk.error); return false;}
   S.dTypes=a.data||[]; S.dRules=b.data||[]; S.dExc=c.data||[];
   S.wk={}; for(let i=0;i<7;i++) S.wk[i]=[];
   S.dRules.forEach(r=>S.wk[r.weekday].push([r.start_time.slice(0,5),r.end_time.slice(0,5)]));
-  let bk=d;
-  if(bk.error) bk=await bq('id,student_name,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)');
   S.dBk=bk.data||[];
   try {
     const ids=S.dBk.map(x=>x.id);
@@ -738,10 +761,15 @@ async function loadDash(){
         const map=new Map((who.data||[]).map(x=>[x.booking_id,x]));
         S.dBk.forEach(x=>{const v=map.get(x.id);if(v)x.profiles={full_name:v.full_name,email:v.email};});
       }
-      S.slotOverrides={};
-      (ov.data||[]).forEach(x=>S.slotOverrides[new Date(x.slot_start).toISOString()]=x.action);
+      if(!ov.error){S.slotOverrides={}; (ov.data||[]).forEach(x=>S.slotOverrides[new Date(x.slot_start).toISOString()]=x.action);}
     }
   } catch(e){ console.warn('Booking attribution/slot overrides unavailable',e); }
+  // Refresh lazy views in place: the timetable, past list and stats keep showing
+  // their current data until the refetch lands (no blank "Loading…" flash).
+  if(S.ttKey) refreshTimetable();
+  if(S.pastKey==='ok') loadPast(true);
+  if(S.tstats) refreshTstats();
+  return true;
 }
 async function loadTeacher(){
   S.t=null; S.bad=false; S.loaded=null;
@@ -751,6 +779,7 @@ async function loadTeacher(){
 }
 async function loadBook(keep){
   if(!S.user||!S.t) return;
+  const seq=(S._bookSeq=(S._bookSeq||0)+1);
   const id=S.t.id, ty=keep&&S.ty&&S.ty.id, err=keep?S.err:'';
   S.ty=null;S.day=null;S.slot=null;S.slots={};S.done=null;S.err=err;
   const [a,b,c,r] = await Promise.all([
@@ -758,6 +787,7 @@ async function loadBook(keep){
     sb.from('availability_rules').select('*').eq('teacher_id',id),
     sb.from('availability_exceptions').select('*').eq('teacher_id',id),
     sb.rpc('get_busy_times',{p_teacher:id,p_from:new Date().toISOString(),p_to:new Date(Date.now()+85*864e5).toISOString()})]);
+  if(seq!==S._bookSeq) return;  // a newer load won; do not overwrite the current booking view
   S.types=a.data||[]; S.rules=b.data||[]; S.exc=c.data||[];
   S.busy=(r.data||[]).map(x=>[Date.parse(x.starts_at),Date.parse(x.blocked_until)]);
   S.ty=(ty&&S.types.find(x=>x.id===ty)) || (S.types.length===1?S.types[0]:null);
@@ -788,6 +818,7 @@ function writeAppHistory(mode='push'){
 async function restoreAppRoute(st){
   if(!st||!st.bmc) return;
   S.slug=st.slug||null; S.tab=st.tab||'link'; S.teacherBooking=!!st.teacherBooking; S.reg=!!st.reg;
+  if(S.modal&&S.modal.refreshErr){_refreshRetry=_refreshGiveUp=null;_mutBusy=false;}
   S.done=null; S.err=''; S.msg=''; S.modal=null; S.rs=null; S.rsAsTeacher=false;
   await loadTeacher();
   if(S.slug&&S.user&&S.t) await loadBook();
@@ -795,7 +826,8 @@ async function restoreAppRoute(st){
   render();
 }
 async function nav(slug){
-  S.slug=slug||null; S.done=null; S.err=''; S.msg=''; S.reg=false; S.rs=null; S.rsAsTeacher=false; S.teacherBooking=false; S.modal=null;
+  if(S.modal&&S.modal.refreshErr){_refreshRetry=_refreshGiveUp=null;_mutBusy=false;}
+  S.slug=slug||null; S.done=null; S.err=''; S.msg=''; S.reg=false; S.rs=null; S.rsAsTeacher=false; S.teacherBooking=false; S.modal=null; S._rsBusy=false;
   writeAppHistory('push');
   await loadTeacher(); if(S.t&&S.user) await loadBook(); render();
 }
@@ -816,7 +848,7 @@ function setCalMode(m){S.calMode=m;render()}
 async function pickType(id){S.ty=S.types.find(x=>x.id===id);await build();render()}
 function pickDay(k){S.day=k||null;S.slot=null;render()}
 function pickSlot(v){S.slot=v?+v:null;render()}
-function closeModal(){S.modal=null;render()}
+function closeModal(){if(S.modal&&S.modal.busy)return;S.modal=null;_refreshRetry=_refreshGiveUp=null;_mutBusy=false;render()}
 
 // ---- auth ----
 async function signIn(){
@@ -900,15 +932,44 @@ async function book(){
   }
 }
 
+// Shared mutation runner: keeps the modal open with a busy state through the write
+// and the refresh. A failed WRITE reopens the modal with the error so the write can
+// be retried. A COMMITTED write is never re-invited: if only the refresh fails, the
+// modal offers a refresh-only retry (or continue) instead.
+let _mutBusy=false,_refreshRetry=null,_refreshGiveUp=null;
+function retryRefresh(){if(_refreshRetry)_refreshRetry()}
+function giveUpRefresh(){if(_refreshGiveUp)_refreshGiveUp()}
+async function runMutation(write,refresh,okMsg){
+  const m=S.modal;
+  if(!m||_mutBusy||m.busy) return false;
+  _mutBusy=true;
+  S.modal={...m,busy:true,err:null,refreshErr:false}; render();
+  const stillOpen=()=>S.modal&&S.modal.busy;
+  let error, unknown=false;
+  try{ error=await write(); }catch(e){ unknown=true; }
+  if(error){_mutBusy=false; if(stillOpen()){S.modal={...m,err:error.message||tr('taken')}; render();} else flash(error.message||tr('taken'),true); return false;}
+  if(unknown){
+    // The write may or may not have committed, so never invite another write.
+    // Reconcile from the server first, then ask the user to check the result.
+    try{ await refresh(); }catch(e){ console.warn('Reconcile after uncertain write failed',e); }
+    _mutBusy=false; S.modal=null; flash(tr('m_unknownWrite'),true); return true;
+  }
+  const tryRefresh=async()=>{try{const ok=await refresh(); return ok!==false;}catch(e){console.warn('Post-mutation refresh failed',e); return false;}};
+  if(await tryRefresh()){_mutBusy=false; S.modal=null; flash(okMsg,false); return true;}
+  if(!stillOpen()){_mutBusy=false; flash(tr('m_refreshWarn'),true); return true;}  // dialog dismissed mid-refresh; the write committed, so warn, never replay
+  return new Promise(res=>{
+    _refreshRetry=async()=>{S.modal={...m,busy:true,refreshErr:false}; render();
+      if(await tryRefresh()){_refreshRetry=_refreshGiveUp=null; _mutBusy=false; S.modal=null; flash(okMsg,false); res(true);}
+      else{S.modal={...m,refreshErr:true}; render();}};
+    _refreshGiveUp=()=>{_refreshRetry=_refreshGiveUp=null; _mutBusy=false; S.modal=null; flash(tr('m_refreshWarn'),true); res(true);};
+    S.modal={...m,refreshErr:true}; render();
+  });
+}
 function promptCancel(id){
   const b=S.mine.find(x=>x.id===id)||S.dBk.find(x=>x.id===id);
   if(!b) return;
-  if(b.series_id){
-    S.modal={type:'cancel',booking:b};
-    render();
-  } else {
-    if(confirm(tr('confirmCancel'))) executeCancel(id,'single');
-  }
+  S.modal={type:'cancel',booking:b};
+  render();
 }
 
 function editBookingDetails(id,asTeacher=true){openEdit(id,asTeacher)}
@@ -919,25 +980,36 @@ function editErr(msg){
   return k?tr(k)+(d?' ('+d[1]+')':''):(msg||tr('taken'));
 }
 async function submitEdit(){
-  const m=S.modal, b=m.booking, tz=S.me&&S.me.teacher&&S.me.teacher.timezone;
+  const m=S.modal; if(!m||m.busy) return;
+  const b=m.booking, tz=S.me&&S.me.teacher&&S.me.teacher.timezone;
   const v={n:$('#ed_n').value.trim(),p:$('#ed_p').value.trim(),t:$('#ed_t').value.trim(),ty:$('#ed_ty')?$('#ed_ty').value:null,d:$('#ed_d')?$('#ed_d').value:null,h:$('#ed_h')?$('#ed_h').value:null,sc:(document.querySelector('input[name=ed_scope]:checked')||{}).value||'single'};
   const fail=e=>{S.modal={...m,vals:v,err:e};render()};
   if(!v.n) return fail(tr('needName'));
   if(v.p&&parsePhone(v.p).invalid) return fail(tr('m_phoneErr'));
   let starts=null; if(m.asTeacher&&v.d&&v.h){const ms=toUtc(v.d,v.h,tz); if(Math.abs(ms-Date.parse(b.starts_at))>=1000) starts=new Date(ms).toISOString();}
   const ty=(m.asTeacher&&v.ty&&v.ty!==b.session_type_id)?v.ty:null;
-  const btn=$('#ed_save'); if(btn){btn.disabled=true;btn.textContent='…';}
-  const {error}=await sb.rpc('edit_booking',{p_booking:b.id,p_student:v.n,p_phone:v.p,p_notes:v.t,p_starts:starts,p_session_type:ty,p_scope:b.series_id?v.sc:'single'});
-  if(error) return fail(editErr(error.message));
-  S.modal=null; await loadMine(); if(S.me&&S.me.teacher) await loadDash(); flash(tr('saved'),false);
+  S.modal={...m,vals:v,busy:true,err:null,refreshErr:false}; render();
+  let error, unknown=false;
+  try{ ({error}=await sb.rpc('edit_booking',{p_booking:b.id,p_student:v.n,p_phone:v.p,p_notes:v.t,p_starts:starts,p_session_type:ty,p_scope:b.series_id?v.sc:'single'})); }catch(e){ unknown=true; }
+  if(unknown){ try{ await loadMine(); if(S.me&&S.me.teacher) await loadDash(); }catch(e2){ console.warn('Reconcile after uncertain edit failed',e2); } S.modal=null; flash(tr('m_unknownWrite'),true); return; }
+  if(error){fail(editErr(error.message)); return;}
+  let ok=true;
+  try{await loadMine(); if(S.me&&S.me.teacher) ok=await loadDash();}catch(e){ok=false;}
+  if(ok!==false){S.modal=null; flash(tr('saved'),false); return;}
+  // The save committed; only the refresh failed - offer a refresh-only retry, never another save.
+  _refreshRetry=async()=>{S.modal={...m,busy:true,refreshErr:false}; render();
+    let ok2=true; try{await loadMine(); if(S.me&&S.me.teacher) ok2=await loadDash();}catch(e2){ok2=false;}
+    if(ok2!==false){_refreshRetry=_refreshGiveUp=null; S.modal=null; flash(tr('saved'),false);}
+    else{S.modal={...m,refreshErr:true}; render();}};
+  _refreshGiveUp=()=>{_refreshRetry=_refreshGiveUp=null; S.modal=null; flash(tr('m_refreshWarn'),true);};
+  S.modal={...m,refreshErr:true}; render();
 }
 
 async function executeCancel(id,scope){
-  S.modal=null; render();
-  const {error}=await sb.rpc('cancel_booking',{p_booking:id,p_scope:scope||'single'});
-  await loadMine(); if(S.me?.teacher) await loadDash();
-  if(S.t&&S.user) await loadBook(true);
-  if(error) flash(tr('late'),true); else flash(tr('saved'),false);
+  await runMutation(
+    ()=>sb.rpc('cancel_booking',{p_booking:id,p_scope:scope||'single'}).then(r=>{const e=r.error; if(!e) return null; return {message:((e.message||'').toLowerCase().includes('too late')?tr('late'):(e.message||tr('taken')))};}),
+    async()=>{const jobs=[loadMine()]; if(S.me&&S.me.teacher) jobs.push(loadDash()); if(S.t&&S.user) jobs.push(loadBook(true)); const rs=await Promise.all(jobs); if(rs.some(x=>x===false)) throw new Error('refresh');},
+    tr('saved'));
 }
 
 function promptResched(id, asTeacher){
@@ -981,27 +1053,43 @@ function ttAskMove(id,iso){
 }
 async function ttMoveDo(scope){
   const m=S.modal; if(!m||m.type!=='ttmove') return; const b=m.booking;
-  S.modal=null; render();
-  const {error}=await sb.rpc('reschedule_booking',{p_booking:b.id,p_starts:new Date(m.to).toISOString(),p_scope:scope});
-  await loadDash();   // refresh from the server either way, so a failed move shows the booking back in its original place
-  if(error){const em=(error.message||'').toLowerCase(); flash(tr(em.includes('too late')?'late':em.includes('too soon')?'tooSoon':'taken'),true); return}
-  flash(tr('saved'),false);
+  await runMutation(
+    ()=>sb.rpc('reschedule_booking',{p_booking:b.id,p_starts:new Date(m.to).toISOString(),p_scope:scope}).then(r=>{const e=r.error; if(!e) return null; const em=(e.message||'').toLowerCase(); return {message:tr(em.includes('too late')?'late':em.includes('too soon')?'tooSoon':'taken')};}),
+    async()=>{if(!await loadDash()) throw new Error('refresh');},
+    tr('saved'));
 }
 async function doResched(){
+  if(S._rsBusy) return; S._rsBusy=true;
+  const rb=document.getElementById('rsBtn'); if(rb){rb.disabled=true; rb.textContent='…';}
   const scope=S.rsScope||'single';
   const wasTeacher=S.rsAsTeacher;
-  const {data,error}=await sb.rpc('reschedule_booking',{p_booking:S.rs.id,p_starts:new Date(S.slot).toISOString(),p_scope:scope});
+  let data,error,unknown=false;
+  try{ ({data,error}=await sb.rpc('reschedule_booking',{p_booking:S.rs.id,p_starts:new Date(S.slot).toISOString(),p_scope:scope})); }catch(e){ unknown=true; }
+  if(unknown){
+    // The reschedule may or may not have committed: drop the pending form so the
+    // same write is not sent again blindly, refresh the view, and ask the user to check.
+    S._rsBusy=false; S.rs=null; S.rsAsTeacher=false; S.err='';
+    try{ if(wasTeacher){S.slug=null; await loadDash();} else {await loadBook(true); await loadMine();} }catch(e2){ console.warn('Reconcile after uncertain reschedule failed',e2); }
+    flash(tr('m_unknownWrite'),true); return;
+  }
   if(error){
+    S._rsBusy=false;
     const em=(error.message||'').toLowerCase(), late=em.includes('too late'), soon=em.includes('too soon');
     S.err=''; await loadBook(true); S.ty=S.types.find(x=>x.id===S.rs.session_type_id)||S.ty; await build(); S.err=tr(late?'late':soon?'tooSoon':'taken'); render(); return;
   }
   if(wasTeacher){
+    S._rsBusy=false;
     S.rs=null; S.rsAsTeacher=false; S.slug=null; S.err='';
-    await loadDash(); flash(tr('saved'),false); return;
+    try{await loadDash();}catch(e){console.warn('Refresh after reschedule failed',e)}
+    flash(tr('saved'),false); return;
   }
-  const ct=await contactFor(data);
+  // The reschedule committed; show the confirmed card even if the follow-up loads fail.
+  let ct={};
+  try{const rs2=await Promise.all([contactFor(data),loadMine().catch(e=>console.warn('Reload after reschedule failed',e))]); ct=rs2[0]||{};}
+  catch(e){console.warn('Contact fetch after reschedule failed',e);}
+  S._rsBusy=false;
   S.done={start:S.slot,name:S.rs.student_name,type:S.ty,t:S.t,meeting:ct.meeting_url||'',whatsapp:ct.whatsapp||'',recurring:!!S.rs.series_id};
-  S.rs=null; S.rsAsTeacher=false; S.err=''; await loadMine(); render();
+  S.rs=null; S.rsAsTeacher=false; S.err=''; render();
 }
 
 // ---- teacher registration ----
@@ -1147,7 +1235,7 @@ function doneCard(){
 }
 
 function viewLanding(){
-  return '<div class="card ok" style="padding:26px 20px">'
+  return '<div class="card ok" style="padding:26px 20px">'+flashHtml()
     +'<div class="big">📚</div>'
     +'<h2 style="justify-content:center;font-size:22px">'+tr('welcome')+'</h2>'
     +'<p class="mut" style="max-width:560px;margin:0 auto 18px">'+tr(hasInvite()?'invited':'welSub')+'</p>'
@@ -1192,7 +1280,7 @@ function viewBook(){
   }
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
-    h+=S.rs?'<button class="btn" onclick="doResched()">'+tr('confirmNew')+'</button>'
+    h+=S.rs?'<button class="btn" id="rsBtn" onclick="doResched()">'+tr('confirmNew')+'</button>'
       :'<input id="sn" list="knownStudents" oninput="fillKnown(this)" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+((S.t&&S.t.allow_forever_booking)?'<label class="mut">'+tr('recurringChoice')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"> '+tr('weeklyRecurring')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"> '+tr('fixedCount')+'</label><div id="recurrenceCountWrap"><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small></div><p class="mut">'+tr('recurringHintOpen')+'</p>':'<label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small><p class="mut">'+tr('recurringHint')+'</p>')+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
@@ -1304,15 +1392,15 @@ function tzMin(ms,tz){const p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:
 function tzKey(ms,tz){const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(ms).reduce((a,x)=>(a[x.type]=x.value,a),{});return p.year+'-'+p.month+'-'+p.day}
 function ttTypeObj(){const a=S.dTypes.filter(x=>x.is_active).sort((x,y)=>x.duration_min-y.duration_min);return a.find(x=>x.id===S.ttType)||a[0]||null}
 function setTtType(id){}
-async function loadTimetable(days,tz){
-  const key=days[0].key; if(S.ttKey===key||S.ttLoading===key) return; S.ttLoading=key;
+async function loadTimetable(days,tz,force){
+  const key=days[0].key; if(!force&&(S.ttKey===key||S.ttLoading===key)) return; S.ttLoading=key; S._ttDays=days; S._ttTz=tz;
   const id=S.me.teacher.id, from=toUtc(days[0].key,'00:00',tz), to=from+7*864e5, f=new Date(from).toISOString(), t=new Date(to).toISOString();
   const [ov,cx,pa]=await Promise.all([
     sb.rpc('get_booking_slot_overrides',{p_teacher:id,p_from:f,p_to:t}),
     sb.from('bookings').select('id,student_name,starts_at,ends_at').eq('teacher_id',id).eq('status','cancelled').gte('starts_at',f).lt('starts_at',t),
     sb.from('bookings').select('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,attendance,booker_id,meeting_url,session_types(name,duration_min)').eq('teacher_id',id).eq('status','confirmed').gte('starts_at',f).lt('starts_at',t).lt('starts_at',new Date().toISOString())]);
   if(S.ttLoading!==key) return;
-  S.ttLoading=null; S.ttKey=key; S.ttOv=ov.error?[]:(ov.data||[]); S.ttCancelled=cx.data||[]; S.ttPast=pa.data||[]; render();
+  S.ttLoading=null; S.ttKey=key; if(!ov.error) S.ttOv=ov.data||[]; if(!cx.error) S.ttCancelled=cx.data||[]; if(!pa.error) S.ttPast=pa.data||[]; render();
 }
 function renderWeekTimetable(days,tz,dayKey,minBookAt){
   if(!S.dTypes.some(x=>x.is_active)) return '<div class="calempty">'+tr('m_noType')+'</div>';
@@ -1365,10 +1453,10 @@ function jumpToDate(v){
 function openSlotMenu(iso,st){S.modal={type:'slotMenu',iso,state:st||'available'}; render();}
 function openBookingMenu(id){const b=allBk().find(x=>x.id===id); if(!b) return; S.modal={type:'bookingMenu',booking:b}; render();}
 async function manageSlotOverride(iso,action){
-  S.modal=null;
-  const {error}=await sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:iso,p_action:action});
-  if(error){flash(error.message||'Could not update this slot',true);return;}
-  S.ttKey=null; flash(action==='closed'?tr('slotClosed'):action==='jit'?tr('slotJit'):tr('saved'),false);
+  await runMutation(
+    ()=>sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:iso,p_action:action}).then(r=>r.error),
+    async()=>{if(!await loadDash()) throw new Error('refresh');},
+    action==='closed'?tr('slotClosed'):action==='jit'?tr('slotJit'):tr('saved'));
 }
 async function startTeacherBookingAtMs(ms){
   S.modal=null; await startTeacherBooking();
@@ -1377,7 +1465,6 @@ async function startTeacherBookingAtMs(ms){
   const pick=all.find(x=>x<=ms+29*6e4&&x+dur>ms)||all.find(x=>x>=ms)||null;
   S.slot=pick; S.day=pick?new Date(pick).toLocaleDateString('en-CA'):null; render();
 }
-function confirmCancelOne(id){if(confirm(tr('confirmCancel'))) executeCancel(id,'single')}
 
 
 function teacherCalendar(){
@@ -1546,7 +1633,7 @@ async function confirmDanger(){
   const {error}=m.kind==='admin'?await sb.rpc('admin_delete_account',{p_user:m.target}):await sb.rpc('delete_my_account');
   if(error){S.modal={...m,err:error.message};render();return}
   S.modal=null;
-  if(m.kind==='self'){await signOut(); alert(tr('m_accDeleted'));}
+  if(m.kind==='self'){await signOut(); flash(tr('m_accDeleted'),false);}
   else{S.adminData=null; flash(tr('m_accDeleted'),false);}
 }
 function acctCard(){
@@ -1564,12 +1651,20 @@ function renderModal(){
   M._m=S.modal;
   const m=S.modal, b=m.booking, tz=S.me&&S.me.teacher?S.me.teacher.timezone:undefined;
   const fFt=ms=>new Date(ms).toLocaleString(loc(),{timeZone:tz,weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
-  const wrap=(title,body)=>'<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'">'+'<h3>'+esc(title)+'</h3>'+body+'</div></div>';
+  const wrap=(title,body)=>'<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'">'+'<h3>'+esc(title)+'</h3>'
+    +(m.refreshErr
+      ?'<div class="err" role="alert">'+tr('m_refreshErr')+'</div><div class="stack">'+bt('btn','retryRefresh()',tr('m_retry'))+bt('chip','giveUpRefresh()',tr('m_continue'))+'</div>'
+      :(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')+body+(m.busy?'<p class="mut" role="status" style="margin:8px 0 0"><span class="mspin" aria-hidden="true"></span>'+tr('m_working')+'</p>':''))
+    +'</div></div>';
   const bt=(cls,fn,label)=>'<button type="button" class="'+cls+'" onclick="'+fn+'">'+label+'</button>';
   let h='';
   if(m.type==='cancel'){
-    h=wrap(tr('cancelModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('cancelModalSub')+'</p><div class="stack">'
-      +bt('btn g',"executeCancel('"+b.id+"','single')",tr('cancelOne'))+bt('btn g',"executeCancel('"+b.id+"','future')",tr('cancelFuture'))+bt('btn d',"executeCancel('"+b.id+"','all')",tr('cancelAll'))+bt('chip','closeModal()',tr('back'))+'</div>');
+    h=wrap(tr('cancelModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p>'
+      +(b.series_id
+        ?'<p class="mut" style="margin:6px 0 0">'+tr('cancelModalSub')+'</p><div class="stack">'
+          +bt('btn g',"executeCancel('"+b.id+"','single')",tr('cancelOne'))+bt('btn g',"executeCancel('"+b.id+"','future')",tr('cancelFuture'))+bt('btn d',"executeCancel('"+b.id+"','all')",tr('cancelAll'))+bt('chip','closeModal()',tr('back'))+'</div>'
+        :'<p class="mut" style="margin:6px 0 0">'+tr('confirmCancel')+'</p><div class="stack">'
+          +bt('btn d',"executeCancel('"+b.id+"','single')",tr('cancel'))+bt('chip','closeModal()',tr('back'))+'</div>'));
   } else if(m.type==='resched'){
     const asT=m.asTeacher?'true':'false';
     h=wrap(tr('reschedModalTitle'),'<p class="mut" style="margin:0">'+esc(b.student_name)+' · '+fF(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:6px 0 0">'+tr('reschedModalSub')+'</p><div class="stack">'
@@ -1597,7 +1692,7 @@ function renderModal(){
       +'<p style="margin:4px 0" dir="ltr">'+(ph?'<a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'—')+'</p>'
       +'<p class="mut" style="margin:4px 0">'+tr('m_by')+': '+esc(p.full_name||'—')+(p.email?' · <span dir="ltr">'+esc(p.email)+'</span>':'')+'</p>'
       +(b.notes?'<p class="mut" style="margin:4px 0">'+esc(b.notes)+'</p>':'')
-      +'<div class="stack">'+((Date.parse(b.starts_at)<Date.now())?(b.attendance?'<p class="mut">'+tr(b.attendance==='attended'?'r_attended':'r_noShow')+'</p>':'')+bt('btn',"markAttMenu('"+b.id+"','attended')",'✔ '+tr('r_attended'))+bt('btn g',"markAttMenu('"+b.id+"','no_show')",'✖ '+tr('r_noShow')):bt('btn',"openEdit('"+b.id+"',true)",tr('m_edit'))+bt('btn g',"confirmCancelOne('"+b.id+"')",tr('m_cancelOcc'))+(b.series_id?bt('btn g',"promptCancel('"+b.id+"')",tr('m_series')):''))+bt('chip',"icsFor('"+b.id+"')",'📆 '+tr('m_ics'))+bt('chip','closeModal()',tr('back'))+'</div>');
+      +'<div class="stack">'+((Date.parse(b.starts_at)<Date.now())?(b.attendance?'<p class="mut">'+tr(b.attendance==='attended'?'r_attended':'r_noShow')+'</p>':'')+bt('btn',"markAttMenu('"+b.id+"','attended')",'✔ '+tr('r_attended'))+bt('btn g',"markAttMenu('"+b.id+"','no_show')",'✖ '+tr('r_noShow')):bt('btn',"openEdit('"+b.id+"',true)",tr('m_edit'))+bt('btn g',"promptCancel('"+b.id+"')",tr('m_cancelOcc'))+(b.series_id?bt('btn g',"promptCancel('"+b.id+"')",tr('m_series')):''))+bt('chip',"icsFor('"+b.id+"')",'📆 '+tr('m_ics'))+bt('chip','closeModal()',tr('back'))+'</div>');
   } else if(m.type==='edit'){
     const v=m.vals||{n:b.student_name||'',p:b.contact_phone||'',t:b.notes||''};
     let tf='';
@@ -1615,11 +1710,12 @@ function renderModal(){
   }
   if(m.type==='danger'){
     const adm=m.kind==='admin', nm=adm?((S.adminData&&S.adminData.teachers||[]).find(x=>x.id===m.target)||{}).display_name||'':'';
-    h=wrap(tr(adm?'m_delTitleAdmin':'m_delTitle')+(nm?': '+nm:''),(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')+'<p>'+tr(adm?'m_delBodyAdmin':'m_delBody')+'</p><label class="fl" for="dg_in">'+tr('m_delType').replace('{w}',tr('m_delWord'))+'</label><input id="dg_in" autocomplete="off" oninput="$(\'#dg_go\').disabled=this.value.trim().toLowerCase()!==tr(\'m_delWord\').toLowerCase()"><div class="stack">'+bt('btn d" id="dg_go" disabled="disabled','confirmDanger()',tr('m_delGo'))+bt('chip','closeModal()',tr('back'))+'</div>');
+    h=wrap(tr(adm?'m_delTitleAdmin':'m_delTitle')+(nm?': '+nm:''),'<p>'+tr(adm?'m_delBodyAdmin':'m_delBody')+'</p><label class="fl" for="dg_in">'+tr('m_delType').replace('{w}',tr('m_delWord'))+'</label><input id="dg_in" autocomplete="off" oninput="$(\'#dg_go\').disabled=this.value.trim().toLowerCase()!==tr(\'m_delWord\').toLowerCase()"><div class="stack">'+bt('btn d" id="dg_go" disabled="disabled','confirmDanger()',tr('m_delGo'))+bt('chip','closeModal()',tr('back'))+'</div>');
   }
   if(!S._pf) S._pf=document.activeElement;
   M.innerHTML=h;
-  const first=M.querySelector('input,select,textarea,button:not([disabled])'); if(first&&first.focus) first.focus();
+  if(m.busy) M.querySelectorAll('button').forEach(x=>{x.disabled=true;});
+  const first=m.busy?null:M.querySelector('input,select,textarea,button:not([disabled])'); if(first&&first.focus) first.focus();
 }
 
 // ---- main render ----
