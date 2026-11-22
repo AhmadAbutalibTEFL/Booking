@@ -66,3 +66,8 @@ begin
   return jsonb_build_object('booking_id',v_first,'series_id',v_series,'created',v_created,'requested',n,'skipped',v_skipped);
 end $function$
 
+
+-- Client access to the new flag, matching the table's existing column-level
+-- grant design (keeps meeting_url/whatsapp private to their RPCs):
+grant select (allow_forever_booking) on public.teachers to anon, authenticated;
+grant update (allow_forever_booking) on public.teachers to authenticated;
