@@ -1657,6 +1657,23 @@ const _loadMe=loadMe; loadMe=async function(){await _loadMe.apply(this,arguments
 const _setTab=setTab; setTab=function(t){S.navOpen=false;S.bellOpen=false;return _setTab.apply(this,arguments)};
 window.addEventListener('offline',()=>{if(!document.getElementById('offBar')){const d=document.createElement('div');d.id='offBar';d.className='offline';d.setAttribute('role','alert');d.textContent=tr('m_offline');document.body.appendChild(d)}});
 window.addEventListener('online',()=>{const d=document.getElementById('offBar');if(d)d.remove()});
+
+// ---- Freshness: time-sensitive grids redraw when the tab wakes or time passes. ----
+// render() recomputes "now", the now-line, today highlight and past/upcoming
+// states, so the schedule never freezes at the time the page was first opened.
+// Data is also reloaded on return-to-tab via the same loaders used after saves.
+// Skipped while a dialog is open or the user is typing, so nothing in progress
+// is disturbed; the 60s timer only re-renders (no network).
+const freshBusy=()=>{const a=document.activeElement;return !!S.modal||!!(a&&(a.tagName==='INPUT'||a.tagName==='TEXTAREA'||a.tagName==='SELECT'||a.isContentEditable))};
+const freshTimeView=()=>!S.slug&&!!(S.user&&S.me)&&(S.tab==='calendar'||S.tab==='sched');
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState!=='visible'||freshBusy()) return;
+  if(freshTimeView()){
+    const reload=S.me.teacher?loadDash:loadMine;
+    reload().then(render).catch(()=>render());
+  }else if(S.slug&&S.t) render();
+});
+setInterval(()=>{if(!document.hidden&&freshTimeView()&&!freshBusy()) render();},60000);
 // ---- PWA: install button in the top bar, iOS guidance, safe service-worker updates. The worker never caches pages or API data. ----
 const pwaStandalone=()=>(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
 const pwaIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
