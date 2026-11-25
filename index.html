@@ -2215,7 +2215,7 @@ function renderModal(){
   if(!S._pf) S._pf=document.activeElement;
   M.innerHTML=h;
   if(m.busy) M.querySelectorAll('button').forEach(x=>{x.disabled=true;});
-  const first=m.busy?null:M.querySelector('input,select,textarea,button:not([disabled])'); if(first&&first.focus) first.focus();
+  const first=(m.busy||m.type==='bookingMenu')?null:M.querySelector('input,select,textarea,button:not([disabled])'); if(first&&first.focus) first.focus();
 }
 
 // schedule opens with today's column next to the hour labels; later re-renders keep the user's own scroll
