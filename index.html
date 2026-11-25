@@ -1029,8 +1029,15 @@ function tabNotif(){
    +(can&&perm!=='granted'&&perm!=='denied'?'<p><button type="button" class="btn g" style="width:auto" onclick="Notification.requestPermission().then(()=>render())">🔔 '+tr('n_desktop')+'</button></p>':'')
    +(perm==='granted'?'<p class="mut">✔ '+tr('n_desktopOn')+'</p>':'')+'<p class="mut" style="font-size:12px">'+tr('n_note')+'</p></div>';
 }
+(function(){
+  let y0=null,sd=null;
+  document.addEventListener('touchstart',e=>{const t=e.target.closest&&e.target.closest('.side.open'); if(!t||innerWidth>820){y0=null;return;} const r=t.getBoundingClientRect(), y=e.touches[0].clientY; if(y-r.top<=44&&t.scrollTop===0){y0=y;sd=t;}else y0=null;},{passive:true});
+  document.addEventListener('touchmove',e=>{if(y0===null||!sd)return; const d=Math.max(0,e.touches[0].clientY-y0); sd.style.transition='none'; sd.style.transform='translateY('+d+'px)';},{passive:true});
+  document.addEventListener('touchend',e=>{if(y0===null||!sd)return; const d=(e.changedTouches[0].clientY-y0); sd.style.transition=''; sd.style.transform=''; const x=sd; y0=null; sd=null; if(d>80) setNav(false);},{passive:true});
+})();
 function setNav(o){
   S.navOpen=!!o;
+  ovSync();
   const sd=document.querySelector('.side'), bk=document.querySelector('.sidebk'), bg=document.querySelector('.burger');
   if(sd) sd.classList.toggle('open',S.navOpen); if(bk) bk.classList.toggle('show',S.navOpen);
   document.body.classList.toggle('nav-lock',S.navOpen);
@@ -1217,6 +1224,13 @@ async function build(){
 // ---- navigation ----
 function appRouteState(){
   return {bmc:true,slug:S.slug||null,tab:S.tab||'link',teacherBooking:!!S.teacherBooking,reg:!!S.reg};
+}
+/* Back button / back swipe closes an open sheet, modal or bell panel instead of leaving the page. */
+function ovOpen(){return !!(S.navOpen||S.modal||S.bellOpen);}
+function ovSync(){
+  const open=ovOpen();
+  if(open&&!S._ovPushed){ try{history.pushState({...appRouteState(),ov:1},'',location.href); S._ovPushed=true;}catch(e){} }
+  else if(!open&&S._ovPushed){ S._ovPushed=false; if(history.state&&history.state.ov){ S._ovSkip=true; try{history.back();}catch(e){S._ovSkip=false;} } }
 }
 function writeAppHistory(mode='push'){
   try{
@@ -2371,7 +2385,7 @@ function render(){
     : (dash||isStud) ? viewDash()
     : viewHome();
   openOnToday();
-  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh();
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh(); ovSync();
   document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':(dash||isStud)&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
 }
 
@@ -2393,6 +2407,12 @@ async function init(){
   S.slug=slug;
   writeAppHistory('replace');
   window.addEventListener('popstate', async (event)=>{
+    if(S._ovSkip){ S._ovSkip=false; return; }
+    if(S._ovPushed){
+      if(S.modal&&S.modal.busy){ try{history.pushState({...appRouteState(),ov:1},'',location.href);}catch(e){} return; }
+      S._ovPushed=false; S.modal=null; S.navOpen=false; S.bellOpen=false; _refreshRetry=_refreshGiveUp=null; _mutBusy=false; render(); return;
+    }
+    if(event.state&&event.state.ov){ history.back(); return; }
     if(event.state?.bmc){ await restoreAppRoute(event.state); }
     else {
       // Keep browser Back inside the app instead of leaving an authenticated page
