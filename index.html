@@ -1810,7 +1810,7 @@ function regCard(){
     +fld(tr('slugL'),'<input id="rs" value="'+esc(slugify(nm))+'" oninput="this.dataset.m=1" style="direction:ltr" autocapitalize="none">')
     +fld(tr('tzl'),tzSel('rt',tz))
     +'<button class="btn" onclick="registerTeacher()">'+tr('create')+'</button>'
-    +(hasInvite()&&inviteLive()?'<br><button class="btn g" onclick="continueAsStudent()">'+tr('contStu')+'</button>':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
+    +(hasInvite()&&inviteLive()?'<br><button class="btn g" style="margin-top:10px" onclick="continueAsStudent()">'+tr('contStu')+'</button>':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
 }
 function viewHome(){
   if(S.reg) return regCard();
