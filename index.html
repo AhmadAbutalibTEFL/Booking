@@ -240,6 +240,15 @@ html,body{max-width:100%;overflow-x:hidden}
 .side-ft{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:auto;padding:14px 8px;border-top:1px solid var(--line)}
 .side-ft p{margin:0;font-size:13px}.side-ft .seg{background:rgba(128,132,160,.18)}.side-ft .seg button{border:0;background:transparent;border-radius:16px;padding:6px 11px;font-size:16px;cursor:pointer}.side-ft .seg button[aria-pressed=true]{background:var(--pri);color:#fff}
 }
+.btm button{overflow:hidden}.btm button:not(.on) .ic{filter:grayscale(1);opacity:.72;transition:filter .2s,opacity .2s}.btm button.on .ic{filter:none;opacity:1}
+.btm-ind{position:absolute;top:0;left:0;height:3px;border-radius:0 0 3px 3px;background:var(--pri);pointer-events:none;will-change:transform}
+.btm .rip{position:absolute;border-radius:50%;background:var(--pri);opacity:0;pointer-events:none;width:120px;height:120px;margin:-60px 0 0 -60px;animation:btmrip .5s ease-out both}
+@keyframes btmrip{0%{transform:scale(.1);opacity:.28}100%{transform:scale(2.2);opacity:0}}
+.btm .ic.pop{animation:btmpop .34s cubic-bezier(.3,1.6,.5,1)}
+@keyframes btmpop{0%{transform:scale(.8)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.main.tabin{animation:tabin .22s ease-out}
+@keyframes tabin{from{opacity:0;transform:translateX(var(--dx,0))}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.btm-ind{transition:none!important}.btm .rip,.btm .ic.pop,.main.tabin{animation:none!important}.btm button .ic{transition:none}}
 @media(prefers-reduced-motion:reduce){.btm button{transition:none}.btm button:active{transform:none}}
 .wn{position:relative;border:1px solid rgba(91,91,240,.45);background:linear-gradient(135deg,rgba(91,91,240,.14),rgba(47,196,178,.12)),var(--card);animation:wnin .35s ease both}
 .wn h2{margin:0 0 4px}.wn ul{margin:10px 0 14px;padding:0;list-style:none;display:grid;gap:10px}
@@ -1029,8 +1038,15 @@ function tabNotif(){
    +(can&&perm!=='granted'&&perm!=='denied'?'<p><button type="button" class="btn g" style="width:auto" onclick="Notification.requestPermission().then(()=>render())">🔔 '+tr('n_desktop')+'</button></p>':'')
    +(perm==='granted'?'<p class="mut">✔ '+tr('n_desktopOn')+'</p>':'')+'<p class="mut" style="font-size:12px">'+tr('n_note')+'</p></div>';
 }
+(function(){
+  let y0=null,sd=null;
+  document.addEventListener('touchstart',e=>{const t=e.target.closest&&e.target.closest('.side.open'); if(!t||innerWidth>820){y0=null;return;} const r=t.getBoundingClientRect(), y=e.touches[0].clientY; if(y-r.top<=44&&t.scrollTop===0){y0=y;sd=t;}else y0=null;},{passive:true});
+  document.addEventListener('touchmove',e=>{if(y0===null||!sd)return; const d=Math.max(0,e.touches[0].clientY-y0); sd.style.transition='none'; sd.style.transform='translateY('+d+'px)';},{passive:true});
+  document.addEventListener('touchend',e=>{if(y0===null||!sd)return; const d=(e.changedTouches[0].clientY-y0); sd.style.transition=''; sd.style.transform=''; const x=sd; y0=null; sd=null; if(d>80) setNav(false);},{passive:true});
+})();
 function setNav(o){
   S.navOpen=!!o;
+  ovSync();
   const sd=document.querySelector('.side'), bk=document.querySelector('.sidebk'), bg=document.querySelector('.burger');
   if(sd) sd.classList.toggle('open',S.navOpen); if(bk) bk.classList.toggle('show',S.navOpen);
   document.body.classList.toggle('nav-lock',S.navOpen);
@@ -1217,6 +1233,40 @@ async function build(){
 // ---- navigation ----
 function appRouteState(){
   return {bmc:true,slug:S.slug||null,tab:S.tab||'link',teacherBooking:!!S.teacherBooking,reg:!!S.reg};
+}
+/* Back button / back swipe closes an open sheet, modal or bell panel instead of leaving the page. */
+/* Bottom bar feel: tap ripple, sliding top indicator, icon pop, and a short content slide in the direction of the move (mirrored in RTL). Transform and opacity only. */
+function btmFx(){
+  const bar=document.querySelector('.btm');
+  if(!bar){ S._bi=null; S._bx=null; return; }
+  const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches, rtl=document.documentElement.dir==='rtl';
+  const btns=[...bar.querySelectorAll('button')], idx=Math.max(0,btns.findIndex(b=>b.classList.contains('on'))), act=btns[idx]; if(!act) return;
+  let ind=bar.querySelector('.btm-ind'); if(!ind){ ind=document.createElement('i'); ind.className='btm-ind'; ind.setAttribute('aria-hidden','true'); bar.appendChild(ind); }
+  const w=Math.round(act.offsetWidth*.5), x=Math.round(act.offsetLeft+(act.offsetWidth-w)/2);
+  ind.style.width=w+'px';
+  const changed=S._bi!=null&&S._bi!==idx;
+  if(rm||S._bx==null||!changed){ ind.style.transition='none'; ind.style.transform='translateX('+x+'px)'; }
+  else { ind.style.transition='none'; ind.style.transform='translateX('+S._bx+'px)'; void ind.offsetWidth; ind.style.transition='transform .26s cubic-bezier(.3,.9,.3,1)'; ind.style.transform='translateX('+x+'px)'; }
+  if(!rm){
+    const r=S._rip; if(r&&performance.now()-r.t<450&&btns[r.i]){ const el=document.createElement('span'); el.className='rip'; el.style.left=r.x+'px'; el.style.top=r.y+'px'; el.style.animationDelay=(-(performance.now()-r.t))+'ms'; btns[r.i].appendChild(el); el.addEventListener('animationend',()=>el.remove()); }
+    if(changed){
+      const ic=act.querySelector('.ic'); if(ic){ ic.classList.add('pop'); ic.addEventListener('animationend',()=>ic.classList.remove('pop'),{once:true}); }
+      const main=document.querySelector('.main'); if(main){ const dir=(idx>S._bi?1:-1)*(rtl?-1:1); main.style.setProperty('--dx',(dir*16)+'px'); main.classList.add('tabin'); main.addEventListener('animationend',()=>main.classList.remove('tabin'),{once:true}); }
+    }
+  }
+  S._bi=idx; S._bx=x;
+}
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest&&e.target.closest('.btm button'); if(!b) return;
+  const r=b.getBoundingClientRect(), btns=[...b.parentNode.querySelectorAll('button')];
+  S._rip={i:btns.indexOf(b),x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now()};
+  if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){ const el=document.createElement('span'); el.className='rip'; el.style.left=S._rip.x+'px'; el.style.top=S._rip.y+'px'; b.appendChild(el); el.addEventListener('animationend',()=>el.remove()); }
+},{passive:true});
+function ovOpen(){return !!(S.navOpen||S.modal||S.bellOpen);}
+function ovSync(){
+  const open=ovOpen();
+  if(open&&!S._ovPushed){ try{history.pushState({...appRouteState(),ov:1},'',location.href); S._ovPushed=true;}catch(e){} }
+  else if(!open&&S._ovPushed){ S._ovPushed=false; if(history.state&&history.state.ov){ S._ovSkip=true; try{history.back();}catch(e){S._ovSkip=false;} } }
 }
 function writeAppHistory(mode='push'){
   try{
@@ -2371,7 +2421,7 @@ function render(){
     : (dash||isStud) ? viewDash()
     : viewHome();
   openOnToday();
-  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh();
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh(); ovSync(); btmFx();
   document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':(dash||isStud)&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
 }
 
@@ -2393,6 +2443,12 @@ async function init(){
   S.slug=slug;
   writeAppHistory('replace');
   window.addEventListener('popstate', async (event)=>{
+    if(S._ovSkip){ S._ovSkip=false; return; }
+    if(S._ovPushed){
+      if(S.modal&&S.modal.busy){ try{history.pushState({...appRouteState(),ov:1},'',location.href);}catch(e){} return; }
+      S._ovPushed=false; S.modal=null; S.navOpen=false; S.bellOpen=false; _refreshRetry=_refreshGiveUp=null; _mutBusy=false; render(); return;
+    }
+    if(event.state&&event.state.ov){ history.back(); return; }
     if(event.state?.bmc){ await restoreAppRoute(event.state); }
     else {
       // Keep browser Back inside the app instead of leaving an authenticated page
