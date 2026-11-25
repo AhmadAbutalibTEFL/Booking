@@ -44,7 +44,7 @@ textarea{min-height:80px;resize:vertical}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit}
 .chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
-.st-bars{display:grid;gap:8px}.st-r{display:grid;grid-template-columns:84px 1fr 44px;align-items:center;gap:8px;font-size:13px}.st-t{height:10px;border-radius:6px;background:var(--line);overflow:hidden}.st-t i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--pri),var(--acc));animation:stgrow .7s ease-out forwards}.st-r b{text-align:end}@keyframes stgrow{from{width:0}to{width:var(--w)}}@media(prefers-reduced-motion:reduce){.st-t i{animation:none;width:var(--w)}}
+.st-ch{display:grid;grid-template-columns:30px 1fr;gap:6px;margin-top:26px}.st-y,.st-g{position:relative;height:var(--h,160px)}.st-y span{position:absolute;inset-inline-end:0;transform:translateY(50%);font-size:11px;color:var(--mut)}.st-g i{position:absolute;inset-inline:0;border-top:1px solid var(--line)}.st-g i:first-child{border-top-color:var(--mut)}.st-pl{position:relative}.st-cols{position:absolute;top:0;inset-inline:0;display:flex;gap:6px}.st-c{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}.st-bw{height:var(--h,160px);width:100%;display:flex;align-items:flex-end;justify-content:center}.st-bar{position:relative;width:70%;max-width:44px;height:0;border-radius:8px 8px 0 0;background:linear-gradient(0deg,var(--pri),var(--acc));animation:stup .7s ease-out forwards}.st-bar b{position:absolute;top:-18px;inset-inline:-10px;text-align:center;font-size:12px;animation:stfade .9s ease-out both}.st-l{margin-top:6px;font-size:11px;color:var(--mut);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}.st-sp{height:30px}@keyframes stup{from{height:0}to{height:var(--v)}}@keyframes stfade{from{opacity:0}60%{opacity:0}to{opacity:1}}@media(prefers-reduced-motion:reduce){.st-bar{animation:none;height:var(--v)}.st-bar b{animation:none}}
 .chip.danger{color:var(--danger);border-color:var(--line)}
 .chip small{display:block;opacity:.75}
 .btn{width:100%;border:0;border-radius:14px;padding:14px;font-size:16px;font-weight:600;color:#fff;background:var(--pri);cursor:pointer;font-family:inherit}
@@ -1683,8 +1683,11 @@ function tabHistory(){
 
 /* ---- Teaching stats (teacher): computed in the page from the same past-lessons list as History ---- */
 function stBars(rows){
-  const mx=Math.max(1,...rows.map(r=>r[1]));
-  return '<div class="st-bars">'+rows.map(r=>'<div class="st-r"><span>'+esc(r[0])+'</span><div class="st-t"><i style="--w:'+Math.round(r[1]/mx*100)+'%"></i></div><b>'+r[1]+'</b></div>').join('')+'</div>';
+  const mx=Math.max(0,...rows.map(r=>r[1])), steps=[0.5,1,2,5,10,20,50,100,200,500], step=steps.find(x=>x>=mx/4)||1000, top=step*4;
+  const t=[0,1,2,3,4].map(i=>i*step), f=v=>(Math.round(v*10)/10).toString();
+  return '<div class="st-ch"><div class="st-y" aria-hidden="true">'+t.map(v=>'<span style="bottom:'+(v/top*100)+'%">'+f(v)+'</span>').join('')+'</div>'
+    +'<div class="st-pl"><div class="st-g" aria-hidden="true">'+t.map(v=>'<i style="bottom:'+(v/top*100)+'%"></i>').join('')+'</div>'
+    +'<div class="st-cols">'+rows.map(r=>'<div class="st-c" role="img" title="'+esc(r[2]||r[0])+'" aria-label="'+esc(r[2]||r[0])+': '+f(r[1])+'"><div class="st-bw"><div class="st-bar" style="--v:'+(r[1]/top*100)+'%"><b>'+f(r[1])+'</b></div></div><div class="st-l">'+esc(r[0])+'</div></div>').join('')+'</div><div class="st-sp"></div></div></div>';
 }
 function tabStats(){
   const head='<div class="card"><h2 style="margin:0">'+tr('st_title')+'</h2><p class="mut" style="margin:8px 0 0">'+tr('st_hint')+'</p></div>';
@@ -1702,7 +1705,7 @@ function tabStats(){
   const now=new Date(), d0=new Date(now.getFullYear(),now.getMonth(),now.getDate()); d0.setDate(d0.getDate()-((d0.getDay()+6)%7));
   const wk=[]; for(let i=7;i>=0;i--){const a=new Date(d0); a.setDate(a.getDate()-i*7); wk.push({a:a.getTime(),m:0});}
   S.hist.forEach(b=>{ if(b.attendance!=='attended') return; const t=Date.parse(b.starts_at); for(let i=wk.length-1;i>=0;i--){ if(t>=wk[i].a){ wk[i].m+=dur(b); break; } } });
-  const wrows=wk.map(w=>[new Date(w.a).toLocaleDateString(loc(),{day:'numeric',month:'short'}),Math.round(w.m/6)/10]);
+  const wrows=wk.map(w=>[new Date(w.a).toLocaleDateString(loc(),{day:'numeric',month:'numeric'}),Math.round(w.m/6)/10]);
   // busiest weekdays (attended lessons in the period), Monday first
   const wd=[0,0,0,0,0,0,0]; att.forEach(b=>{wd[(new Date(b.starts_at).getDay()+6)%7]++;});
   const dn=[...Array(7)].map((_,i)=>new Date(2024,0,1+i).toLocaleDateString(loc(),{weekday:'short'}));
@@ -1716,7 +1719,7 @@ function tabStats(){
     +'<div class="rw-stats">'+tiles.map(x=>'<div><b>'+x[0]+'</b><small>'+tr(x[1])+'</small></div>').join('')+'</div></div>'
     +'<div class="card"><h2>'+tr('st_weeks')+'</h2>'+stBars(wrows)+'</div>'
     +'<div class="card"><h2>'+tr('st_days')+'</h2>'+(att.length?stBars(dn.map((n,i)=>[n,wd[i]])):'<p class="mut">'+tr('h_none')+'</p>')+'</div>'
-    +'<div class="card"><h2>'+tr('st_top')+'</h2>'+(top.length?stBars(top):'<p class="mut">'+tr('h_none')+'</p>')+'</div>';
+    +'<div class="card"><h2>'+tr('st_top')+'</h2>'+(top.length?stBars(top.map(x=>[x[0].split(/\s+/)[0],x[1],x[0]])):'<p class="mut">'+tr('h_none')+'</p>')+'</div>';
 }
 function tabProfile(){
   const t=S.me.teacher;
