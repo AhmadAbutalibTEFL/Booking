@@ -231,6 +231,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .wn-x{position:absolute;top:8px;inset-inline-end:8px;width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--mut);font-size:18px;cursor:pointer;box-shadow:none}
 @keyframes wnin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.wn{animation:none}}
+.ni-wrap{border-bottom:1px solid var(--line)}.ni-wrap .ni{border-bottom:0}.pay-ask{padding:0 12px 12px 30px;font-size:14px}[dir=rtl] .pay-ask{padding:0 30px 12px 12px}.pay-terms{display:flex;gap:8px;margin-top:8px}.pay-terms input{flex:1;min-width:0;max-width:130px}.pay-terms select{width:auto}.pay-two{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.pay-two .chip{flex:1;min-height:44px}
 @media print{.btm,.btm-sp,.bar,.side,.seg,.chip,.btn,.calnav,.ttsearch,.site-footer,#panelRoot,.tt2-legend{display:none!important}.tt2-wrap{max-height:none;overflow:visible}}
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -605,9 +606,15 @@ function tabCredits(){
     return '<div class="card cr-row"><div class="cr-rg">'+crRing(st)+'<div class="cr-num"><b class="cr-n" data-k="'+esc(st.key)+'" data-n="'+Math.max(0,st.remaining)+'">'+Math.max(0,st.remaining)+'</b><small>'+tr('cr_left')+'</small></div></div>'
       +'<div class="cr-mid"><b>'+esc(st.name)+'</b>'+((st.email||st.phone)?'<br><span class="mut" dir="ltr" style="font-size:13px">'+esc(st.email||st.phone)+'</span>':'')
       +'<div class="cr-chips"><span class="sd-st mu">'+tr('cr_of').replace('{t}',st.total)+'</span><span class="sd-st mu">'+tr('cr_used').replace('{n}',st.used)+'</span>'+(st.pending?'<span class="sd-st mu">'+tr('cr_booked').replace('{n}',st.pending)+'</span>':'')+(st.free>0?'<span class="sd-st ok">'+tr('cr_free').replace('{n}',st.free)+'</span>':'')+(few?'<span class="sd-st soft">'+tr('cr_few')+'</span>':'')+'</div>'
-      +(st.uncovered>0?'<p class="cr-note warn" style="margin:8px 0 0">'+tr('cr_over').replace('{n}',st.uncovered)+'</p>':'')+'</div>'
+      +payStudentRow(st)+(st.uncovered>0?'<p class="cr-note warn" style="margin:8px 0 0">'+tr('cr_over').replace('{n}',st.uncovered)+'</p>':'')+'</div>'
       +'<div class="cr-act"><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredit(this.dataset.k)">＋ '+tr('cr_add')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredLog(this.dataset.k)">'+tr('cr_log')+'</button></div></div>';
   }).join('');
+}
+function payStudentRow(st){
+  payLazy(); if(!S.pay) return '';
+  const m=S.pay.modes[st.key]||(st.total>0?'before':'after');
+  return '<div class="pay-two" style="margin-top:8px" role="group" aria-label="'+esc(tr('pay_card'))+'">'+['after','before'].map(k=>'<button type="button" class="chip'+(m===k?' on':'')+'" aria-pressed="'+(m===k)+'" data-k="'+esc(st.key)+'" onclick="payStudent(this.dataset.k,\''+k+'\')">'+tr(k==='after'?'pay_after':'pay_before')+'</button>').join('')+'</div>'
+    +(()=>{const t=payTerms(st.key); return '<div class="pay-terms" data-k="'+esc(st.key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select></div>'})();
 }
 function openCredit(key){
   const all=S.cr?S.cr.students.concat(S.cr.known):[]; const pre=key?all.find(x=>x.key===key):null;
@@ -627,7 +634,7 @@ function crUseEmail(e){const i=$('#cr_e'); if(i) i.value=e; const g=$('#cr_sug')
 async function submitCredit(){
   const m=S.modal; if(!m||m.busy) return;
   const k=$('#cr_sel').value, all=S.cr?S.cr.students.concat(S.cr.known):[], sel=all.find(x=>x.key===k);
-  const v={k,e:($('#cr_e')?$('#cr_e').value.trim():''),n:k==='__new'?$('#cr_n').value.trim():(sel?sel.name:''),p:(sel&&sel.phone)||'',l:$('#cr_l').value.trim(),d:$('#cr_d').value,t:$('#cr_t').value.trim()};
+  const v={k,e:($('#cr_e')?$('#cr_e').value.trim():''),n:k==='__new'?$('#cr_n').value.trim():(sel?sel.name:''),p:(sel&&sel.phone)||'',l:$('#cr_l').value.trim(),d:$('#cr_d').value,t:$('#cr_t').value.trim(),a:($('#cr_a')?$('#cr_a').value.trim():'')};
   const fail=e=>{S.modal={...m,vals:v,err:e};render()};
   const n=parseInt(v.l,10);
   if(!k) return fail(tr('cr_errName'));
@@ -636,7 +643,7 @@ async function submitCredit(){
   if(!Number.isInteger(n)||n===0||Math.abs(n)>500) return fail(tr('cr_errN'));
   S.modal={...m,vals:v};
   const ok=await runMutation(
-    ()=>sb.rpc('add_credits_for',{p_key:k==='__new'?null:k,p_name:v.n||null,p_phone:v.p||null,p_email:v.e||null,p_lessons:n,p_paid_on:v.d||crToday(),p_note:v.t||null}).then(r=>r.error),
+    ()=>sb.rpc('add_credits_for',{p_key:k==='__new'?null:k,p_name:v.n||null,p_phone:v.p||null,p_email:v.e||null,p_lessons:n,p_paid_on:v.d||crToday(),p_note:v.t||null}).then(async r=>{ if(r.error) return r.error; const am=parseFloat(v.a); if(n>0&&v.a!==''&&am>=0&&r.data&&r.data.id){ const q=await sb.rpc('set_credit_amount',{p_id:r.data.id,p_amount:am}); return q.error||null; } return null; }),
     async()=>loadCredits(true),
     tr('cr_saved').replace('{n}',n).replace('{s}',v.n||(sel&&sel.name)||v.e));
   if(ok&&n>0&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){try{const c=confettiInst(); if(c) c({particleCount:60,spread:70,origin:{y:.7}});}catch(e){}}
@@ -671,7 +678,88 @@ function statsCard(){
 function tabMe(){return flashHtml()+statsCard()+rewardsCard()}
 Object.assign(T.en,{wn_title:'What’s new',wn_sub:'A few updates since you last looked.',wn_1:'Stats tab',wn_1d:'See your lessons week by week with simple charts.',wn_2:'History tab',wn_2d:'Every past lesson in one place, with its status.',wn_3:'Shared lessons per email',wn_3d:'Up to 3 students can share one balance.',wn_4:'Clearer bell and ☰ menu',wn_4d:'Bigger, easier to tap, with a count.',wn_ok:'Got it',wn_x:'Close'});
 Object.assign(T.ar,{wn_title:'الجديد',wn_sub:'بعض التحديثات منذ زيارتك الأخيرة.',wn_1:'تبويب الإحصاءات',wn_1d:'شاهد حصصك أسبوعاً بأسبوع برسوم بسيطة.',wn_2:'تبويب السجل',wn_2d:'كل الحصص السابقة في مكان واحد مع حالتها.',wn_3:'رصيد مشترك لكل بريد',wn_3d:'حتى 3 طلاب يشتركون في رصيد واحد.',wn_4:'جرس أوضح وقائمة ☰',wn_4d:'أكبر وأسهل في اللمس مع عدّاد.',wn_ok:'فهمت',wn_x:'إغلاق'});
+Object.assign(T.en,{pay_title:'Payments',pay_price:'Default price per lesson',pay_cur:'Currency',pay_priceHint:'Used for new students. Each student can have their own price and currency. Students never see any of it.',pay_stPrice:'Price',pay_termsSaved:'Saved',pay_saved:'Payment settings saved',pay_err:'Enter a price between 0 and 100000',pay_label:'Pays',pay_after:'After the lesson',pay_before:'Before (lesson balance)',pay_remembered:'Remembered for this student. You can change it anytime.',pay_ask:'How will {s} pay?',pay_set:'Saved: {m}',pay_tA:'Pays after',pay_tB:'Prepaid',cr_amount:'Amount paid (optional)',pay_card:'How this student pays'});
+Object.assign(T.ar,{pay_title:'المدفوعات',pay_price:'السعر الافتراضي للحصة',pay_cur:'العملة',pay_priceHint:'يُستخدم للطلاب الجدد. يمكن لكل طالب أن يكون له سعر وعملة خاصان. لا يراها الطلاب.',pay_stPrice:'السعر',pay_termsSaved:'تم الحفظ',pay_saved:'تم حفظ إعدادات الدفع',pay_err:'أدخل سعراً بين 0 و 100000',pay_label:'الدفع',pay_after:'بعد الحصة',pay_before:'قبل (رصيد حصص)',pay_remembered:'محفوظ لهذا الطالب. يمكنك تغييره في أي وقت.',pay_ask:'كيف يتم الدفع لدى {s}؟',pay_set:'تم الحفظ: {m}',pay_tA:'يدفع بعد',pay_tB:'دفع مسبق',cr_amount:'المبلغ المدفوع (اختياري)',pay_card:'طريقة دفع هذا الطالب'});
 const NAV={link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings'],rank:['🏅','nav_rank'],credits:['🎟️','nav_credits'],stats:['📊','nav_stats'],history:['📖','nav_history'],sched:['🗓️','nav_sched']};
+// ---- payments: per-student pay type, price per lesson (teacher-only; students never see any of it) ----
+async function loadPay(){
+  if(!S.me||!S.me.teacher||S._payLoading) return; S._payLoading=true;
+  try{ const r=await sb.rpc('get_pay_context'); if(!r.error&&r.data){const d=r.data; S.pay={price:d.price,currency:d.currency||'SAR',modes:d.modes||{},terms:d.terms||{},bk:new Map((d.bk||[]).map(x=>[x.id,x])),names:(d.bk||[])}; S._payLoading=false; render(); return;} }catch(e){}
+  S._payLoading=false;
+}
+function payLazy(){ if(S.me&&S.me.teacher&&!S.pay&&!S._payLoading) setTimeout(loadPay,0); }
+function payOf(bid){ const x=S.pay&&S.pay.bk.get(bid); return x?{key:x.key,mode:S.pay.modes[x.key]||null,byT:!!x.by_teacher}:null }
+const PAY_CUR=['SAR','USD','EGP','AED','KWD','QAR','BHD','OMR','JOD','EUR','GBP'];
+function curOpts(sel){ const l=PAY_CUR.slice(); if(sel&&!l.includes(sel)) l.push(sel); return l.map(c=>'<option'+(c===sel?' selected':'')+'>'+esc(c)+'</option>').join('') }
+function payTerms(key){ const t=S.pay&&S.pay.terms&&S.pay.terms[key]; return {price:(t&&t.price!=null)?t.price:(S.pay?S.pay.price:null), cur:(t&&t.currency)||(S.pay&&S.pay.currency)||'SAR', own:!!(t&&(t.price!=null||t.currency))} }
+function payKeyByName(name){ const n=String(name||'').trim().toLowerCase(); if(!n||!S.pay) return null; const x=S.pay.names.find(b=>String(b.name||'').trim().toLowerCase()===n); return x?x.key:null }
+async function payTermsSave(el){
+  const w=el.closest('.pay-terms'), key=w.dataset.k, raw=(w.querySelector('input').value||'').trim(), pr=raw===''?null:parseFloat(raw);
+  if(pr!==null&&!(pr>=0&&pr<=100000)){flash(tr('pay_err'),true);return}
+  const c=w.querySelector('select').value, r=await sb.rpc('set_student_terms',{p_key:key,p_price:pr,p_currency:c});
+  if(r.error){flash(r.error.message||tr('taken'),true);return}
+  S.pay.terms[key]={price:pr,currency:c}; flash(tr('pay_termsSaved'),false);
+}
+function payAsk(bid){ const p=payOf(bid); return !!(p&&!p.byT&&!p.mode) }
+function payRemembered(name){
+  const n=String(name||'').trim().toLowerCase(); if(!n||!S.pay) return null;
+  const x=S.pay.names.find(b=>String(b.name||'').trim().toLowerCase()===n&&S.pay.modes[b.key]); return x?S.pay.modes[x.key]:null;
+}
+function payChoice(bid,name){
+  return '<div class="pay-ask"><b>'+esc(tr('pay_ask').replace('{s}',name||''))+'</b><div class="pay-two"><button type="button" class="chip" onclick="payAnswer(\''+esc(bid)+'\',\'after\')">'+tr('pay_after')+'</button><button type="button" class="chip" onclick="payAnswer(\''+esc(bid)+'\',\'before\')">'+tr('pay_before')+'</button></div></div>';
+}
+function payBadge(b){
+  const p=payOf(b.id); if(!p) return '';
+  if(p.mode) return '<span class="badge">'+tr(p.mode==='before'?'pay_tB':'pay_tA')+'</span>';
+  return p.byT?'':payChoice(b.id,b.student_name);
+}
+async function payAnswer(bid,mode){
+  const r=await sb.rpc('set_booking_pay',{p_booking:bid,p_mode:mode});
+  if(r.error){flash(r.error.message||tr('taken'),true);return}
+  await loadPay();
+  if(mode==='before'){ await loadCredits(true); openCredit(r.data); }
+  else flash(tr('pay_set').replace('{m}',tr('pay_after')),false);
+}
+async function payStudent(key,mode){
+  const r=await sb.rpc('set_student_pay',{p_key:key,p_mode:mode});
+  if(r.error){flash(r.error.message||tr('taken'),true);return}
+  await loadPay();
+}
+function payPickHtml(){
+  return '<label class="mut" style="display:block;margin-top:10px">'+tr('pay_label')+'</label><div class="pay-two" id="payPick" role="group" aria-label="'+tr('pay_label')+'"><button type="button" class="chip" data-m="after" onclick="payPickSet(\'after\')">'+tr('pay_after')+'</button><button type="button" class="chip" data-m="before" onclick="payPickSet(\'before\')">'+tr('pay_before')+'</button></div><div class="pay-terms" id="payTermsF"><input id="pp_p" type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" oninput="S.payPrice=this.value"><select id="pp_c" aria-label="'+esc(tr('pay_cur'))+'" onchange="S.payCur=this.value">'+curOpts('SAR')+'</select></div><p class="mut" id="payHint" style="margin:4px 0 10px;font-size:13px"></p>';
+}
+function payRefresh(){
+  const g=document.getElementById('payPick'); if(!g) return;
+  const rem=payRemembered(($('#sn')||{}).value), m=S.payPick||rem||'after';
+  g.querySelectorAll('button').forEach(b=>{const on=b.dataset.m===m; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on))});
+  const key=payKeyByName(($('#sn')||{}).value), t=key?payTerms(key):{price:S.pay?S.pay.price:null,cur:S.pay?S.pay.currency:'SAR'}, pe=$('#pp_p'), ce=$('#pp_c');
+  if(pe) pe.value=S.payPrice!=null?S.payPrice:(t.price==null?'':String(t.price));
+  if(ce) ce.value=S.payCur!=null?S.payCur:t.cur;
+  const h=document.getElementById('payHint'); if(h) h.textContent=(!S.payPick&&rem)?tr('pay_remembered'):'';
+}
+function payPickSet(m){S.payPick=m; payRefresh()}
+function payCard(){
+  payLazy();
+  if(!S.pay) return '<div class="card mut" role="status">…</div>';
+  const cur=S.pay.currency||'SAR';
+  return '<div class="card"><h2>💳 '+tr('pay_title')+'</h2>'
+    +fld(tr('pay_price'),'<input id="pay_p" type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" value="'+(S.pay.price==null?'':esc(String(S.pay.price)))+'"><p class="mut" style="margin:-4px 0 10px">'+tr('pay_priceHint')+'</p>')
+    +fld(tr('pay_cur'),'<select id="pay_c">'+curOpts(cur)+'</select>')
+    +'<button class="btn" onclick="savePay()">'+tr('save')+'</button></div>';
+}
+async function savePay(){
+  const raw=($('#pay_p').value||'').trim(), pr=raw===''?null:parseFloat(raw);
+  if(pr!==null&&!(pr>=0&&pr<=100000)){flash(tr('pay_err'),true);return}
+  const c=$('#pay_c').value, r=await sb.rpc('set_pay_settings',{p_price:pr,p_currency:c});
+  if(r.error){flash(r.error.message||tr('taken'),true);return}
+  S.pay.price=pr; S.pay.currency=c; flash(tr('pay_saved'),false);
+}
+async function payAfterBooking(bid,mode,tp){
+  const r=await sb.rpc('set_booking_pay',{p_booking:bid,p_mode:mode}); if(r.error) return;
+  if(tp&&(tp.price!=null||tp.cur!=null)){ const raw=String(tp.price==null?'':tp.price).trim(), pr=raw===''?null:parseFloat(raw), key=r.data, cur=S.pay&&S.pay.terms&&S.pay.terms[key]; await sb.rpc('set_student_terms',{p_key:key,p_price:(pr!==null&&pr>=0&&pr<=100000)?pr:(tp.price==null?(cur?cur.price:null):null),p_currency:tp.cur||(cur&&cur.currency)||(S.pay?S.pay.currency:'SAR')}); }
+  await loadPay();
+  if(mode==='before'){ await loadCredits(true); openCredit(r.data); }
+}
 function notifWhen(iso){return iso?new Date(iso).toLocaleString(loc(),{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit',timeZone:S.me&&S.me.teacher?S.me.teacher.timezone:undefined}):''}
 function notifText(n){
   const d=n.data||{}, f=(k)=>tr(k).replace('{s}',d.student_name||'').replace('{w}',notifWhen(d.starts_at)).replace('{a}',d.actor_name||tr('n_someone')).replace('{c}',(d.changes||[]).map(c=>tr('n_ch_'+c)).join(', '));
@@ -701,6 +789,7 @@ function startNotifs(){
       const n=p.new; if(!n||S.notifs.some(x=>x.id===n.id)) return;
       S.notifs.unshift(n); S.unread++; S._nk=null; const txt=notifText(n); showToast('🔔 '+txt);
       if(document.hidden&&window.Notification&&Notification.permission==='granted'){try{new Notification('BookMyClass',{body:txt})}catch(e){}}
+      if(S.me&&S.me.teacher&&n.kind==='booking_new') loadPay();
       if(/^booking_/.test(n.kind||'')&&!S.modal&&!S.rs&&!S.slug){loadMine().then(()=>render());return}
       if(S.bellOpen||S.tab==='notif') render(); else updateBadges();
     }).subscribe();
@@ -721,7 +810,9 @@ async function openNotif(id){
 }
 function toggleBell(){S.bellOpen=!S.bellOpen; if(S.bellOpen&&!S.notifLoaded) loadNotifs(); render();}
 function notifItem(n){
-  return '<button type="button" class="ni'+(n.read_at?'':' unread')+'" onclick="openNotif('+n.id+')"><span class="u" aria-hidden="true" style="visibility:'+(n.read_at?'hidden':'visible')+'"></span><span style="flex:1;min-width:0"><span style="display:block">'+({booking_new:'🆕 ',booking_cancelled:'❌ ',booking_changed:'✏️ '}[n.kind]||'')+esc(notifText(n))+'</span><small class="mut">'+esc(timeAgo(n.created_at))+'</small></span></button>';
+  const ask=S.me&&S.me.teacher&&n.kind==='booking_new'&&n.booking_id&&payAsk(n.booking_id); if(S.me&&S.me.teacher) payLazy();
+  const btn='<button type="button" class="ni'+(n.read_at?'':' unread')+'" onclick="openNotif('+n.id+')"><span class="u" aria-hidden="true" style="visibility:'+(n.read_at?'hidden':'visible')+'"></span><span style="flex:1;min-width:0"><span style="display:block">'+({booking_new:'🆕 ',booking_cancelled:'❌ ',booking_changed:'✏️ '}[n.kind]||'')+esc(notifText(n))+'</span><small class="mut">'+esc(timeAgo(n.created_at))+'</small></span></button>';
+  return ask?'<div class="ni-wrap">'+btn+payChoice(n.booking_id,(n.data&&n.data.student_name)||'')+'</div>':btn;
 }
 function renderPanel(){
   let P=document.getElementById('panelRoot'); if(!P) return;
@@ -881,7 +972,7 @@ async function loadDash(){
   S.dTypes=a.data||[]; S.dRules=b.data||[]; S.dExc=c.data||[];
   S.wk={}; for(let i=0;i<7;i++) S.wk[i]=[];
   S.dRules.forEach(r=>S.wk[r.weekday].push([r.start_time.slice(0,5),r.end_time.slice(0,5)]));
-  S.dBk=bk.data||[];
+  S.dBk=bk.data||[]; if(S.me.teacher) loadPay();
   try {
     const ids=S.dBk.map(x=>x.id);
     if(ids.length){
@@ -966,7 +1057,7 @@ async function nav(slug){
 function setTab(t){S.tab=t;if(t==='credits'&&S.me&&S.me.teacher)loadCredits(true); if((t==='history'||t==='stats')&&S.me&&S.me.teacher)loadHistory(true);S.err='';S.msg='';writeAppHistory('push');if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
 async function startTeacherBooking(){
   if(!S.me?.teacher) return;
-  S.teacherBooking=true; S.rs=null; S.rsAsTeacher=true; S.rsFrom=null; S.done=null; S.err='';
+  S.payPick=null;S.payPrice=null;S.payCur=null; S.teacherBooking=true; S.rs=null; S.rsAsTeacher=true; S.rsFrom=null; S.done=null; S.err='';
   S.slug=S.me.teacher.slug; S.rsAsTeacher=true; S.teacherBooking=true; writeAppHistory('push'); await loadTeacher(); await loadBook(); S.rsAsTeacher=true; S.teacherBooking=true; render();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -987,7 +1078,7 @@ async function signIn(){
   if(S.slug) ls.set('next',S.slug);
   await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/'}});
 }
-async function signOut(){await sb.auth.signOut();S.user=null;S.me=null;S.mine=[];S.rs=null;S.loaded=null;S.reg=false;S.modal=null;render()}
+async function signOut(){await sb.auth.signOut();S.pay=null;S.user=null;S.me=null;S.mine=[];S.rs=null;S.loaded=null;S.reg=false;S.modal=null;render()}
 
 // ---- booking actions ----
 async function contactFor(id){
@@ -1000,6 +1091,7 @@ function bookErr(msg){
 }
 function fillKnown(el){
   if(!S.teacherBooking) return;
+  setTimeout(payRefresh,0);
   const b=[...S.dBk].reverse().find(x=>x.student_name===el.value&&x.contact_phone), p=$('#ph');
   if(b&&p&&!p.value) p.value=b.contact_phone;
 }
@@ -1019,13 +1111,13 @@ async function book(){
     const {data,error}=await sb.rpc('book_lesson',{p_teacher:S.t.id,p_session_type:S.ty.id,p_starts:new Date(S.slot).toISOString(),p_student:n,p_phone:ph,p_notes:'',p_mode:mode,p_count:cnt});
     if(error){S.booking=false; S.err=''; await loadBook(true); S.err=bookErr(error.message); render(); return;}
     const skipped=(data&&data.skipped)||[], bid=data&&data.booking_id;
-    const createdForTeacher=!!S.teacherBooking;
+    const createdForTeacher=!!S.teacherBooking, payMode=createdForTeacher?(S.payPick||payRemembered(n)||'after'):null, payTp=(createdForTeacher&&(S.payPrice!=null||S.payCur!=null))?{price:S.payPrice,cur:S.payCur}:null; S.payPick=null; S.payPrice=null; S.payCur=null;
     S.err='';
     if(createdForTeacher){
       S.booking=false;
       S.teacherBooking=false; S.rsAsTeacher=false; S.slug=null; S.done=null;
       await loadDash(); S.tab='calendar';
-      S.msg=(lang==='ar'?'تم حجز الحصة للطالب بنجاح.':'Lesson booked for the student.')+(skipped.length?' '+tr('m_skipped')+': '+skipped.length:''); render(); return;
+      S.msg=(lang==='ar'?'تم حجز الحصة للطالب بنجاح.':'Lesson booked for the student.')+(skipped.length?' '+tr('m_skipped')+': '+skipped.length:''); render(); if(bid) payAfterBooking(bid,payMode,payTp); return;
     }
     // The booking is confirmed. Keep the loading state while contact details and
     // earned points load in parallel, then show the complete success card once,
@@ -1413,7 +1505,7 @@ function viewBook(){
   if(S.slot){
     h+='<div class="card"><h2><span class="n">3</span>'+tr('details')+'</h2>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'<p><b>'+fF(S.slot)+'</b> · '+S.ty.duration_min+' '+tr('min')+'</p>';
     h+=S.rs?'<button class="btn" id="rsBtn" onclick="doResched()">'+tr('confirmNew')+'</button>'
-      :'<input id="sn" list="knownStudents" oninput="fillKnown(this)" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+((S.t&&S.t.allow_forever_booking)?'<label class="mut">'+tr('recurringChoice')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"> '+tr('weeklyRecurring')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"> '+tr('fixedCount')+'</label><div id="recurrenceCountWrap"><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small></div><p class="mut">'+tr('recurringHintOpen')+'</p>':'<label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small><p class="mut">'+tr('recurringHint')+'</p>')+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
+      :'<input id="sn" list="knownStudents" oninput="fillKnown(this)" placeholder="'+(S.teacherBooking?tr('existingStudent'):tr('name'))+'"><datalist id="knownStudents">'+(S.teacherBooking?[...new Set(S.dBk.map(b=>b.student_name).filter(Boolean))].sort().map(n=>'<option value="'+esc(n)+'">').join(''):'')+'</datalist><input id="ph" type="tel" placeholder="'+tr('phone')+'">'+((S.t&&S.t.allow_forever_booking)?'<label class="mut">'+tr('recurringChoice')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringWeekly" value="weekly" onchange="document.getElementById(\'recurrenceCountWrap\').hidden=true"> '+tr('weeklyRecurring')+'</label><label class="ck"><input type="radio" name="recurrenceMode" id="recurringFixed" value="fixed" checked onchange="document.getElementById(\'recurrenceCountWrap\').hidden=false"> '+tr('fixedCount')+'</label><div id="recurrenceCountWrap"><label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small></div><p class="mut">'+tr('recurringHintOpen')+'</p>':'<label class="mut">'+tr('recurrenceCount')+'</label><input id="recurrenceCount" type="number" min="1" max="52" value="8"><small class="mut">'+tr('m_countHint')+'</small><p class="mut">'+tr('recurringHint')+'</p>')+(S.teacherBooking?payPickHtml():'')+'<button class="btn" onclick="book()">'+tr('book')+'</button>';
     h+='</div>';
   } else if(S.err) h+='<div class="card err">'+esc(S.err)+'</div>';
   return h;
@@ -1657,10 +1749,11 @@ function teacherCalendar(){
 }
 
 function tabBookings(){
+  payLazy();
   return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+flashHtml()+(S.dBk.length?S.dBk.map(b=>{
     const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
     return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
-      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'<br><span class="mut">'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+payBadge(b)+'<br><span class="mut">'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
       +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button></div></div>';
   }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
 }
@@ -1767,7 +1860,7 @@ function tabProfile(){
     +'<label class="ck"><input id="onspot" type="checkbox"'+(t.on_the_spot_booking?' checked':'')+'> '+tr('onSpot')+'</label><p class="mut">'+tr('noticeEight')+'</p>'
     +'<label class="ck"><input id="allowopen" type="checkbox"'+(t.allow_forever_booking?' checked':'')+'> '+tr('allowForever')+'</label><p class="mut">'+tr('allowForeverHint')+'</p>'
     +fld(tr('slugL'),'<input id="ps" style="direction:ltr" value="'+esc(t.slug)+'"><p class="mut" style="margin:-4px 0 10px">'+tr('slugWarn')+'</p>')
-    +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>'+acctCard();
+    +'<button class="btn" onclick="saveProfile()">'+tr('save')+'</button></div>'+payCard()+acctCard();
 }
 function adminDashboard(){
   if(!S.adminData&&!S.adminLoading&&S.me&&S.me.role==='admin'){setTimeout(loadAdminOverview,0);return '<div class="card mut">…</div>';}
@@ -1944,6 +2037,7 @@ function renderModal(){
       +'</div><div id="cr_embox"'+(isNew||(selX&&!selX.email)?'':' style="display:none"')+'><label class="fl" for="cr_e">'+tr('cr_email')+(isNew?'':' ('+tr('cr_opt')+')')+'</label><input id="cr_e" type="email" inputmode="email" maxlength="254" dir="ltr" autocomplete="off" value="'+esc(v.e||'')+'"><div id="cr_sug">'+(selX&&selX.suggest&&!v.e?'<button type="button" class="chip" style="margin-top:6px" data-e="'+esc(selX.suggest)+'" onclick="crUseEmail(this.dataset.e)">'+tr('cr_sameAs').replace('{e}',esc(selX.suggest))+'</button>':'')+'</div></div>'
       +'<label class="fl" for="cr_l">'+tr('cr_lessons')+'</label><div class="cr-q">'+[4,8,16].map(n=>'<button type="button" class="chip" onclick="crQuick('+n+')">'+n+'</button>').join('')+'<input id="cr_l" type="number" inputmode="numeric" min="-500" max="500" step="1" placeholder="'+esc(tr('cr_other'))+'" value="'+esc(v.l)+'"></div><p class="mut" style="margin:2px 0 0;font-size:12px">'+tr('cr_otherHint')+'</p>'
       +'<label class="fl" for="cr_d">'+tr('cr_paid')+'</label><input id="cr_d" type="date" value="'+esc(v.d)+'">'
+      +'<label class="fl" for="cr_a">'+tr('cr_amount')+'</label><input id="cr_a" type="number" inputmode="decimal" min="0" max="10000000" step="0.01" dir="ltr" value="'+esc(v.a||'')+'">'
       +'<label class="fl" for="cr_t">'+tr('cr_note')+'</label><input id="cr_t" maxlength="500" placeholder="'+esc(tr('cr_notePh'))+'" value="'+esc(v.t)+'">'
       +'<div class="stack">'+bt('btn" id="cr_save','submitCredit()',tr('cr_save'))+bt('chip','closeModal()',tr('back'))+'</div>');
   }
@@ -2004,7 +2098,7 @@ function render(){
     : (dash||isStud) ? viewDash()
     : viewHome();
   openOnToday();
-  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh();
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh();
   document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':(dash||isStud)&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
 }
 
