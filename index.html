@@ -346,7 +346,7 @@ const T = {
   nav_close:'Close menu',
   sd_tz:'Times are shown in your timezone ({z}).',sd_rules:'You can change or cancel a lesson here. If it is too late to change it online, you will be asked to message your teacher.',sd_next:'Next lesson',sd_past:'Past & cancelled lessons',sd_pastEmpty:'No past lessons yet.',sd_pastErr:'Couldn’t load your lesson history right now. Please try again later.',sd_more:'Show more',sd_less:'Show less',sd_confirmed:'Confirmed',sd_completed:'Completed',sd_cancelled:'Cancelled',
   homeTitle:'Book a new lesson',homeHint:'Open the booking link your teacher shared with you to view their schedule.',noSessions:'You have no upcoming lessons scheduled yet.',
-  imTeacher:'I’m a teacher — set up my account',goHome:'My lessons',goDash:'Dashboard',
+  contStu:'Continue as a student',imTeacher:'I’m a teacher — set up my account',goHome:'My lessons',goDash:'Dashboard',
   regTitle:'Create your teacher account',code:'Invite code',dname:'Your display name',slugL:'Link name (letters, numbers, dashes)',tzl:'Time zone',create:'Create account',
   errCode:'That invite code is invalid or already used.',errSlug:'That link name is taken or not valid (3–30 letters, numbers or dashes).',errGen:'Something went wrong. Please try again.',
   adminNote:'You’re the admin, so no invite code is needed.',
@@ -409,7 +409,7 @@ const T = {
   nav_close:'إغلاق القائمة',
   sd_tz:'تُعرض الأوقات حسب منطقتك الزمنية ({z}).',sd_rules:'يمكنك تغيير الحصة أو إلغاءها من هنا. إذا فات وقت التعديل عبر الموقع، فسيُطلب منك مراسلة المعلم.',sd_next:'الحصة القادمة',sd_past:'الحصص السابقة والملغاة',sd_pastEmpty:'لا توجد حصص سابقة بعد.',sd_pastErr:'تعذّر تحميل سجل حصصك حاليًا. يرجى المحاولة لاحقًا.',sd_more:'عرض المزيد',sd_less:'عرض أقل',sd_confirmed:'مؤكدة',sd_completed:'مكتملة',sd_cancelled:'ملغاة',
   homeTitle:'احجز حصة جديدة',homeHint:'افتح رابط الحجز الذي شاركه معك المعلم لعرض جدوله.',noSessions:'ليس لديك حصص قادمة مجدولة حاليًا.',
-  imTeacher:'أنا معلم — إعداد حسابي',goHome:'حصصي',goDash:'لوحة التحكم',
+  contStu:'المتابعة كطالب',imTeacher:'أنا معلم — إعداد حسابي',goHome:'حصصي',goDash:'لوحة التحكم',
   regTitle:'أنشئ حساب المعلم',code:'رمز الدعوة',dname:'الاسم الظاهر',slugL:'اسم الرابط (حروف إنجليزية وأرقام وشرطات)',tzl:'المنطقة الزمنية',create:'إنشاء الحساب',
   errCode:'رمز الدعوة غير صالح أو مستخدم مسبقًا.',errSlug:'اسم الرابط مستخدم أو غير صالح (من 3 إلى 30 حرفًا إنجليزيًا أو رقمًا أو شرطة).',errGen:'حدث خطأ. حاول مرة أخرى.',
   adminNote:'أنت المشرف، لذلك لا تحتاج إلى رمز دعوة.',
@@ -1162,6 +1162,10 @@ function esc(s) {
   const slugify = n => n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
 const myLink = () => location.origin + '/?t=' + S.me.teacher.slug;
 const hasInvite = () => !!ls.get('invite');
+// Teacher sign-up is forced only for a live invite: ?invite= opened this visit, or the sign-in started from one (marked just before Google login, consumed on return, 15 min max).
+// An old saved code never overrides the student landing.
+const inviteLive = () => !!S.inviteNow;
+function continueAsStudent(){ ls.del('invite'); ls.del('inviteGo'); S.inviteNow=false; S.reg=false; S.err=''; S.tab='mine'; writeAppHistory('replace'); render(); }
 
 // ---- data loading ----
 async function loadMine(){
@@ -1354,6 +1358,7 @@ function closeModal(){if(S.modal&&S.modal.busy)return;S.modal=null;_refreshRetry
 // ---- auth ----
 async function signIn(){
   if(S.slug) ls.set('next',S.slug);
+  if(inviteLive()&&hasInvite()) ls.set('inviteGo',String(Date.now()));
   await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/'}});
 }
 async function signOut(){await sb.auth.signOut();S.pay=null;S.inc=null;S.incErr=false;S.user=null;S.me=null;S.mine=[];S.rs=null;S.loaded=null;S.reg=false;S.modal=null;render()}
@@ -1607,7 +1612,7 @@ async function registerTeacher(){
     S.err = m.includes('code')?tr('errCode') : (m.includes('slug')||m.includes('duplicate')||m.includes('unique'))?tr('errSlug') : tr('errGen');
     render(); return;
   }
-  ls.del('invite'); S.reg=false; S.err=''; S.tab='link';
+  ls.del('invite'); ls.del('inviteGo'); S.inviteNow=false; S.reg=false; S.err=''; S.tab='link';
   await loadMe(); S.msg=tr('saved'); render();
 }
 
@@ -1740,7 +1745,7 @@ function viewLanding(){
   return '<div class="card ok" style="padding:26px 20px">'+flashHtml()
     +'<div class="big">📚</div>'
     +'<h2 style="justify-content:center;font-size:22px">'+tr('welcome')+'</h2>'
-    +'<p class="mut" style="max-width:560px;margin:0 auto 18px">'+tr(hasInvite()?'invited':'welSub')+'</p>'
+    +'<p class="mut" style="max-width:560px;margin:0 auto 18px">'+tr(hasInvite()&&inviteLive()?'invited':'welSub')+'</p>'
     +'<button class="btn" style="max-width:320px;margin:0 auto" onclick="signIn()">'+tr('login')+'</button>'
     +'</div>'
     +'<div class="card">'
@@ -1805,7 +1810,7 @@ function regCard(){
     +fld(tr('slugL'),'<input id="rs" value="'+esc(slugify(nm))+'" oninput="this.dataset.m=1" style="direction:ltr" autocapitalize="none">')
     +fld(tr('tzl'),tzSel('rt',tz))
     +'<button class="btn" onclick="registerTeacher()">'+tr('create')+'</button>'
-    +(hasInvite()?'':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
+    +(hasInvite()&&inviteLive()?'<br><button class="btn g" onclick="continueAsStudent()">'+tr('contStu')+'</button>':'<br><button class="btn g" onclick="S.reg=false;S.err=\'\';render()">'+tr('back')+'</button>')+'</div>';
 }
 function viewHome(){
   if(S.reg) return regCard();
@@ -2483,6 +2488,8 @@ async function init(){
   const q=new URLSearchParams(location.search), m=location.pathname.match(/^\/t\/([a-z0-9-]+)/i);
   let slug=((q.get('t')||(m&&m[1])||'')+'').toLowerCase()||null;
   const inv=q.get('invite'); if(inv) ls.set('invite',inv.toUpperCase().replace(/[^A-Z0-9]/g,''));
+  const _ig=+(ls.get('inviteGo')||0); ls.del('inviteGo');
+  S.inviteNow=!!inv||(_ig>0&&Date.now()-_ig<15*60000&&hasInvite());
   const {data:{session}}=await sb.auth.getSession(); S.user=session?.user||null;
   const next=ls.get('next'); ls.del('next');
   if(!slug&&S.user&&next) slug=next;
@@ -2509,14 +2516,14 @@ async function init(){
       S.user=u; S.loaded=null; S.done=null;
       if(u){await Promise.all([loadMe(),loadMine()])} else {S.me=null;S.mine=[]}
       if(S.slug&&S.t&&u) await loadBook();
-      S.reg = !!(u&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
+      S.reg = !!(u&&S.me&&!S.me.teacher&&hasInvite()&&inviteLive()&&!S.slug);
       render();
     },0);
   });
   if(S.user) await Promise.all([loadMe(),loadMine()]);
   await loadTeacher();
   if(S.slug&&S.user&&S.t) await loadBook();
-  S.reg = !!(S.user&&S.me&&!S.me.teacher&&hasInvite()&&!S.slug);
+  S.reg = !!(S.user&&S.me&&!S.me.teacher&&hasInvite()&&inviteLive()&&!S.slug);
   S.ready=true; render(); hideSplash();
 }
 applyTheme();
