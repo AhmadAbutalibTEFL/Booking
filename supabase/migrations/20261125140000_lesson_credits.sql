@@ -1,7 +1,7 @@
 -- Lesson credits (new tables and functions only; nothing existing is changed).
 -- A student is "tracked" only after the teacher adds credits for them. Untracked students see no change.
--- Balance = lessons added - lessons taught. A lesson counts as taught when the teacher marked it
--- 'attended' or 'no_show' (rule: a no-show uses a credit; teacher_cancelled and cancelled never do).
+-- Balance = lessons added - lessons taught. Only a lesson the teacher marked 'attended' uses a credit.
+-- A no-show is treated as postponed (no credit used, not counted as booked); teacher_cancelled and cancelled never count.
 -- Lessons are counted from the start of the first "paid on" date. Booking is never blocked.
 
 create table if not exists public.credit_ledger (
@@ -35,7 +35,7 @@ language sql stable security definer set search_path to 'public','pg_temp' as $$
   bk as (
     select b.id, public.bmc_student_key(b.contact_phone,b.student_name) k, b.starts_at, b.attendance
     from public.bookings b
-    where b.teacher_id=p_teacher and b.status='confirmed' and (b.attendance is null or b.attendance in ('attended','no_show'))),
+    where b.teacher_id=p_teacher and b.status='confirmed' and (b.attendance is null or b.attendance = 'attended')),
   c as (
     select bk.id, bk.k, bk.starts_at, bk.attendance, led.total,
            row_number() over (partition by bk.k order by bk.starts_at) rn
@@ -59,7 +59,7 @@ begin
   l as (select * from public.bmc_credit_lessons(u)),
   agg as (
     select student_key,
-      count(*) filter (where attendance in ('attended','no_show'))::int used,
+      count(*) filter (where attendance = 'attended')::int used,
       count(*) filter (where attendance is null)::int pending,
       count(*) filter (where rn>total)::int uncovered
     from l group by 1),
