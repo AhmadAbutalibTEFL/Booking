@@ -172,7 +172,7 @@ html,body{max-width:100%;overflow-x:hidden}
 .cr-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 16px;align-items:center}.cr-rg{position:relative;width:64px;height:64px}.cr-ring{display:block}
 .cr-fg{stroke-dashoffset:var(--o);animation:crring .9s cubic-bezier(.2,.8,.2,1)}@keyframes crring{from{stroke-dashoffset:150.8}}
 .cr-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.cr-num b{font-size:20px}.cr-num small{font-size:9px;color:var(--mut)}
-.cr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cr-chips .sd-st{margin:0}.le-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}.le-row .chip{margin-inline-start:auto}.le-ul{margin:10px 0 0;padding-inline-start:20px;font-size:14px}.le-ul li{margin:3px 0}.cr-act{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
+.cr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cr-chips .sd-st{margin:0}.le-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}.le-row .chip{margin-inline-start:auto}.le-sg{margin:8px 0;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:14px}.le-sg b{font-size:13px}.le-sg .mut{font-size:12px}.bk-who{font-size:13px;overflow-wrap:anywhere}.le-ul{margin:10px 0 0;padding-inline-start:20px;font-size:14px}.le-ul li{margin:3px 0}.cr-act{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 .cr-note{margin:6px 0;font-size:13px;color:var(--mut)}.cr-note.warn{color:#8a5a00;background:rgba(245,166,35,.14);padding:6px 10px;border-radius:10px}
 .cr-q{display:flex;gap:8px;align-items:center}.cr-q input{flex:1;min-width:0}.cr-log>div{display:grid;grid-template-columns:auto auto 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 @media(prefers-reduced-motion:reduce){.cr-fg{animation:none}}
@@ -664,15 +664,44 @@ function undoToast(msg,fn){
 }
 /* Teacher-chosen student email for lessons that have none. Nothing is matched automatically. */
 function leKey(b){ const d=String(b.contact_phone||'').replace(/\D/g,''); return d||('n:'+String(b.student_name||'').trim().toLowerCase()); }
+function bkWho(b){
+  const me=S.me&&S.me.teacher?S.me.teacher.id:null;
+  const own=!b.booker_id||b.booker_id===me, byYou=own||(b.linked_from_booker&&b.linked_from_booker===me);
+  const pe=(!own&&b.profiles&&b.profiles.email)||'';
+  return {byYou,own,email:pe||b.link_email||''};
+}
+function bkLine(b){
+  const w=bkWho(b);
+  return '<span class="mut bk-who">✉ <span dir="ltr">'+(w.email?esc(w.email):tr('le_row')+': '+tr('le_none'))+'</span> · '+tr(w.byYou?'bw_you':'bw_stu')+'</span>';
+}
+function leTok(n){return String(n||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').split(/\s+/).filter(x=>x.length>=3)[0]||'';}
+function leSuggest(b){
+  const w=bkWho(b); if(w.email||!w.own) return [];
+  const t=leTok(b.student_name); if(!t) return [];
+  const no=S._sgNo||(S._sgNo=new Set()), key=leKey(b), seen=new Map();
+  allBk().forEach(x=>{
+    const wx=bkWho(x); if(wx.byYou||!wx.email) return;
+    if(![x.student_name,x.profiles&&x.profiles.full_name].some(n=>leTok(n)===t)) return;
+    if(no.has(key+'|'+wx.email)||seen.has(wx.email)) return;
+    seen.set(wx.email,{email:wx.email,name:(x.profiles&&x.profiles.full_name)||x.student_name,lessons:x.student_name});
+  });
+  return [...seen.values()].slice(0,2);
+}
+function leNo(el){const b=allBk().find(x=>x.id===el.dataset.id); if(!b) return; (S._sgNo||(S._sgNo=new Set())).add(leKey(b)+'|'+el.dataset.e); render();}
+function leUse(el){openLinkEmail(el.dataset.id,el.dataset.e);}
 function leRow(b){
   if(!S.me||!S.me.teacher) return '';
-  const own=!b.booker_id||b.booker_id===S.me.teacher.id; if(!own) return '';
-  if(b.link_email) return '<div class="le-row"><span class="mut">'+tr('le_row')+'</span><span dir="ltr">'+esc(b.link_email)+'</span></div>';
-  return '<div class="le-row"><span class="mut">'+tr('le_row')+'</span><span>'+tr('le_none')+'</span><button type="button" class="chip" data-id="'+esc(b.id)+'" onclick="openLinkEmail(this.dataset.id)">'+tr('le_add')+'</button></div>';
+  const w=bkWho(b);
+  let h='<div class="le-row"><span class="mut">'+tr('le_row')+'</span>'+(w.email?'<b dir="ltr" style="overflow-wrap:anywhere">'+esc(w.email)+'</b>':'<span>'+tr('le_none')+'</span>'+(w.own?'<button type="button" class="chip" data-id="'+esc(b.id)+'" onclick="openLinkEmail(this.dataset.id)">'+tr('le_add')+'</button>':''))+'</div>'
+    +'<div class="le-row" style="margin-top:0"><span class="mut">'+tr('bw_lbl')+'</span><span>'+tr(w.byYou?'bw_you':'bw_stu')+'</span></div>';
+  leSuggest(b).forEach(c=>{
+    h+='<div class="card le-sg"><b>'+tr('sg_t')+'</b><span dir="ltr">'+esc(c.name)+' · '+esc(c.email)+'</span><span class="mut">'+tr('sg_b').replace('{n}',esc(c.lessons))+'</span><div class="row" style="gap:6px;margin-top:6px"><button type="button" class="chip" data-id="'+esc(b.id)+'" data-e="'+esc(c.email)+'" onclick="leUse(this)">'+tr('sg_use')+'</button><button type="button" class="chip" data-id="'+esc(b.id)+'" data-e="'+esc(c.email)+'" onclick="leNo(this)">'+tr('sg_no')+'</button></div></div>';
+  });
+  return h;
 }
-async function openLinkEmail(id){
+async function openLinkEmail(id,pre){
   const b=allBk().find(x=>x.id===id); if(!b) return; const key=leKey(b);
-  S.modal={type:'linkemail',name:b.student_name||'',key,pv:null,e:'',booking:{}}; render();
+  S.modal={type:'linkemail',name:b.student_name||'',key,pv:null,e:pre||'',booking:{}}; render();
   const M=S.modal; let r; try{ r=await sb.rpc('preview_link_student',{p_old_key:key}); }catch(e){ r={error:e}; }
   if(S.modal===M){ const e=$('#le_e'); M.e=e?e.value:''; S.modal={...M,pv:r.error?{total:0,past:0,upcoming:0}:r.data}; render(); const i=$('#le_e'); if(i) i.focus(); }
 }
@@ -755,6 +784,8 @@ Object.assign(T.en,{m_status:'Status',m_unmarked:'Not marked yet',r_markedNone:'
 Object.assign(T.ar,{m_status:'الحالة',m_unmarked:'لم تُسجَّل بعد',r_markedNone:'أُعيدت إلى غير مسجّلة.'});
 Object.assign(T.en,{cc_btn:'Correct balance',cc_title:'Correct balance',cc_now:'Lessons left now',cc_should:'Lessons left should be',cc_chg:'Change: {a} → {b} ({d})',cc_ph:'e.g. 4 lessons were used before',cc_hint:'A correction row is added to History. Nothing is deleted.',cc_go:'Change {a} to {b}',cc_go0:'Enter a new number',cc_done:'Balance changed from {a} to {b}.',cc_undone:'Balance change undone.',cc_undoNote:'Undo correction',cc_stale:'The balance changed. Reloaded, please try again.',cc_badge:'Correction',cc_hist:'Correction: {a} → {b}',cc_shared:'Shared balance: {n} use the same email, so this changes the balance for all of them.',le_row:'Student email',le_none:'Not added',le_add:'Add',le_title:'Add student email',le_1:'Applies to all {n} lessons under this student with no email ({p} past, {u} upcoming).',le_2:'They use that email’s lesson balance.',le_3:'The student sees them in their own account (signed in with this email) and can change, cancel or book more.',le_4:'You choose the email. Nothing is matched automatically.',le_save:'Save email',le_done:'Email saved. {n} lessons linked.',le_undone:'Email link undone.'});
 Object.assign(T.ar,{cc_btn:'تصحيح الرصيد',cc_title:'تصحيح الرصيد',cc_now:'الحصص المتبقية الآن',cc_should:'الحصص المتبقية يجب أن تكون',cc_chg:'التغيير: {a} ← {b} ({d})',cc_ph:'مثال: استُخدمت 4 حصص سابقًا',cc_hint:'تُضاف إلى السجل سطر تصحيح. لا يُحذف شيء.',cc_go:'تغيير من {a} إلى {b}',cc_go0:'أدخل رقمًا جديدًا',cc_done:'تم تغيير الرصيد من {a} إلى {b}.',cc_undone:'تم التراجع عن تغيير الرصيد.',cc_undoNote:'تراجع عن التصحيح',cc_stale:'تغيّر الرصيد. تم التحديث، حاول مرة أخرى.',cc_badge:'تصحيح',cc_hist:'تصحيح: {a} ← {b}',cc_shared:'رصيد مشترك: {n} يستخدمون نفس البريد، لذا يتغير الرصيد لجميعهم.',le_row:'بريد الطالب',le_none:'غير مضاف',le_add:'إضافة',le_title:'إضافة بريد الطالب',le_1:'ينطبق على كل الحصص ({n}) لهذا الطالب بدون بريد ({p} سابقة، {u} قادمة).',le_2:'تستخدم رصيد الحصص الخاص بهذا البريد.',le_3:'يراها الطالب في حسابه (بعد تسجيل الدخول بهذا البريد) ويمكنه تغييرها أو إلغاؤها أو حجز المزيد.',le_4:'أنت من يختار البريد. لا تتم أي مطابقة تلقائية.',le_save:'حفظ البريد',le_done:'تم حفظ البريد. تم ربط {n} حصص.',le_undone:'تم التراجع عن ربط البريد.'});
+Object.assign(T.en,{bw_you:'Booked by you',bw_stu:'Booked by student',bw_lbl:'Booking',sg_t:'Possible account (a suggestion, nothing is linked)',sg_b:'Has booked lessons as “{n}”. Same first name only. You decide if it is the same student.',sg_use:'Use this email',sg_no:'Not her'});
+Object.assign(T.ar,{bw_you:'حجزتَه أنت',bw_stu:'حجزه الطالب',bw_lbl:'الحجز',sg_t:'حساب محتمل (مجرد اقتراح، لا يتم ربط شيء)',sg_b:'حجز حصصًا باسم «{n}». نفس الاسم الأول فقط. أنت من يقرر إن كان نفس الطالب.',sg_use:'استخدم هذا البريد',sg_no:'ليس هو'});
 Object.assign(T.en,{st_hi:'Hi {n}',st_nextL:'Your next lesson',st_today:'Today',st_tmrw:'Tomorrow',st_join:'Join lesson',st_cu:'Coming up',st_book:'＋ Book another lesson',st_past:'Past lessons ({n})',st_lessons:'Lessons',st_rew:'Rewards',st_none:'No upcoming lessons yet.'});
 Object.assign(T.ar,{st_hi:'مرحبًا {n}',st_nextL:'حصتك القادمة',st_today:'اليوم',st_tmrw:'غدًا',st_join:'انضم للحصة',st_cu:'القادمة',st_book:'＋ احجز حصة أخرى',st_past:'الحصص السابقة ({n})',st_lessons:'الحصص',st_rew:'المكافآت',st_none:'لا توجد حصص قادمة بعد.'});
 const NAV={income:['💰','nav_income'],link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings'],rank:['🏅','nav_rank'],credits:['🎟️','nav_credits'],stats:['📊','nav_stats'],history:['📖','nav_history'],sched:['🗓️','nav_sched']};
@@ -1117,7 +1148,7 @@ async function loadDash(){
     sb.from('session_types').select('*').eq('teacher_id',id).order('duration_min'),
     sb.from('availability_rules').select('*').eq('teacher_id',id).order('start_time'),
     sb.from('availability_exceptions').select('*').eq('teacher_id',id).gte('on_date',today).order('on_date'),
-    bq('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,link_email,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)')]);
+    bq('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,booker_id,link_email,linked_from_booker,session_types(name,name_ar,duration_min),profiles:profiles!bookings_booker_id_fkey(full_name,email)')]);
   if(seq!==S._dashSeq) return false;
   if(a.error||b.error||c.error){console.warn('loadDash failed',a.error||b.error||c.error); return false;}
   let bk=d;
@@ -1757,7 +1788,7 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
       const st=b.session_types||{};
       h+='<div class="calbook"><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'
         +'<small>'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+(b.series_id?' · '+tr('weeklyBadge'):'')+'</small>'
-        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</small>'
+        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>'+bkLine(b)+'</small>'
         +'<div class="row" style="margin-top:6px"><button type="button" class="chip" onclick="openBookingMenu(\''+b.id+'\')">'+tr('m_manage')+'</button></div></div>';
     });
   } else {
@@ -1777,7 +1808,7 @@ async function loadTimetable(days,tz,force){
   const [ov,cx,pa]=await Promise.all([
     sb.rpc('get_booking_slot_overrides',{p_teacher:id,p_from:f,p_to:t}),
     sb.from('bookings').select('id,student_name,starts_at,ends_at').eq('teacher_id',id).eq('status','cancelled').gte('starts_at',f).lt('starts_at',t),
-    sb.from('bookings').select('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,attendance,booker_id,link_email,meeting_url,session_types(name,duration_min)').eq('teacher_id',id).eq('status','confirmed').gte('starts_at',f).lt('starts_at',t).lt('starts_at',new Date().toISOString())]);
+    sb.from('bookings').select('id,student_name,contact_phone,notes,starts_at,ends_at,blocked_until,series_id,session_type_id,attendance,booker_id,link_email,linked_from_booker,meeting_url,session_types(name,duration_min)').eq('teacher_id',id).eq('status','confirmed').gte('starts_at',f).lt('starts_at',t).lt('starts_at',new Date().toISOString())]);
   if(S.ttLoading!==key) return;
   S.ttLoading=null; S.ttKey=key; if(!ov.error) S.ttOv=ov.data||[]; if(!cx.error) S.ttCancelled=cx.data||[]; if(!pa.error) S.ttPast=pa.data||[]; render();
 }
@@ -1831,7 +1862,15 @@ function jumpToDate(v){
   S.calendarOffset=Math.round((wsOf(new Date(v+'T12:00:00'))-wsOf(new Date()))/(7*864e5)); render();
 }
 function openSlotMenu(iso,st){S.modal={type:'slotMenu',iso,state:st||'available'}; render();}
-function openBookingMenu(id){const b=allBk().find(x=>x.id===id); if(!b) return; S.modal={type:'bookingMenu',booking:b}; render();}
+function openBookingMenu(id){const b=allBk().find(x=>x.id===id); if(!b) return; S.modal={type:'bookingMenu',booking:b}; render(); bkFetchWho(b);}
+async function bkFetchWho(b){
+  if(!S.me||!S.me.teacher) return;
+  const miss=allBk().filter(x=>x.booker_id&&x.booker_id!==S.me.teacher.id&&!x.profiles).map(x=>x.id);
+  if(!miss.length&&b.profiles!==undefined) return;
+  if(S._whoBusy) return; S._whoBusy=true;
+  try{ const r=await sb.rpc('get_teacher_booking_bookers',{p_booking_ids:(b.profiles===undefined&&!miss.includes(b.id)?miss.concat([b.id]):miss).slice(0,200)}); if(!r.error){ const m=new Map((r.data||[]).map(x=>[x.booking_id,x])); let ch=false; allBk().forEach(x=>{const v=m.get(x.id); if(v&&!x.profiles){x.profiles={full_name:v.full_name,email:v.email}; ch=true;}}); if(ch&&S.modal&&S.modal.type==='bookingMenu') render(); } }catch(e){}
+  S._whoBusy=false;
+}
 async function manageSlotOverride(iso,action){
   await runMutation(
     ()=>sb.rpc('set_booking_slot_override',{p_teacher:S.me.teacher.id,p_slot_start:iso,p_action:action}).then(r=>r.error),
@@ -1908,7 +1947,7 @@ function tabBookings(){
   return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+flashHtml()+(S.dBk.length?S.dBk.map(b=>{
     const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
     return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
-      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+payBadge(b)+'<br><span class="mut">'+tr('m_by')+': '+esc(b.profiles?.full_name||b.profiles?.email||'—')+'</span>'+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+payBadge(b)+'<br>'+bkLine(b)+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
       +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button></div></div>';
   }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
 }
@@ -2214,7 +2253,7 @@ function renderModal(){
       +'<p class="mut" style="margin:4px 0 0">'+fFt(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:0">'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</p>'
       +(past?'<div class="mk-st"><small>'+tr('m_status')+'</small>'+pill+'</div><div class="seg3'+(at?' has':'')+'" style="margin-top:8px">'+sg('xa','✔',tr('r_attended'))+sg('xn','✖',tr('r_noShow'))+sg('xt','🚫',tr('r_tCancelled'))+'</div>'
         :'<div class="stack">'+bt('btn',"openEdit('"+b.id+"',true)",tr('m_edit'))+bt('btn g',"promptCancel('"+b.id+"')",tr('m_cancelOcc'))+(b.series_id?bt('btn g',"promptCancel('"+b.id+"')",tr('m_series')):'')+'</div>')
-      +'<div class="mk-c">'+(ph?'<a target="_blank" rel="noopener" dir="ltr" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+(p.email?(ph?' · ':'')+'<span dir="ltr">'+esc(p.email)+'</span>':'')+'</div>'
+      +'<div class="mk-c">'+(ph?'<a target="_blank" rel="noopener" dir="ltr" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'</div>'
       +(b.notes?'<p class="mut" style="margin:4px 0 0;font-size:13px">'+esc(b.notes)+'</p>':'')
       +leRow(b)+crPopLine(b)
       +'<div class="mk-sec">'+bt('',"icsFor('"+b.id+"')",'📆 '+tr('m_ics'))+bt('','closeModal()',tr('back'))+'</div>');
