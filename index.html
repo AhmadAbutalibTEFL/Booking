@@ -2010,6 +2010,7 @@ function teacherCalendar(){
       +'<div class="row" style="margin:6px 0"><input type="search" class="ttsearch" id="ttSearch" placeholder="'+tr('m_searchStudent')+'" aria-label="'+tr('m_searchStudent')+'" value="'+esc(S.ttQ||'')+'" oninput="setTtQ(this.value)"><span class="mut" id="ttCount" role="status"></span></div>';
     h+=renderWeekTimetable(days,tz,dayKey,minBookAt);
   } else {
+    payLazy();
     if(!S.dBk.length){
       h+='<p class="mut">'+tr('noBk')+'</p>';
     } else {
@@ -2023,6 +2024,7 @@ function teacherCalendar(){
         h+='<div class="bk"><div><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')
           +'<br><span class="mut">'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</span>'
           +(ph?' · <a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(b.contact_phone)+'</a>':'')
+          +payBadge(b)+'<br>'+bkLine(b)
           +'</div><div class="row">'
           +'<button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button>'
           +'<button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button>'
