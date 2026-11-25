@@ -231,7 +231,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .wn-x{position:absolute;top:8px;inset-inline-end:8px;width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--mut);font-size:18px;cursor:pointer;box-shadow:none}
 @keyframes wnin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.wn{animation:none}}
-.ni-wrap{border-bottom:1px solid var(--line)}.ni-wrap .ni{border-bottom:0}.pay-ask{padding:0 12px 12px 30px;font-size:14px}[dir=rtl] .pay-ask{padding:0 30px 12px 12px}.pay-terms{display:flex;gap:8px;margin-top:8px}.pay-terms input{flex:1;min-width:0;max-width:130px}.pay-terms select{width:auto}.pay-two{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.pay-two .chip{flex:1;min-height:44px}
+.ni-wrap{border-bottom:1px solid var(--line)}.ni-wrap .ni{border-bottom:0}.pay-ask{padding:0 12px 12px 30px;font-size:14px}[dir=rtl] .pay-ask{padding:0 30px 12px 12px}.pay-terms{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}.pay-sv{font-size:13px;font-weight:600;color:#1a8a5a;opacity:0;transition:opacity .2s}.pay-sv.on{opacity:1}.ap-btn{margin-top:8px;width:100%;min-height:44px}.ap-btn[hidden]{display:none}.ap-rows>div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}.ap-toast{position:fixed;z-index:9999;left:12px;right:12px;bottom:84px;background:#1d2340;color:#fff;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px}.ap-toast button{background:none;border:0;color:#9fb0ff;font-weight:700;font-size:15px;min-height:40px;padding:0 8px}@media (prefers-reduced-motion:reduce){.pay-sv{transition:none}}.pay-terms input{flex:1;min-width:92px;max-width:130px}.pay-terms select{width:auto}.pay-two{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.pay-two .chip{flex:1;min-height:44px}
 @media print{.btm,.btm-sp,.bar,.side,.seg,.chip,.btn,.calnav,.ttsearch,.site-footer,#panelRoot,.tt2-legend{display:none!important}.tt2-wrap{max-height:none;overflow:visible}}
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
@@ -614,7 +614,7 @@ function payStudentRow(st){
   payLazy(); if(!S.pay) return '';
   const m=S.pay.modes[st.key]||(st.total>0?'before':'after');
   return '<div class="pay-two" style="margin-top:8px" role="group" aria-label="'+esc(tr('pay_card'))+'">'+['after','before'].map(k=>'<button type="button" class="chip'+(m===k?' on':'')+'" aria-pressed="'+(m===k)+'" data-k="'+esc(st.key)+'" onclick="payStudent(this.dataset.k,\''+k+'\')">'+tr(k==='after'?'pay_after':'pay_before')+'</button>').join('')+'</div>'
-    +(()=>{const t=payTerms(st.key); return '<div class="pay-terms" data-k="'+esc(st.key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select></div>'})();
+    +(()=>{const t=payTerms(st.key); return '<div class="pay-terms" data-k="'+esc(st.key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select><span class="pay-sv" role="status" aria-live="polite"></span></div><button type="button" class="chip ap-btn" data-k="'+esc(st.key)+'"'+(t.price==null?' hidden':'')+' onclick="openApplyPast(this.dataset.k)">'+tr('ap_btn')+'</button>'})();
 }
 function openCredit(key){
   const all=S.cr?S.cr.students.concat(S.cr.known):[]; const pre=key?all.find(x=>x.key===key):null;
@@ -680,11 +680,15 @@ Object.assign(T.en,{wn_title:'What’s new',wn_sub:'A few updates since you last
 Object.assign(T.ar,{wn_title:'الجديد',wn_sub:'بعض التحديثات منذ زيارتك الأخيرة.',wn_1:'تبويب الإحصاءات',wn_1d:'شاهد حصصك أسبوعاً بأسبوع برسوم بسيطة.',wn_2:'تبويب السجل',wn_2d:'كل الحصص السابقة في مكان واحد مع حالتها.',wn_3:'رصيد مشترك لكل بريد',wn_3d:'حتى 3 طلاب يشتركون في رصيد واحد.',wn_4:'جرس أوضح وقائمة ☰',wn_4d:'أكبر وأسهل في اللمس مع عدّاد.',wn_ok:'فهمت',wn_x:'إغلاق'});
 Object.assign(T.en,{pay_title:'Payments',pay_price:'Default price per lesson',pay_cur:'Currency',pay_priceHint:'Used for new students. Each student can have their own price and currency. Students never see any of it.',pay_stPrice:'Price',pay_termsSaved:'Saved',pay_saved:'Payment settings saved',pay_err:'Enter a price between 0 and 100000',pay_label:'Pays',pay_after:'After the lesson',pay_before:'Before (lesson balance)',pay_remembered:'Remembered for this student. You can change it anytime.',pay_ask:'How will {s} pay?',pay_set:'Saved: {m}',pay_tA:'Pays after',pay_tB:'Prepaid',cr_amount:'Amount paid (optional)',pay_card:'How this student pays'});
 Object.assign(T.ar,{pay_title:'المدفوعات',pay_price:'السعر الافتراضي للحصة',pay_cur:'العملة',pay_priceHint:'يُستخدم للطلاب الجدد. يمكن لكل طالب أن يكون له سعر وعملة خاصان. لا يراها الطلاب.',pay_stPrice:'السعر',pay_termsSaved:'تم الحفظ',pay_saved:'تم حفظ إعدادات الدفع',pay_err:'أدخل سعراً بين 0 و 100000',pay_label:'الدفع',pay_after:'بعد الحصة',pay_before:'قبل (رصيد حصص)',pay_remembered:'محفوظ لهذا الطالب. يمكنك تغييره في أي وقت.',pay_ask:'كيف يتم الدفع لدى {s}؟',pay_set:'تم الحفظ: {m}',pay_tA:'يدفع بعد',pay_tB:'دفع مسبق',cr_amount:'المبلغ المدفوع (اختياري)',pay_card:'طريقة دفع هذا الطالب'});
-const NAV={link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings'],rank:['🏅','nav_rank'],credits:['🎟️','nav_credits'],stats:['📊','nav_stats'],history:['📖','nav_history'],sched:['🗓️','nav_sched']};
+Object.assign(T.en,{nav_income:'Income',inc_title:'Income',inc_hint:'Only you can see this. Each currency is shown on its own and nothing is converted.',inc_earned:'Earned',inc_received:'Received',inc_due:'To collect',inc_markPaid:'Mark paid',inc_undo:'Undo',inc_fromBal:'From balance',inc_paid:'Paid',inc_ns:'No-show',inc_none:'No lessons with a price in this period.',inc_marked:'Marked as paid',inc_list:'Lessons',inc_dueNone:'Nothing to collect.',inc_nopr:'No price set',pay_ns:'Charge for no-shows',pay_nsHint:'When on, a student who does not show up counts as a taught lesson: it is earned and uses one lesson from a prepaid balance. Off by default.',st_tgHrs:'Hours',st_weeksE:'Earned per week',st_tgEarn:'Earned',st_earnedIn:'Earned in this period'});
+Object.assign(T.ar,{nav_income:'الدخل',inc_title:'الدخل',inc_hint:'لا يراه غيرك. كل عملة تظهر على حدة ولا يتم أي تحويل.',inc_earned:'المكتسب',inc_received:'المستلم',inc_due:'للتحصيل',inc_markPaid:'تم الدفع',inc_undo:'تراجع',inc_fromBal:'من الرصيد',inc_paid:'مدفوع',inc_ns:'لم يحضر',inc_none:'لا توجد حصص بسعر في هذه الفترة.',inc_marked:'تم تسجيل الدفع',inc_list:'الحصص',inc_dueNone:'لا شيء للتحصيل.',inc_nopr:'بدون سعر',pay_ns:'احتساب الغياب',pay_nsHint:'عند التفعيل تُحتسب حصة الطالب الغائب كحصة مُدرَّسة: تُحسب ضمن المكتسب وتخصم حصة من الرصيد المدفوع مسبقًا. معطّل افتراضيًا.',st_tgHrs:'الساعات',st_weeksE:'المكتسب أسبوعيًا',st_tgEarn:'المكتسب',st_earnedIn:'المكتسب في هذه الفترة'});
+Object.assign(T.en,{ap_btn:'Apply this price to past lessons',ap_title:'Apply {p} to past lessons?',ap_body:'{s} has lessons marked attended that have no price yet.',ap_cnt:'Lessons',ap_tot:'Total',ap_from:'From',ap_to:'To',ap_note:'Only lessons without a price are changed. Lessons that already have a price stay as they are. You can undo this right after.',ap_ok:'Apply',ap_none:'No past lessons without a price.',ap_done:'Applied to {n} lessons ({t}).',ap_undone:'Undone',ap_saved:'Saved'});
+Object.assign(T.ar,{ap_btn:'تطبيق هذا السعر على الحصص السابقة',ap_title:'تطبيق {p} على الحصص السابقة؟',ap_body:'لدى {s} حصص حضرها بدون سعر بعد.',ap_cnt:'الحصص',ap_tot:'الإجمالي',ap_from:'من',ap_to:'إلى',ap_note:'تتغير فقط الحصص التي بلا سعر. الحصص التي لها سعر تبقى كما هي. يمكنك التراجع مباشرة بعد ذلك.',ap_ok:'تطبيق',ap_none:'لا توجد حصص سابقة بلا سعر.',ap_done:'تم التطبيق على {n} حصص ({t}).',ap_undone:'تم التراجع',ap_saved:'تم الحفظ'});
+const NAV={income:['💰','nav_income'],link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings'],rank:['🏅','nav_rank'],credits:['🎟️','nav_credits'],stats:['📊','nav_stats'],history:['📖','nav_history'],sched:['🗓️','nav_sched']};
 // ---- payments: per-student pay type, price per lesson (teacher-only; students never see any of it) ----
 async function loadPay(){
   if(!S.me||!S.me.teacher||S._payLoading) return; S._payLoading=true;
-  try{ const r=await sb.rpc('get_pay_context'); if(!r.error&&r.data){const d=r.data; S.pay={price:d.price,currency:d.currency||'SAR',modes:d.modes||{},terms:d.terms||{},bk:new Map((d.bk||[]).map(x=>[x.id,x])),names:(d.bk||[])}; S._payLoading=false; render(); return;} }catch(e){}
+  try{ const r=await sb.rpc('get_pay_context'); if(!r.error&&r.data){const d=r.data; S.pay={price:d.price,currency:d.currency||'SAR',chargeNs:!!d.charge_noshow,modes:d.modes||{},terms:d.terms||{},bk:new Map((d.bk||[]).map(x=>[x.id,x])),names:(d.bk||[])}; S._payLoading=false; render(); return;} }catch(e){}
   S._payLoading=false;
 }
 function payLazy(){ if(S.me&&S.me.teacher&&!S.pay&&!S._payLoading) setTimeout(loadPay,0); }
@@ -693,12 +697,43 @@ const PAY_CUR=['SAR','USD','EGP','AED','KWD','QAR','BHD','OMR','JOD','EUR','GBP'
 function curOpts(sel){ const l=PAY_CUR.slice(); if(sel&&!l.includes(sel)) l.push(sel); return l.map(c=>'<option'+(c===sel?' selected':'')+'>'+esc(c)+'</option>').join('') }
 function payTerms(key){ const t=S.pay&&S.pay.terms&&S.pay.terms[key]; return {price:(t&&t.price!=null)?t.price:(S.pay?S.pay.price:null), cur:(t&&t.currency)||(S.pay&&S.pay.currency)||'SAR', own:!!(t&&(t.price!=null||t.currency))} }
 function payKeyByName(name){ const n=String(name||'').trim().toLowerCase(); if(!n||!S.pay) return null; const x=S.pay.names.find(b=>String(b.name||'').trim().toLowerCase()===n); return x?x.key:null }
+async function openApplyPast(key){
+  const all=S.cr?S.cr.students.concat(S.cr.known):[], st=all.find(x=>x.key===key);
+  S.modal={type:'applypast',key,name:st?st.name:'',pv:null,from:'',to:'',busy:false}; render();
+  apPreview(true);
+}
+async function apPreview(init){
+  const m=S.modal; if(!m||m.type!=='applypast') return;
+  const f=init?null:(m.from||null), t=init?null:(m.to||null);
+  const r=await sb.rpc('preview_past_price',{p_key:m.key,p_from:f,p_to:t});
+  if(!S.modal||S.modal!==m&&S.modal.type!=='applypast') return;
+  if(r.error){S.modal={...S.modal,err:r.error.message||tr('taken'),pv:{count:0}}; render(); return}
+  const today=new Date().toISOString().slice(0,10);
+  S.modal={...S.modal,err:'',pv:r.data,from:init?(r.data.first||''):S.modal.from,to:init?today:S.modal.to}; render();
+}
+function apDate(which,v){ if(!S.modal) return; S.modal={...S.modal,[which]:v}; apPreview(false) }
+async function apApply(){
+  const m=S.modal; if(!m||m.busy) return; S.modal={...m,busy:true}; render();
+  const r=await sb.rpc('apply_past_price',{p_key:m.key,p_from:m.from||null,p_to:m.to||null});
+  if(r.error){S.modal={...S.modal,busy:false,err:r.error.message||tr('taken')}; render(); return}
+  S.modal=null; S.inc=null; render();
+  apToast(tr('ap_done').replace('{n}',r.data.count).replace('{t}',fmtMoney(r.data.total,r.data.currency)),r.data.batch);
+}
+function apToast(msg,batch){
+  const o=document.getElementById('apToast'); if(o) o.remove();
+  const d=document.createElement('div'); d.id='apToast'; d.className='ap-toast'; d.setAttribute('role','status');
+  const sp=document.createElement('span'); sp.textContent=msg; const b=document.createElement('button'); b.type='button'; b.textContent=tr('inc_undo');
+  b.onclick=async()=>{ b.disabled=true; const r=await sb.rpc('undo_past_price',{p_batch:batch}); d.remove(); if(r.error){flash(r.error.message||tr('taken'),true);return} S.inc=null; flash(tr('ap_undone'),false); render() };
+  d.appendChild(sp); d.appendChild(b); document.body.appendChild(d); setTimeout(()=>d.remove(),15000);
+}
 async function payTermsSave(el){
   const w=el.closest('.pay-terms'), key=w.dataset.k, raw=(w.querySelector('input').value||'').trim(), pr=raw===''?null:parseFloat(raw);
   if(pr!==null&&!(pr>=0&&pr<=100000)){flash(tr('pay_err'),true);return}
   const c=w.querySelector('select').value, r=await sb.rpc('set_student_terms',{p_key:key,p_price:pr,p_currency:c});
   if(r.error){flash(r.error.message||tr('taken'),true);return}
   S.pay.terms[key]={price:pr,currency:c}; flash(tr('pay_termsSaved'),false);
+  const sv=w.querySelector('.pay-sv'); if(sv){sv.textContent='✓ '+tr('ap_saved'); sv.classList.add('on'); clearTimeout(sv._t); sv._t=setTimeout(()=>{sv.classList.remove('on')},2500)}
+  const ab=w.parentNode.querySelector('.ap-btn'); if(ab) ab.hidden=(pr==null);
 }
 function payAsk(bid){ const p=payOf(bid); return !!(p&&!p.byT&&!p.mode) }
 function payRemembered(name){
@@ -738,6 +773,49 @@ function payRefresh(){
   const h=document.getElementById('payHint'); if(h) h.textContent=(!S.payPick&&rem)?tr('pay_remembered'):'';
 }
 function payPickSet(m){S.payPick=m; payRefresh()}
+function fmtMoney(n,c){ return (Math.round(n*100)/100).toLocaleString(loc(),{maximumFractionDigits:2})+' '+c }
+function incHas(){ return !!(S.pay&&(S.pay.price!=null||Object.values(S.pay.terms||{}).some(t=>t&&t.price!=null))) }
+function loadInc(){
+  if(S._incLoading||!S.me||!S.me.teacher) return; S._incLoading=true;
+  sb.rpc('get_income').then(r=>{ S._incLoading=false; if(r.error||!r.data){S.incErr=true}else{S.inc=r.data;S.incErr=false} render(); },()=>{S._incLoading=false;S.incErr=true;render()});
+}
+function incLazy(){ if(S.me&&S.me.teacher&&!S.inc&&!S._incLoading&&!S.incErr) setTimeout(loadInc,0) }
+async function markPaid(id,paid){
+  const r=await sb.rpc('mark_lesson_paid',{p_booking:id,p_paid:paid}); if(r.error){flash(r.error.message||tr('taken'),true);return}
+  if(paid) flash(tr('inc_marked'),false); S.inc=null; loadInc();
+}
+async function payNs(on){
+  const r=await sb.rpc('set_charge_noshow',{p_on:!!on}); if(r.error){flash(r.error.message||tr('taken'),true);render();return}
+  S.pay.chargeNs=!!on; S.inc=null; S.cr=null; flash(tr('pay_saved'),false);
+}
+function incStatus(l){ return l.covered?'bal':l.paid_at?'paid':l.price==null?'none':'due' }
+function incRow(l){
+  const st=incStatus(l), d=new Date(l.starts_at).toLocaleDateString(loc(),{day:'numeric',month:'short'});
+  const pill=st==='bal'?sdPill('ok',tr('inc_fromBal')):st==='paid'?sdPill('ok',tr('inc_paid')):st==='due'?sdPill('soft',tr('inc_due')):sdPill('off',tr('inc_nopr'));
+  const btn=st==='due'?'<button type="button" class="chip" onclick="markPaid(\''+esc(l.id)+'\',true)">'+tr('inc_markPaid')+'</button>':st==='paid'?'<button type="button" class="chip" onclick="markPaid(\''+esc(l.id)+'\',false)">'+tr('inc_undo')+'</button>':'';
+  return '<div class="bk"><div><b>'+esc(l.name||'')+'</b> <span class="badge">'+tr(l.mode==='before'?'pay_tB':'pay_tA')+'</span>'+(l.att==='no_show'?' <span class="badge">'+tr('inc_ns')+'</span>':'')+'<br><span class="mut" dir="auto">'+d+(l.price!=null?' · <span dir="ltr">'+esc(fmtMoney(l.price,l.cur))+'</span>':'')+'</span> '+pill+'</div><div class="row">'+btn+'</div></div>';
+}
+function tabIncome(){
+  const head='<div class="card"><h2 style="margin:0">'+tr('inc_title')+'</h2><p class="mut" style="margin:8px 0 0">'+tr('inc_hint')+'</p></div>';
+  payLazy();
+  if(S.incErr) return flashHtml()+head+'<div class="card"><p class="err">'+tr('h_err')+'</p><button type="button" class="chip" onclick="S.incErr=false;loadInc()">'+tr('cr_retry')+'</button></div>';
+  if(!S.inc){ incLazy(); return flashHtml()+head+'<div class="card mut" role="status">'+tr('h_loading')+'</div>'; }
+  const p=S.ip||'30', from=p==='all'?0:Date.now()-(+p)*86400000, LL=S.inc.lessons, T={};
+  const tt=c=>T[c]||(T[c]={earned:0,received:0,due:0});
+  const inP=LL.filter(l=>Date.parse(l.starts_at)>=from);
+  inP.forEach(l=>{ if(l.price!=null) tt(l.cur).earned+=+l.price });
+  LL.forEach(l=>{ if(l.price!=null&&!l.covered&&!l.paid_at) tt(l.cur).due+=+l.price; if(l.paid_at&&l.paid_amount!=null&&Date.parse(l.paid_at)>=from) tt(l.paid_cur||l.cur).received+=+l.paid_amount });
+  (S.inc.received||[]).forEach(r=>{ if(Date.parse(r.paid_on)>=from) tt(r.cur).received+=+r.amount });
+  const cs=Object.keys(T).sort((a,b)=>T[b].earned-T[a].earned);
+  const chip=(on,fn,t)=>'<button type="button" class="chip'+(on?' on':'')+'" aria-pressed="'+on+'" onclick="'+fn+'">'+t+'</button>';
+  const pc=[['30',tr('h_30')],['90',tr('h_90')],['all',tr('h_alltime')]];
+  const due=LL.filter(l=>incStatus(l)==='due').reverse();
+  return flashHtml()+head
+    +'<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px">'+pc.map(x=>chip(p===x[0],"S.ip='"+x[0]+"';render()",x[1])).join('')+'</div></div>'
+    +(cs.length?cs.map(c=>'<div class="card"><h2>'+esc(c)+'</h2><div class="rw-stats">'+[[T[c].earned,'inc_earned'],[T[c].received,'inc_received'],[T[c].due,'inc_due']].map(x=>'<div><b dir="ltr">'+esc(fmtMoney(x[0],c))+'</b><small>'+tr(x[1])+'</small></div>').join('')+'</div></div>').join(''):'<div class="card"><p class="mut">'+tr('inc_none')+'</p></div>')
+    +'<div class="card"><h2>'+tr('inc_due')+'</h2>'+(due.length?due.slice(0,30).map(incRow).join(''):'<p class="mut">'+tr('inc_dueNone')+'</p>')+'</div>'
+    +'<div class="card"><h2>'+tr('inc_list')+'</h2>'+(inP.length?inP.slice(0,40).map(incRow).join(''):'<p class="mut">'+tr('inc_none')+'</p>')+'</div>';
+}
 function payCard(){
   payLazy();
   if(!S.pay) return '<div class="card mut" role="status">…</div>';
@@ -745,6 +823,7 @@ function payCard(){
   return '<div class="card"><h2>💳 '+tr('pay_title')+'</h2>'
     +fld(tr('pay_price'),'<input id="pay_p" type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" value="'+(S.pay.price==null?'':esc(String(S.pay.price)))+'"><p class="mut" style="margin:-4px 0 10px">'+tr('pay_priceHint')+'</p>')
     +fld(tr('pay_cur'),'<select id="pay_c">'+curOpts(cur)+'</select>')
+    +'<label class="ck"><input id="pay_ns" type="checkbox"'+(S.pay.chargeNs?' checked':'')+' onchange="payNs(this.checked)"> '+tr('pay_ns')+'</label><p class="mut">'+tr('pay_nsHint')+'</p>'
     +'<button class="btn" onclick="savePay()">'+tr('save')+'</button></div>';
 }
 async function savePay(){
@@ -1054,7 +1133,7 @@ async function nav(slug){
   writeAppHistory('push');
   await loadTeacher(); if(S.t&&S.user) await loadBook(); render();
 }
-function setTab(t){S.tab=t;if(t==='credits'&&S.me&&S.me.teacher)loadCredits(true); if((t==='history'||t==='stats')&&S.me&&S.me.teacher)loadHistory(true);S.err='';S.msg='';writeAppHistory('push');if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
+function setTab(t){S.tab=t;if(t==='income'||t==='stats')S.inc=null;if(t==='credits'&&S.me&&S.me.teacher)loadCredits(true); if((t==='history'||t==='stats')&&S.me&&S.me.teacher)loadHistory(true);S.err='';S.msg='';writeAppHistory('push');if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
 async function startTeacherBooking(){
   if(!S.me?.teacher) return;
   S.payPick=null;S.payPrice=null;S.payCur=null; S.teacherBooking=true; S.rs=null; S.rsAsTeacher=true; S.rsFrom=null; S.done=null; S.err='';
@@ -1078,7 +1157,7 @@ async function signIn(){
   if(S.slug) ls.set('next',S.slug);
   await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+'/'}});
 }
-async function signOut(){await sb.auth.signOut();S.pay=null;S.user=null;S.me=null;S.mine=[];S.rs=null;S.loaded=null;S.reg=false;S.modal=null;render()}
+async function signOut(){await sb.auth.signOut();S.pay=null;S.inc=null;S.incErr=false;S.user=null;S.me=null;S.mine=[];S.rs=null;S.loaded=null;S.reg=false;S.modal=null;render()}
 
 // ---- booking actions ----
 async function contactFor(id){
@@ -1810,12 +1889,13 @@ function tabHistory(){
 
 /* ---- Teaching stats (teacher): computed in the page from the same past-lessons list as History ---- */
 function stBars(rows){
-  const mx=Math.max(0,...rows.map(r=>r[1])), steps=[0.5,1,2,5,10,20,50,100,200,500], step=steps.find(x=>x>=mx/4)||1000, top=step*4;
+  const mx=Math.max(0,...rows.map(r=>r[1])), steps=[0.5,1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000,100000,200000,500000,1000000], step=steps.find(x=>x>=mx/4)||2000000, top=step*4;
   const t=[0,1,2,3,4].map(i=>i*step), f=v=>(Math.round(v*10)/10).toString();
   return '<div class="st-ch"><div class="st-y" aria-hidden="true">'+t.map(v=>'<span style="bottom:'+(v/top*100)+'%">'+f(v)+'</span>').join('')+'</div>'
     +'<div class="st-pl"><div class="st-g" aria-hidden="true">'+t.map(v=>'<i style="bottom:'+(v/top*100)+'%"></i>').join('')+'</div>'
     +'<div class="st-cols">'+rows.map(r=>'<div class="st-c" role="img" title="'+esc(r[2]||r[0])+'" aria-label="'+esc(r[2]||r[0])+': '+f(r[1])+'"><div class="st-bw"><div class="st-bar" style="--v:'+(r[1]/top*100)+'%"><b>'+f(r[1])+'</b></div></div><div class="st-l">'+esc(r[0])+'</div></div>').join('')+'</div><div class="st-sp"></div></div></div>';
 }
+const chip2=(on,fn,t)=>'<button type="button" class="chip'+(on?' on':'')+'" aria-pressed="'+on+'" onclick="'+fn+'">'+t+'</button>';
 function tabStats(){
   const head='<div class="card"><h2 style="margin:0">'+tr('st_title')+'</h2><p class="mut" style="margin:8px 0 0">'+tr('st_hint')+'</p></div>';
   if(S.histErr) return flashHtml()+head+'<div class="card"><p class="err">'+tr('h_err')+'</p><button type="button" class="chip" onclick="S.histErr=false;loadHistory(true)">'+tr('cr_retry')+'</button></div>';
@@ -1833,6 +1913,14 @@ function tabStats(){
   const wk=[]; for(let i=7;i>=0;i--){const a=new Date(d0); a.setDate(a.getDate()-i*7); wk.push({a:a.getTime(),m:0});}
   S.hist.forEach(b=>{ if(b.attendance!=='attended') return; const t=Date.parse(b.starts_at); for(let i=wk.length-1;i>=0;i--){ if(t>=wk[i].a){ wk[i].m+=dur(b); break; } } });
   const wrows=wk.map(w=>[new Date(w.a).toLocaleDateString(loc(),{day:'numeric',month:'numeric'}),Math.round(w.m/6)/10]);
+  payLazy(); if(incHas()) incLazy();
+  const IL=(S.inc&&S.inc.lessons||[]).filter(l=>l.price!=null), money=IL.length>0;
+  const ec={}; IL.forEach(l=>{ec[l.cur]=(ec[l.cur]||0)+ +l.price});
+  const ecs=Object.keys(ec).sort((a,b)=>ec[b]-ec[a]), scur=ecs.includes(S.stc)?S.stc:ecs[0], earnMode=money&&S.stm==='e';
+  let erows=null; if(earnMode){ const w2=wk.map(x=>({a:x.a,m:0})); IL.forEach(l=>{ if(l.cur!==scur) return; const t=Date.parse(l.starts_at); for(let i=w2.length-1;i>=0;i--){ if(t>=w2[i].a){ w2[i].m+= +l.price; break; } } }); erows=w2.map(w=>[new Date(w.a).toLocaleDateString(loc(),{day:'numeric',month:'numeric'}),Math.round(w.m*100)/100]); }
+  const pe={}; IL.forEach(l=>{ if(Date.parse(l.starts_at)>=from) pe[l.cur]=(pe[l.cur]||0)+ +l.price });
+  const peLine=Object.keys(pe).length?'<p class="mut" style="margin:10px 0 0">'+tr('st_earnedIn')+': <span dir="ltr">'+Object.keys(pe).sort((a,b)=>pe[b]-pe[a]).map(c=>'<b>'+esc(fmtMoney(pe[c],c))+'</b>').join(' · ')+'</span></p>':'';
+  const tog=money?'<div class="row" style="flex-wrap:wrap;gap:6px;margin:0 0 10px">'+chip2(!earnMode,"S.stm='h';render()",tr('st_tgHrs'))+chip2(earnMode,"S.stm='e';render()",tr('st_tgEarn'))+(earnMode&&ecs.length>1?ecs.map(c=>chip2(c===scur,"S.stc='"+c+"';render()",esc(c))).join(''):'')+'</div>':'';
   // busiest weekdays (attended lessons in the period), Monday first
   const wd=[0,0,0,0,0,0,0]; att.forEach(b=>{wd[(new Date(b.starts_at).getDay()+6)%7]++;});
   const dn=[...Array(7)].map((_,i)=>new Date(2024,0,1+i).toLocaleDateString(loc(),{weekday:'short'}));
@@ -1843,8 +1931,8 @@ function tabStats(){
   const pc=[['30',tr('h_30')],['90',tr('h_90')],['all',tr('h_alltime')]];
   return flashHtml()+head
     +'<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px;margin-bottom:10px">'+pc.map(x=>chip(p===x[0],"S.sp='"+x[0]+"';render()",x[1])).join('')+'</div>'
-    +'<div class="rw-stats">'+tiles.map(x=>'<div><b>'+x[0]+'</b><small>'+tr(x[1])+'</small></div>').join('')+'</div></div>'
-    +'<div class="card"><h2>'+tr('st_weeks')+'</h2>'+stBars(wrows)+'</div>'
+    +'<div class="rw-stats">'+tiles.map(x=>'<div><b>'+x[0]+'</b><small>'+tr(x[1])+'</small></div>').join('')+'</div>'+peLine+'</div>'
+    +'<div class="card"><h2>'+tr(earnMode?'st_weeksE':'st_weeks')+'</h2>'+tog+stBars(earnMode?erows:wrows)+(earnMode?'<p class="mut" style="margin:6px 0 0" dir="ltr">'+esc(scur)+'</p>':'')+'</div>'
     +'<div class="card"><h2>'+tr('st_days')+'</h2>'+(att.length?stBars(dn.map((n,i)=>[n,wd[i]])):'<p class="mut">'+tr('h_none')+'</p>')+'</div>'
     +'<div class="card"><h2>'+tr('st_top')+'</h2>'+(top.length?stBars(top.map(x=>[x[0].split(/\s+/)[0],x[1],x[0]])):'<p class="mut">'+tr('h_none')+'</p>')+'</div>';
 }
@@ -1878,14 +1966,15 @@ function adminDashboard(){
 
 function viewDash(){
   const isT=!!S.me.teacher, isA=S.me.role==='admin';
-  let tabs=isT?['link','calendar','bk','history','stats','credits','hours','types','notif','me','rank','mine','prof']:[];
+  let tabs=isT?['link','calendar','bk','history','stats','credits','income','hours','types','notif','me','rank','mine','prof']:[];
   if(!isT&&!isA) tabs=['mine','sched','notif','me','acct'];
   if(isA) tabs=isT?tabs.concat(['inv','admin']):['admin','notif','me','mine','inv'];
+  if(isT){ payLazy(); if(!incHas()) tabs=tabs.filter(k=>k!=='income'); }
   if(!tabs.includes(S.tab)) S.tab=tabs[0];
   const col=ls.get('navCollapsed')==='1', rtl=lang==='ar';
   const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><div class="side-hd"><b>BookMyClass</b><button type="button" class="side-x" onclick="setNav(false)" aria-label="'+tr('nav_close')+'">✕</button></div><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
     +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'<div class="side-ft"><p class="mut">'+tr('hi')+' '+esc(S.user.user_metadata?.full_name||S.user.email)+'</p><span class="seg" role="group" aria-label="Theme">'+[['system','🖥️','m_themeSys'],['light','☀️','m_themeLight'],['dark','🌙','m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+((ls.get('theme')||'system')===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span><button type="button" class="chip" onclick="setLang(lang===\'ar\'?\'en\':\'ar\')">'+tr('lang')+'</button><button type="button" class="chip" onclick="signOut()">'+tr('out')+'</button></div></nav>';
-  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,credits:tabCredits,history:tabHistory,stats:tabStats,sched:tabSched,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,credits:tabCredits,income:tabIncome,history:tabHistory,stats:tabStats,sched:tabSched,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   const bt4=['calendar','bk','link','credits'], btm=(isT&&!isA)||(isT&&isA)?'<nav class="btm" aria-label="'+tr('nav_main')+'">'+bt4.map(k=>'<button type="button"'+(S.tab===k?' class="on" aria-current="page"':'')+' onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span>'+tr(k==='credits'?'nav_credits_s':NAV[k][1])+'</span></button>').join('')+'<button type="button"'+(bt4.includes(S.tab)?'':' class="on"')+' onclick="setNav(true)" aria-haspopup="true"><span class="ic" aria-hidden="true">☰</span><span>'+tr('nav_more')+'</span>'+(S.unread?'<span class="dot">'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button></nav>':'';
   return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="setNav(false)"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+(isT?whatsNew():'')+content+(btm?'<div class="btm-sp"></div>':'')+'</section>'+btm+'</div>';
 }
@@ -2040,6 +2129,15 @@ function renderModal(){
       +'<label class="fl" for="cr_a">'+tr('cr_amount')+'</label><input id="cr_a" type="number" inputmode="decimal" min="0" max="10000000" step="0.01" dir="ltr" value="'+esc(v.a||'')+'">'
       +'<label class="fl" for="cr_t">'+tr('cr_note')+'</label><input id="cr_t" maxlength="500" placeholder="'+esc(tr('cr_notePh'))+'" value="'+esc(v.t)+'">'
       +'<div class="stack">'+bt('btn" id="cr_save','submitCredit()',tr('cr_save'))+bt('chip','closeModal()',tr('back'))+'</div>');
+  }
+  if(m.type==='applypast'){
+    const pv=m.pv, pm=pv&&pv.price!=null?fmtMoney(pv.price,pv.currency):'';
+    h=wrap(tr('ap_title').replace('{p}',pm),pv===null?'<p class="mut"><span class="mspin" aria-hidden="true"></span> '+tr('h_loading')+'</p>'
+      :'<p class="mut">'+tr('ap_body').replace('{s}',esc(m.name))+'</p>'
+      +'<div class="ap-rows"><div><span class="mut">'+tr('ap_cnt')+'</span><b dir="ltr">'+pv.count+'</b></div><div><span class="mut">'+tr('ap_tot')+'</span><b dir="ltr">'+(pv.total!=null?esc(fmtMoney(pv.total,pv.currency)):'-')+'</b></div></div>'
+      +'<div class="pay-terms" style="margin:10px 0"><label class="mut" style="flex:1">'+tr('ap_from')+'<input type="date" value="'+esc(m.from||'')+'" onchange="apDate(\'from\',this.value)" style="max-width:none;width:100%"></label><label class="mut" style="flex:1">'+tr('ap_to')+'<input type="date" value="'+esc(m.to||'')+'" onchange="apDate(\'to\',this.value)" style="max-width:none;width:100%"></label></div>'
+      +(pv.count?'':'<p class="mut">'+tr('ap_none')+'</p>')+'<p class="mut" style="font-size:13px">'+tr('ap_note')+'</p>'
+      +'<div class="stack">'+(pv.count?bt('btn','apApply()',tr('ap_ok')):'')+bt('chip','closeModal()',tr('back'))+'</div>');
   }
   if(m.type==='credlog'){
     const L=m.rows;
