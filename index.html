@@ -172,6 +172,11 @@ html,body{max-width:100%;overflow-x:hidden}
 .cr-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px 16px;align-items:center}.cr-rg{position:relative;width:64px;height:64px}.cr-ring{display:block}
 .cr-fg{stroke-dashoffset:var(--o);animation:crring .9s cubic-bezier(.2,.8,.2,1)}@keyframes crring{from{stroke-dashoffset:150.8}}
 .cr-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.cr-num b{font-size:20px}.cr-num small{font-size:9px;color:var(--mut)}
+.isv{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:none}.ic .isv{width:1em;height:1em;vertical-align:middle;display:block;margin:0 auto}.btm button .ic .isv{width:1.05em;height:1.05em}.side-i .ic .isv{width:1.05em;height:1.05em}
+.bkl{display:block}.bkl-e,.bkl-b{display:flex;align-items:center;gap:6px;margin-top:3px}.bkl-e .isv{color:var(--mut)}.bkl-m{unicode-bidi:isolate;direction:ltr;text-align:start;overflow-wrap:anywhere}.bkl-b{color:var(--mut)}
+.inf{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;width:20px;height:20px;padding:0;margin:0;margin-inline-start:6px;border-radius:50%;border:1.5px solid var(--mut);background:transparent;color:var(--mut);font:700 12px/1 Georgia,serif;cursor:pointer;min-height:0}.inf::after{content:"";position:absolute;inset:-12px}.inf.on{background:var(--mut);color:var(--card)}.inf:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.infn{display:none;background:rgba(128,132,160,.14);color:var(--mut);border-radius:10px;padding:8px 10px;font-size:12.5px;line-height:1.5;margin:6px 0 8px;font-weight:400;text-align:start}.infn.on{display:block}
+.inc-steps{margin:10px 0 12px;padding-inline-start:22px;display:grid;gap:6px;font-size:14px}.pay-terms .inf{margin-inline-start:2px}
 .cr-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cr-chips .sd-st{margin:0}.le-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}.le-row .chip{margin-inline-start:auto}.le-sg{margin:8px 0;padding:10px;display:flex;flex-direction:column;gap:2px;font-size:14px}.le-sg b{font-size:13px}.le-sg .mut{font-size:12px}.bk-who{font-size:13px;overflow-wrap:anywhere}.le-ul{margin:10px 0 0;padding-inline-start:20px;font-size:14px}.le-ul li{margin:3px 0}.cr-act{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap}
 .cr-note{margin:6px 0;font-size:13px;color:var(--mut)}.cr-note.warn{color:#8a5a00;background:rgba(245,166,35,.14);padding:6px 10px;border-radius:10px}
 .cr-q{display:flex;gap:8px;align-items:center}.cr-q input{flex:1;min-width:0}.cr-log>div{display:grid;grid-template-columns:auto auto 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
@@ -560,11 +565,11 @@ async function setLbVisible(show){
   S.lbPeriod='month'; S.lb=null; S.lbTier=''; await loadLeaderboard();
 }
 function tabRank(){
-  if(S.lbErr) return flashHtml()+'<div class="card"><h2>🏅 '+tr('lb_title')+'</h2><p class="mut">'+tr('lb_setup')+'</p></div>';
+  if(S.lbErr) return flashHtml()+'<div class="card"><h2>'+ic('medal')+' '+tr('lb_title')+'</h2><p class="mut">'+tr('lb_setup')+'</p></div>';
   if(!S.rw&&!S.rwLoading&&!S.rwErr) setTimeout(loadRewards,0);
   if(!S.lb){ if(!S.lbLoading) setTimeout(()=>loadLeaderboard(),0); return flashHtml()+'<div class="card mut" role="status">'+tr('r_loading')+'</div>'; }
   const d=S.lb, me=d.me||{}, per=S.lbPeriod||'month', rows=d.rows||[];
-  let h=flashHtml()+'<div class="card"><h2>🏅 '+tr('lb_title')+'</h2><div class="row" style="gap:8px;margin-bottom:10px">'
+  let h=flashHtml()+'<div class="card"><h2>'+ic('medal')+' '+tr('lb_title')+'</h2><div class="row" style="gap:8px;margin-bottom:10px">'
     +'<button type="button" class="chip'+(per==='month'?' on':'')+'" onclick="setLbPeriod(\'month\')">'+tr('lb_month')+'</button>'
     +'<button type="button" class="chip'+(per==='all'?' on':'')+'" onclick="setLbPeriod(\'all\')">'+tr('lb_all')+'</button></div>';
   if(me.visible===false) h+='<p class="mut">'+tr('lb_hidden')+'</p>';
@@ -622,7 +627,7 @@ function crTick(){
   });
 }
 function tabCredits(){
-  const head='<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">'+tr('cr_title')+'</h2><button type="button" class="btn" style="margin:0;width:auto" onclick="openCredit()">＋ '+tr('cr_add')+'</button></div><p class="mut" style="margin:8px 0 0">'+tr('cr_hint')+'</p></div>';
+  const head='<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">'+tr('cr_title')+'</h2><button type="button" class="btn" style="margin:0;width:auto" onclick="openCredit()">'+ic('plus')+' '+tr('cr_add')+'</button></div><p class="mut" style="margin:8px 0 0">'+tr('cr_hint')+'</p></div>';
   if(S.crErr) return flashHtml()+head+'<div class="card"><p class="err">'+tr('cr_err')+'</p><button type="button" class="chip" onclick="S.crErr=false;loadCredits()">'+tr('cr_retry')+'</button></div>';
   if(!S.cr){ if(!S.crLoading) setTimeout(()=>loadCredits(),0); return flashHtml()+head+'<div class="card mut" role="status">'+tr('cr_loading')+'</div>'; }
   const L=S.cr.students;
@@ -634,14 +639,14 @@ function tabCredits(){
       +'<div class="cr-mid"><b>'+esc(st.name)+'</b>'+((st.email||st.phone)?'<br><span class="mut" dir="ltr" style="font-size:13px">'+esc(st.email||st.phone)+'</span>':'')
       +'<div class="cr-chips"><span class="sd-st mu">'+tr('cr_of').replace('{t}',st.total)+'</span><span class="sd-st mu">'+tr('cr_used').replace('{n}',st.used)+'</span>'+(st.pending?'<span class="sd-st mu">'+tr('cr_booked').replace('{n}',st.pending)+'</span>':'')+(st.free>0?'<span class="sd-st ok">'+tr('cr_free').replace('{n}',st.free)+'</span>':'')+(few?'<span class="sd-st soft">'+tr('cr_few')+'</span>':'')+'</div>'
       +payStudentRow(st)+(st.uncovered>0?'<p class="cr-note warn" style="margin:8px 0 0">'+tr('cr_over').replace('{n}',st.uncovered)+'</p>':'')+'</div>'
-      +'<div class="cr-act"><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredit(this.dataset.k)">＋ '+tr('cr_add')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredLog(this.dataset.k)">'+tr('cr_log')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCorrect(this.dataset.k)">✎ '+tr('cc_btn')+'</button></div></div>';
+      +'<div class="cr-act"><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredit(this.dataset.k)">'+ic('plus')+' '+tr('cr_add')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredLog(this.dataset.k)">'+tr('cr_log')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCorrect(this.dataset.k)">'+ic('edit')+' '+tr('cc_btn')+'</button></div></div>';
   }).join('');
 }
 function payStudentRow(st){
   payLazy(); if(!S.pay) return '';
   const m=S.pay.modes[st.key]||(st.total>0?'before':'after');
-  return '<div class="pay-two" style="margin-top:8px" role="group" aria-label="'+esc(tr('pay_card'))+'">'+['after','before'].map(k=>'<button type="button" class="chip'+(m===k?' on':'')+'" aria-pressed="'+(m===k)+'" data-k="'+esc(st.key)+'" onclick="payStudent(this.dataset.k,\''+k+'\')">'+tr(k==='after'?'pay_after':'pay_before')+'</button>').join('')+'</div>'
-    +(()=>{const t=payTerms(st.key); return '<div class="pay-terms" data-k="'+esc(st.key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select><span class="pay-sv" role="status" aria-live="polite"></span></div><button type="button" class="chip ap-btn" data-k="'+esc(st.key)+'"'+(t.price==null?' hidden':'')+' onclick="openApplyPast(this.dataset.k)">'+tr('ap_btn')+'</button>'})();
+  return '<div class="infw"><div class="pay-two" style="margin-top:8px" role="group" aria-label="'+esc(tr('pay_card'))+'">'+['after','before'].map(k=>'<button type="button" class="chip'+(m===k?' on':'')+'" aria-pressed="'+(m===k)+'" data-k="'+esc(st.key)+'" onclick="payStudent(this.dataset.k,\''+k+'\')">'+tr(k==='after'?'pay_after':'pay_before')+'</button>').join('')+info('mode',st.key)+'</div>'+infoNote('mode',st.key)+'</div>'
+    +(()=>{const t=payTerms(st.key); return '<div class="infw"><div class="pay-terms" data-k="'+esc(st.key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select><span class="pay-sv" role="status" aria-live="polite"></span>'+info('price',st.key)+'</div>'+infoNote('price',st.key)+'</div><button type="button" class="chip ap-btn" data-k="'+esc(st.key)+'"'+(t.price==null?' hidden':'')+' onclick="openApplyPast(this.dataset.k)">'+tr('ap_btn')+'</button>'})();
 }
 function crCorrText(n){const m=/^Correction: (\d+) → (\d+)(?: · (.*))?$/.exec(n||''); return m?tr('cc_hist').replace('{a}',m[1]).replace('{b}',m[2])+(m[3]?' · '+m[3]:''):(n||tr('cr_adj'));}
 function ccChange(cur,v){const n=parseInt(v,10); if(v===''||!Number.isInteger(n)) return ''; const d=n-cur; return tr('cc_chg').replace('{a}',cur).replace('{b}',n).replace('{d}',(d>0?'+':d<0?'−':'±')+Math.abs(d));}
@@ -681,7 +686,7 @@ function bkWho(b){
 }
 function bkLine(b){
   const w=bkWho(b);
-  return '<span class="mut bk-who">✉ <span dir="ltr">'+(w.email?esc(w.email):tr('le_row')+': '+tr('le_none'))+'</span> · '+tr(w.byYou?'bw_you':'bw_stu')+'</span>';
+  return '<span class="bkl infw"><span class="bkl-e">'+ic('mail')+(w.email?'<bdi class="bkl-m" dir="ltr">'+esc(w.email)+'</bdi>':'<span>'+tr('le_row')+': '+tr('le_none')+'</span>')+'</span><span class="bkl-b"><span>'+tr(w.byYou?'bw_you':'bw_stu')+'</span>'+info('by',b.id)+'</span>'+infoNote('by',b.id)+'</span>';
 }
 function leTok(n){return String(n||'').toLowerCase().replace(/[^\p{L}\p{N}\s]/gu,' ').split(/\s+/).filter(x=>x.length>=3)[0]||'';}
 function leSuggest(b){
@@ -762,7 +767,7 @@ function markCard(){
   if(!S.me||!S.me.teacher) return '';
   if(S.pastKey!=='ok'){ if(!S.pastLoading) setTimeout(loadPast,0); return ''; }
   if(!S.past.length) return '';
-  return '<div class="card"><h2>'+tr('r_toMark')+' ('+S.past.length+')</h2><p class="mut">'+tr('r_markHint')+'</p>'+S.past.slice(0,8).map(b=>'<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+'</span></div><div class="row"><button type="button" class="chip" onclick="markAtt(\''+b.id+'\',\'attended\',this)">✔ '+tr('r_attended')+'</button><button type="button" class="chip danger" onclick="markAtt(\''+b.id+'\',\'no_show\',this)">✖ '+tr('r_noShow')+'</button></div></div>').join('')+'</div>';
+  return '<div class="card"><h2>'+tr('r_toMark')+' ('+S.past.length+')</h2><p class="mut">'+tr('r_markHint')+'</p>'+S.past.slice(0,8).map(b=>'<div class="bk"><div><b>'+esc(b.student_name)+'</b><br><span class="mut">'+fF(Date.parse(b.starts_at))+'</span></div><div class="row"><button type="button" class="chip" onclick="markAtt(\''+b.id+'\',\'attended\',this)">'+ic('check')+' '+tr('r_attended')+'</button><button type="button" class="chip danger" onclick="markAtt(\''+b.id+'\',\'no_show\',this)">'+ic('close')+' '+tr('r_noShow')+'</button></div></div>').join('')+'</div>';
 }
 async function markAtt(id,st,el){
   if(el&&el.disabled) return;
@@ -797,7 +802,42 @@ Object.assign(T.en,{bw_you:'Booked by you',bw_stu:'Booked by student',bw_lbl:'Bo
 Object.assign(T.ar,{bw_you:'حجزتَه أنت',bw_stu:'حجزه الطالب',bw_lbl:'الحجز',sg_t:'حساب محتمل (مجرد اقتراح، لا يتم ربط شيء)',sg_b:'حجز حصصًا باسم «{n}». نفس الاسم الأول فقط. أنت من يقرر إن كان نفس الطالب.',sg_use:'استخدم هذا البريد',sg_no:'ليس هو'});
 Object.assign(T.en,{st_hi:'Hi {n}',st_nextL:'Your next lesson',st_today:'Today',st_tmrw:'Tomorrow',st_join:'Join lesson',st_cu:'Coming up',st_book:'＋ Book another lesson',st_past:'Past lessons ({n})',st_lessons:'Lessons',st_rew:'Rewards',st_none:'No upcoming lessons yet.'});
 Object.assign(T.ar,{st_hi:'مرحبًا {n}',st_nextL:'حصتك القادمة',st_today:'اليوم',st_tmrw:'غدًا',st_join:'انضم للحصة',st_cu:'القادمة',st_book:'＋ احجز حصة أخرى',st_past:'الحصص السابقة ({n})',st_lessons:'الحصص',st_rew:'المكافآت',st_none:'لا توجد حصص قادمة بعد.'});
-const NAV={income:['💰','nav_income'],link:['🔗','nav_link'],calendar:['📅','nav_schedule'],bk:['📋','nav_bookings'],hours:['🕒','nav_avail'],types:['🎓','nav_types'],notif:['🔔','nav_notif'],me:['🏆','nav_rewards'],mine:['🎒','nav_mylessons'],prof:['⚙️','nav_settings'],admin:['🛡️','nav_admin'],inv:['🔑','nav_invites'],acct:['⚙️','nav_settings'],rank:['🏅','nav_rank'],credits:['🎟️','nav_credits'],stats:['📊','nav_stats'],history:['📖','nav_history'],sched:['🗓️','nav_sched']};
+Object.assign(T.en,{i_label:'More info',inc_empty:'Set a price per lesson to see your income.',inc_s1:'Set a price for each student, or one default price',inc_s2:'Mark lessons as Attended',inc_s3:'Tap Mark paid when you get paid',inc_setp:'Set price',
+i_inc:'Earned: attended lessons × price. Received: what you marked paid. To collect: attended, not paid yet. Only you see this.',
+i_mode:'After the lesson: each time you mark Attended you earn the price, then tap Mark paid in Income. Before: the student prepays lessons, and each attended lesson uses one.',
+i_price:'Price for this student. It replaces your default. Students never see it.',
+i_ns:'Off: a no-show is moved to another time and not counted. On: it counts as taught and is earned.',
+i_cb:'Use this if the count is wrong. It does not change any lesson or payment, and it is saved in History.',
+i_ae:'Links these lessons to the student’s account. Linked lessons follow the same notifications as any other lesson.',
+i_ac:'Adds paid lessons to the balance. The amount is optional and only shows in your Income.',
+i_poss:'Same first name only. It is a suggestion. You decide who the student is.',
+i_by:'Shows who made the booking: you or the student.'});
+Object.assign(T.ar,{i_label:'مزيد من المعلومات',inc_empty:'حدّد سعر الحصة لترى دخلك.',inc_s1:'حدّد سعرًا لكل طالب، أو سعرًا افتراضيًا واحدًا',inc_s2:'سجّل الحصص كـ «حضر»',inc_s3:'اضغط «تم الدفع» عندما تستلم المبلغ',inc_setp:'تحديد السعر',
+i_inc:'المكتسب: الحصص التي حضرها الطلاب × السعر. المستلم: ما سجّلته كمدفوع. للتحصيل: حضر ولم يُدفع بعد. لا يراه غيرك.',
+i_mode:'بعد الحصة: كلما سجّلت «حضر» تكسب السعر، ثم اضغط «تم الدفع» في الدخل. قبل: يدفع الطالب مسبقًا وكل حصة حضرها تخصم حصة من رصيده.',
+i_price:'سعر هذا الطالب. يحل محل سعرك الافتراضي. لا يراه الطلاب.',
+i_ns:'معطّل: الحصة التي يغيب عنها الطالب تُؤجَّل ولا تُحتسب. مفعّل: تُحتسب كحصة مُدرَّسة وتدخل في المكتسب.',
+i_cb:'استخدمه إذا كان العدد خاطئًا. لا يغيّر أي حصة أو دفعة، ويُحفظ في السجل.',
+i_ae:'يربط هذه الحصص بحساب الطالب. تعمل الإشعارات للحصص المرتبطة مثل أي حصة أخرى.',
+i_ac:'يضيف حصصًا مدفوعة إلى الرصيد. المبلغ اختياري ويظهر في الدخل لديك فقط.',
+i_poss:'الاسم الأول فقط متشابه. هذا اقتراح، وأنت من يقرر من هو الطالب.',
+i_by:'يوضح من أنشأ الحجز: أنت أو الطالب.'});
+const ICP={mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',chev:'<path d="m6 15 6-6 6 6"/>',more:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',search:'<circle cx="11" cy="11" r="6"/><path d="m20 20-4.2-4.2"/>',phone:'<path d="M6 3h3l1.5 4-2 1.5a11 11 0 0 0 5 5l1.5-2 4 1.5v3a2 2 0 0 1-2 2A15 15 0 0 1 4 5a2 2 0 0 1 2-2z"/>',calplus:'<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M12 13v5M9.5 15.5h5"/>',warn:'<path d="M12 4 2.5 20h19z"/><path d="M12 10v4.5M12 17.3v.2"/>',okc:'<circle cx="12" cy="12" r="9"/><path d="m8 12.5 3 3 5-6"/>',xc:'<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.8v.2"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',monitor:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>',moon:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>',card:'<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/>',plus:'<path d="M12 5v14M5 12h14"/>',income:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.1M17.5 14.5v.1"/>',link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1"/>',cal:'<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',clip:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',cap:'<path d="m2.5 9.5 9.5-4.5 9.5 4.5-9.5 4.5z"/><path d="M6.5 12v4.5c0 1 2.5 2.5 5.5 2.5s5.5-1.5 5.5-2.5V12M21.5 9.5V15"/>',bell:'<path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M10 21h4"/>',trophy:'<path d="M8 4h8v6a4 4 0 0 1-8 0zM8 6H4.5c0 3 1.5 4.5 3.7 4.8M16 6h3.5c0 3-1.5 4.5-3.7 4.8M12 14v4M8.5 20h7"/>',bag:'<path d="M7 8V6a5 5 0 0 1 10 0v2"/><rect x="4.5" y="8" width="15" height="12" rx="3"/><path d="M9 14h6"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/><circle cx="12" cy="12" r="6.5"/>',shield:'<path d="M12 3 5 6v5.5c0 4.3 3 7.6 7 9.5 4-1.9 7-5.2 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/>',key:'<circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 7l2.5 2.5M14 9l2 2"/>',medal:'<circle cx="12" cy="14" r="5.5"/><path d="M8.5 9.5 6.5 3h4l1.5 3 1.5-3h4l-2 6.5M12 11.5v5"/>',ticket:'<path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2.5 2.5 0 0 0 0 5v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2.5 2.5 0 0 0 0-5z" transform="translate(0 -.5)"/><path d="M14 6v12" stroke-dasharray="1.5 2.5"/>',chart:'<path d="M4 20V4M4 20h16"/><path d="M8 16v-5M12 16V8M16 16v-3"/>',book:'<path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/>',days:'<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h.1M12 14h.1M16 14h.1M8 17h.1M12 17h.1"/>',block:'<circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/>'};
+function ic(k){return '<svg class="isv" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(ICP[k]||'')+'</svg>'}
+
+/* Info "i": tap to open a short grey note, tap again / tap outside / Esc / Back to close. Real button, aria-expanded, note is a polite live region. */
+function infoId(k,u){return k+(u?':'+u:'')}
+function info(k,u){const id=infoId(k,u), on=S.infoOpen===id; return '<button type="button" class="inf'+(on?' on':'')+'" data-i="'+esc(id)+'" data-k="'+k+'" aria-label="'+esc(tr('i_label'))+'" aria-expanded="'+on+'" onclick="infoTog(this)"><span aria-hidden="true">i</span></button>'}
+function infoNote(k,u){const on=S.infoOpen===infoId(k,u); return '<div class="infn'+(on?' on':'')+'" role="note" aria-live="polite">'+(on?tr('i_'+k):'')+'</div>'}
+function infoClose(sync){ if(!S.infoOpen) return; S.infoOpen=null; document.querySelectorAll('.inf.on').forEach(x=>{x.classList.remove('on');x.setAttribute('aria-expanded','false')}); document.querySelectorAll('.infn.on').forEach(x=>{x.classList.remove('on');x.textContent=''}); if(sync!==false) ovSync(); }
+function infoTog(b){
+  const id=b.dataset.i, was=S.infoOpen===id; infoClose(false);
+  if(!was){ S.infoOpen=id; b.classList.add('on'); b.setAttribute('aria-expanded','true'); const w=b.closest('.infw'), n=w&&w.querySelector('.infn'); if(n){ n.textContent=tr('i_'+b.dataset.k); n.classList.add('on'); } }
+  ovSync();
+}
+document.addEventListener('click',e=>{ if(S.infoOpen&&!e.target.closest('.inf,.infn')) infoClose(); },true);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&S.infoOpen){ infoClose(); } });
+const NAV={income:[ic('income'),'nav_income'],link:[ic('link'),'nav_link'],calendar:[ic('cal'),'nav_schedule'],bk:[ic('clip'),'nav_bookings'],hours:[ic('clock'),'nav_avail'],types:[ic('cap'),'nav_types'],notif:[ic('bell'),'nav_notif'],me:[ic('trophy'),'nav_rewards'],mine:[ic('bag'),'nav_mylessons'],prof:[ic('gear'),'nav_settings'],admin:[ic('shield'),'nav_admin'],inv:[ic('key'),'nav_invites'],acct:[ic('gear'),'nav_settings'],rank:[ic('medal'),'nav_rank'],credits:[ic('ticket'),'nav_credits'],stats:[ic('chart'),'nav_stats'],history:[ic('book'),'nav_history'],sched:[ic('days'),'nav_sched']};
 // ---- payments: per-student pay type, price per lesson (teacher-only; students never see any of it) ----
 async function loadPay(){
   if(!S.me||!S.me.teacher||S._payLoading) return; S._payLoading=true;
@@ -892,6 +932,7 @@ function loadInc(){
   if(S._incLoading||!S.me||!S.me.teacher) return; S._incLoading=true;
   sb.rpc('get_income').then(r=>{ S._incLoading=false; if(r.error||!r.data){S.incErr=true}else{S.inc=r.data;S.incErr=false} render(); },()=>{S._incLoading=false;S.incErr=true;render()});
 }
+function incSetPrice(){ setTab('prof'); setTimeout(()=>{ const e=document.getElementById('payCard'); if(e) e.scrollIntoView({behavior:'smooth',block:'start'}) },60) }
 function incLazy(){ if(S.me&&S.me.teacher&&!S.inc&&!S._incLoading&&!S.incErr) setTimeout(loadInc,0) }
 async function markPaid(id,paid){
   const r=await sb.rpc('mark_lesson_paid',{p_booking:id,p_paid:paid}); if(r.error){flash(r.error.message||tr('taken'),true);return}
@@ -909,8 +950,9 @@ function incRow(l){
   return '<div class="bk"><div><b>'+esc(l.name||'')+'</b> <span class="badge">'+tr(l.mode==='before'?'pay_tB':'pay_tA')+'</span>'+(l.att==='no_show'?' <span class="badge">'+tr('inc_ns')+'</span>':'')+'<br><span class="mut" dir="auto">'+d+(l.price!=null?' · <span dir="ltr">'+esc(fmtMoney(l.price,l.cur))+'</span>':'')+'</span> '+pill+'</div><div class="row">'+btn+'</div></div>';
 }
 function tabIncome(){
-  const head='<div class="card"><h2 style="margin:0">'+tr('inc_title')+'</h2><p class="mut" style="margin:8px 0 0">'+tr('inc_hint')+'</p></div>';
+  const head='<div class="card infw"><div class="row" style="flex-wrap:nowrap;justify-content:space-between"><h2 style="margin:0">'+tr('inc_title')+'</h2>'+info('inc')+'</div>'+infoNote('inc')+'<p class="mut" style="margin:8px 0 0">'+tr('inc_hint')+'</p></div>';
   payLazy();
+  if(S.pay&&!incHas()) return flashHtml()+head+'<div class="card"><p style="margin:0;font-weight:600">'+tr('inc_empty')+'</p><ol class="inc-steps"><li>'+tr('inc_s1')+'</li><li>'+tr('inc_s2')+'</li><li>'+tr('inc_s3')+'</li></ol><button type="button" class="btn" style="margin:0" onclick="incSetPrice()">'+tr('inc_setp')+'</button></div>';
   if(S.incErr) return flashHtml()+head+'<div class="card"><p class="err">'+tr('h_err')+'</p><button type="button" class="chip" onclick="S.incErr=false;loadInc()">'+tr('cr_retry')+'</button></div>';
   if(!S.inc){ incLazy(); return flashHtml()+head+'<div class="card mut" role="status">'+tr('h_loading')+'</div>'; }
   const p=S.ip||'30', from=p==='all'?0:Date.now()-(+p)*86400000, LL=S.inc.lessons, T={};
@@ -933,10 +975,10 @@ function payCard(){
   payLazy();
   if(!S.pay) return '<div class="card mut" role="status">…</div>';
   const cur=S.pay.currency||'SAR';
-  return '<div class="card"><h2>💳 '+tr('pay_title')+'</h2>'
+  return '<div class="card" id="payCard"><h2>'+ic('card')+' '+tr('pay_title')+'</h2>'
     +fld(tr('pay_price'),'<input id="pay_p" type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" value="'+(S.pay.price==null?'':esc(String(S.pay.price)))+'"><p class="mut" style="margin:-4px 0 10px">'+tr('pay_priceHint')+'</p>')
     +fld(tr('pay_cur'),'<select id="pay_c">'+curOpts(cur)+'</select>')
-    +'<label class="ck"><input id="pay_ns" type="checkbox"'+(S.pay.chargeNs?' checked':'')+' onchange="payNs(this.checked)"> '+tr('pay_ns')+'</label><p class="mut">'+tr('pay_nsHint')+'</p>'
+    +'<div class="infw"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><label class="ck" style="margin:0"><input id="pay_ns" type="checkbox"'+(S.pay.chargeNs?' checked':'')+' onchange="payNs(this.checked)"> '+tr('pay_ns')+'</label>'+info('ns')+'</div>'+infoNote('ns')+'</div>'
     +'<button class="btn" onclick="savePay()">'+tr('save')+'</button></div>';
 }
 async function savePay(){
@@ -997,13 +1039,13 @@ async function openNotif(id){
   const n=S.notifs.find(x=>x.id===id); if(!n) return;
   if(!n.read_at){n.read_at=new Date().toISOString(); S.unread=Math.max(0,S.unread-1); sb.rpc('mark_notifications_read',{p_ids:[id]}); S._nk=null;}
   S.bellOpen=false; if(S.slug) {nav(null)}
-  if(S.me&&S.me.teacher){S.tab=(n.data&&n.data.actor_is_teacher)?'mine':'bk'; ls.set('x','')} 
+  if(S.me&&S.me.teacher){S.tab=(n.data&&n.data.actor_is_teacher)?'mine':'calendar'; ls.set('x','')} 
   render();
 }
 function toggleBell(){S.bellOpen=!S.bellOpen; if(S.bellOpen&&!S.notifLoaded) loadNotifs(); render();}
 function notifItem(n){
   const ask=S.me&&S.me.teacher&&n.kind==='booking_new'&&n.booking_id&&payAsk(n.booking_id); if(S.me&&S.me.teacher) payLazy();
-  const btn='<button type="button" class="ni'+(n.read_at?'':' unread')+'" onclick="openNotif('+n.id+')"><span class="u" aria-hidden="true" style="visibility:'+(n.read_at?'hidden':'visible')+'"></span><span style="flex:1;min-width:0"><span style="display:block">'+({booking_new:'🆕 ',booking_cancelled:'❌ ',booking_changed:'✏️ '}[n.kind]||'')+esc(notifText(n))+'</span><small class="mut">'+esc(timeAgo(n.created_at))+'</small></span></button>';
+  const btn='<button type="button" class="ni'+(n.read_at?'':' unread')+'" onclick="openNotif('+n.id+')"><span class="u" aria-hidden="true" style="visibility:'+(n.read_at?'hidden':'visible')+'"></span><span style="flex:1;min-width:0"><span style="display:block">'+({booking_new:ic('plus')+' ',booking_cancelled:ic('xc')+' ',booking_changed:ic('edit')+' '}[n.kind]||'')+esc(notifText(n))+'</span><small class="mut">'+esc(timeAgo(n.created_at))+'</small></span></button>';
   return ask?'<div class="ni-wrap">'+btn+payChoice(n.booking_id,(n.data&&n.data.student_name)||'')+'</div>':btn;
 }
 function renderPanel(){
@@ -1035,8 +1077,8 @@ function tabNotif(){
   return flashHtml()+'<div class="card"><div class="calnav calhead"><h2>'+tr('nav_notif')+'</h2><div class="row"><button type="button" class="chip'+(f==='all'?' on':'')+'" onclick="S.nFilter=\'all\';render()">'+tr('n_all')+'</button><button type="button" class="chip'+(f==='unread'?' on':'')+'" onclick="S.nFilter=\'unread\';render()">'+tr('n_unread')+(S.unread?' ('+S.unread+')':'')+'</button><button type="button" class="chip" onclick="markAllRead()"'+(S.unread?'':' disabled')+'>'+tr('n_markAll')+'</button></div></div>'
    +(S.notifErr?'<div class="err">'+tr('n_err')+'</div>':'')
    +(list.length?'<div class="nlist">'+list.map(notifItem).join('')+'</div>':'<p class="mut" style="text-align:center;padding:24px">'+tr(f==='unread'?'n_noUnread':'n_empty')+'</p>')
-   +(can&&perm!=='granted'&&perm!=='denied'?'<p><button type="button" class="btn g" style="width:auto" onclick="Notification.requestPermission().then(()=>render())">🔔 '+tr('n_desktop')+'</button></p>':'')
-   +(perm==='granted'?'<p class="mut">✔ '+tr('n_desktopOn')+'</p>':'')+'<p class="mut" style="font-size:12px">'+tr('n_note')+'</p></div>';
+   +(can&&perm!=='granted'&&perm!=='denied'?'<p><button type="button" class="btn g" style="width:auto" onclick="Notification.requestPermission().then(()=>render())">'+ic('bell')+' '+tr('n_desktop')+'</button></p>':'')
+   +(perm==='granted'?'<p class="mut">'+ic('check')+' '+tr('n_desktopOn')+'</p>':'')+'<p class="mut" style="font-size:12px">'+tr('n_note')+'</p></div>';
 }
 (function(){
   let y0=null,sd=null;
@@ -1250,7 +1292,7 @@ function btmFx(){
   if(!rm){
     const r=S._rip; if(r&&performance.now()-r.t<450&&btns[r.i]){ const el=document.createElement('span'); el.className='rip'; el.style.left=r.x+'px'; el.style.top=r.y+'px'; el.style.animationDelay=(-(performance.now()-r.t))+'ms'; btns[r.i].appendChild(el); el.addEventListener('animationend',()=>el.remove()); }
     if(changed){
-      const ic=act.querySelector('.ic'); if(ic){ ic.classList.add('pop'); ic.addEventListener('animationend',()=>ic.classList.remove('pop'),{once:true}); }
+      const icEl=act.querySelector('.ic'); if(icEl){ icEl.classList.add('pop'); icEl.addEventListener('animationend',()=>icEl.classList.remove('pop'),{once:true}); }
       const main=document.querySelector('.main'); if(main){ const dir=(idx>S._bi?1:-1)*(rtl?-1:1); main.style.setProperty('--dx',(dir*16)+'px'); main.classList.add('tabin'); main.addEventListener('animationend',()=>main.classList.remove('tabin'),{once:true}); }
     }
   }
@@ -1262,7 +1304,7 @@ document.addEventListener('pointerdown',e=>{
   S._rip={i:btns.indexOf(b),x:e.clientX-r.left,y:e.clientY-r.top,t:performance.now()};
   if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches)){ const el=document.createElement('span'); el.className='rip'; el.style.left=S._rip.x+'px'; el.style.top=S._rip.y+'px'; b.appendChild(el); el.addEventListener('animationend',()=>el.remove()); }
 },{passive:true});
-function ovOpen(){return !!(S.navOpen||S.modal||S.bellOpen);}
+function ovOpen(){return !!(S.navOpen||S.modal||S.bellOpen||S.infoOpen);}
 function ovSync(){
   const open=ovOpen();
   if(open&&!S._ovPushed){ try{history.pushState({...appRouteState(),ov:1},'',location.href); S._ovPushed=true;}catch(e){} }
@@ -1290,7 +1332,7 @@ async function nav(slug){
   writeAppHistory('push');
   await loadTeacher(); if(S.t&&S.user) await loadBook(); render();
 }
-function setTab(t){S.tab=t;if(t==='income'||t==='stats')S.inc=null;if(t==='credits'&&S.me&&S.me.teacher)loadCredits(true); if((t==='history'||t==='stats')&&S.me&&S.me.teacher)loadHistory(true);S.err='';S.msg='';writeAppHistory('push');if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
+function setTab(t){S.infoOpen=null;S.tab=t;if(t==='income'||t==='stats')S.inc=null;if(t==='credits'&&S.me&&S.me.teacher)loadCredits(true); if((t==='history'||t==='stats')&&S.me&&S.me.teacher)loadHistory(true);S.err='';S.msg='';writeAppHistory('push');if(t==='admin'&&S.me?.role==='admin')loadAdminOverview();render()}
 async function startTeacherBooking(){
   if(!S.me?.teacher) return;
   S.payPick=null;S.payPrice=null;S.payCur=null; S.teacherBooking=true; S.rs=null; S.rsAsTeacher=true; S.rsFrom=null; S.done=null; S.err='';
@@ -1687,7 +1729,7 @@ function doneCard(){
   const wa=(d.whatsapp||'').replace(/\D/g,''), txt=encodeURIComponent(tr('waMsg')+'\n'+d.name+'\n'+fF(d.start)+' ('+dur+' '+tr('min')+')');
   const gc=ms=>new Date(ms).toISOString().replace(/[-:]|\.\d{3}/g,'');
   const cal='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(d.t.display_name+' – '+d.name)+'&dates='+gc(d.start)+'/'+gc(d.start+dur*6e4)+'&details='+encodeURIComponent(m||'');
-  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span>'+(d.recurring?'<br><span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'+(d.skipped&&d.skipped.length?'<p class="mut">'+tr('m_skipped')+': '+d.skipped.map(x=>fD(new Date(x.starts_at).toLocaleDateString('en-CA'))).join(', ')+'</p>':'')+'<p><button type="button" class="chip" onclick="icsFromDone()">📆 '+tr('m_ics')+'</button></p>'+(d.points?'<p class="pts-pop'+(d.ptsLate?' pts-nopop':'')+'">+'+d.points+' ⭐ '+tr('r_earned')+'</p>':d.ptsPending?'<p class="pts-pop pts-pending" role="status">'+tr('r_ptsPending')+'</p>':d.ptsUnavailable?'<p class="pts-pop pts-pending">'+tr('r_ptsUnavailable')+'</p>':'')
+  return '<div class="card ok"><div class="big">🎉</div><h2 style="justify-content:center">'+tr('done')+'</h2><p><b>'+esc(d.name)+'</b><br>'+fF(d.start)+'<br><span class="mut">'+dur+' '+tr('min')+' · '+esc(d.t.display_name)+'</span>'+(d.recurring?'<br><span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</p>'+(d.skipped&&d.skipped.length?'<p class="mut">'+tr('m_skipped')+': '+d.skipped.map(x=>fD(new Date(x.starts_at).toLocaleDateString('en-CA'))).join(', ')+'</p>':'')+'<p><button type="button" class="chip" onclick="icsFromDone()">'+ic('calplus')+' '+tr('m_ics')+'</button></p>'+(d.points?'<p class="pts-pop'+(d.ptsLate?' pts-nopop':'')+'">+'+d.points+' ⭐ '+tr('r_earned')+'</p>':d.ptsPending?'<p class="pts-pop pts-pending" role="status">'+tr('r_ptsPending')+'</p>':d.ptsUnavailable?'<p class="pts-pop pts-pending">'+tr('r_ptsUnavailable')+'</p>':'')
     +(m?'<p><a href="'+esc(m)+'" target="_blank" rel="noopener">'+tr('link')+'</a></p>':'')
     +(wa?'<a class="btn w" href="https://wa.me/'+wa+'?text='+txt+'" target="_blank" rel="noopener">'+tr('wa')+'</a>':'')
     +'<a class="btn g" href="'+esc(cal)+'" target="_blank" rel="noopener">'+tr('gcal')+'</a>'
@@ -1704,9 +1746,9 @@ function viewLanding(){
     +'<div class="card">'
     +'<h2>'+tr('howTitle')+'</h2>'
     +'<div class="g3">'
-    +'<div class="feat"><b>🎓 '+tr('feat1Title')+'</b><span class="mut">'+tr('feat1Body')+'</span></div>'
-    +'<div class="feat"><b>🗓️ '+tr('feat2Title')+'</b><span class="mut">'+tr('feat2Body')+'</span></div>'
-    +'<div class="feat"><b>🔒 '+tr('feat3Title')+'</b><span class="mut">'+tr('feat3Body')+'</span></div>'
+    +'<div class="feat"><b>'+ic('cap')+' '+tr('feat1Title')+'</b><span class="mut">'+tr('feat1Body')+'</span></div>'
+    +'<div class="feat"><b>'+ic('days')+' '+tr('feat2Title')+'</b><span class="mut">'+tr('feat2Body')+'</span></div>'
+    +'<div class="feat"><b>'+ic('lock')+' '+tr('feat3Title')+'</b><span class="mut">'+tr('feat3Body')+'</span></div>'
     +'</div>'
     +'<div class="sub mut">'
     +'<p style="margin:4px 0">'+tr('how1')+'</p>'
@@ -1786,19 +1828,19 @@ function tabLink(){
     +'<div class="lk"><input id="lk" readonly value="'+esc(link)+'"><button class="chip" id="cp" onclick="copyLink()">'+tr('copy')+'</button></div>'
     +'<a class="btn w" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(tr('shareMsg')+' '+link)+'">'+tr('shareWa')+'</a>'
     +'<a class="btn g" href="javascript:nav(\''+esc(t.slug)+'\')">'+tr('preview')+'</a></div>'
-    +'<div class="card"><h2>'+tr('check')+'</h2>'+ok.map(([v,k,tab])=>'<div class="ck"><span>'+(v?'✅':'⚠️')+'</span><span>'+tr(k)+(v?'':' · <a onclick="setTab(\''+tab+'\')">'+tr('fix')+'</a>')+'</span></div>').join('')+'</div>';
+    +'<div class="card"><h2>'+tr('check')+'</h2>'+ok.map(([v,k,tab])=>'<div class="ck"><span>'+(v?ic('okc'):ic('warn'))+'</span><span>'+tr(k)+(v?'':' · <a onclick="setTab(\''+tab+'\')">'+tr('fix')+'</a>')+'</span></div>').join('')+'</div>';
 }
 function tabHours(){
   const t=S.me.teacher, today=new Date().toISOString().slice(0,10);
   let h='<div class="card"><h2>'+tr('hoursTitle')+'</h2>'+flashHtml()+'<p class="mut">'+tr('hoursHint')+' <b dir="ltr">'+esc(t.timezone)+'</b></p>';
   for(let d=0;d<7;d++){
     h+='<div class="day"><b>'+wdName(d)+'</b><div class="rs">'
-      +(S.wk[d].length?S.wk[d].map((r,j)=>'<div class="row"><input class="t" type="time" value="'+r[0]+'" onchange="setR('+d+','+j+',0,this.value)"> – <input class="t" type="time" value="'+r[1]+'" onchange="setR('+d+','+j+',1,this.value)"><button class="chip" aria-label="'+tr('remove')+'" onclick="delR('+d+','+j+')">✕</button></div>').join(''):'<span class="mut" style="padding-top:8px">'+tr('closed')+'</span>')
+      +(S.wk[d].length?S.wk[d].map((r,j)=>'<div class="row"><input class="t" type="time" value="'+r[0]+'" onchange="setR('+d+','+j+',0,this.value)"> – <input class="t" type="time" value="'+r[1]+'" onchange="setR('+d+','+j+',1,this.value)"><button class="chip" aria-label="'+tr('remove')+'" onclick="delR('+d+','+j+')">'+ic('close')+'</button></div>').join(''):'<span class="mut" style="padding-top:8px">'+tr('closed')+'</span>')
       +'<div><button class="chip" onclick="addR('+d+')">'+tr('addR')+'</button></div></div></div>';
   }
   h+='<br><button class="btn" onclick="saveHours()">'+tr('save')+'</button></div>';
   h+='<div class="card"><h2>'+tr('offTitle')+'</h2><p class="mut">'+tr('offHint')+'</p>'
-    +(S.dExc.length?S.dExc.map(x=>'<div class="row" style="justify-content:space-between;padding:6px 0"><span>📅 '+fD(x.on_date)+' · '+(x.is_available?esc((x.start_time||'').slice(0,5)+' – '+(x.end_time||'').slice(0,5)):tr('dayOff'))+'</span><button class="chip" onclick="delExc(\''+x.id+'\')">'+tr('remove')+'</button></div>').join(''):'<p class="mut">'+tr('noExc')+'</p>')
+    +(S.dExc.length?S.dExc.map(x=>'<div class="row" style="justify-content:space-between;padding:6px 0"><span>'+ic('cal')+' '+fD(x.on_date)+' · '+(x.is_available?esc((x.start_time||'').slice(0,5)+' – '+(x.end_time||'').slice(0,5)):tr('dayOff'))+'</span><button class="chip" onclick="delExc(\''+x.id+'\')">'+tr('remove')+'</button></div>').join(''):'<p class="mut">'+tr('noExc')+'</p>')
     +'<div class="sub"><input id="xd" type="date" min="'+today+'"><div class="row" style="margin-bottom:10px"><input class="t" id="xa" type="time"> – <input class="t" id="xb" type="time"></div>'
     +'<div class="g2"><button class="btn g" onclick="addExc(true)">'+tr('dayOff')+'</button><button class="btn g" onclick="addExc(false)">'+tr('custom')+'</button></div></div></div>';
   return h;
@@ -1838,7 +1880,7 @@ function renderDayCol(day, tz, fmtTime, fmt24, dayKey, minBookAt, isSingle){
       const st=b.session_types||{};
       h+='<div class="calbook"><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'
         +'<small>'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+(b.series_id?' · '+tr('weeklyBadge'):'')+'</small>'
-        +'<small>📞 '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>'+bkLine(b)+'</small>'
+        +'<small>'+ic('phone')+' '+esc(phoneWithFlag(b.contact_phone||''))+'</small><small>'+bkLine(b)+'</small>'
         +'<div class="row" style="margin-top:6px"><button type="button" class="chip" onclick="openBookingMenu(\''+b.id+'\')">'+tr('m_manage')+'</button></div></div>';
     });
   } else {
@@ -1892,7 +1934,7 @@ function renderWeekTimetable(days,tz,dayKey,minBookAt){
     }});
     bks.filter(x=>tzKey(x.a,tz)===d.key).forEach(x=>{
       const t0=tzMin(x.a,tz), pr=parsePhone(x.b.contact_phone), long=(x.e-x.a)/6e4>30;
-      h+='<div role="button" tabindex="0" class="tt2-b '+(long?'long':'short')+'"'+(x.a>now?' draggable="true"':'')+' data-id="'+x.b.id+'" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}" data-q="'+esc((x.b.student_name+' '+(x.b.contact_phone||'')).toLowerCase())+'" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(wd(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+(x.b.attendance==='attended'?' · ✔':x.b.attendance==='no_show'?' · ✖':x.b.attendance==='teacher_cancelled'?' · 🚫':'')+'</small></div>';
+      h+='<div role="button" tabindex="0" class="tt2-b '+(long?'long':'short')+'"'+(x.a>now?' draggable="true"':'')+' data-id="'+x.b.id+'" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}" data-q="'+esc((x.b.student_name+' '+(x.b.contact_phone||'')).toLowerCase())+'" style="top:'+px(t0)+'px;height:'+hgt(t0,t0+(x.e-x.a)/6e4)+'px" aria-label="'+esc(wd(d)+' '+fmt24(x.a)+' '+x.b.student_name)+'" onclick="openBookingMenu(\''+x.b.id+'\')"><b>'+esc(x.b.student_name)+'</b><small>'+fmt24(x.a)+(pr.flag?' · '+pr.flag:'')+(x.b.series_id?' · 🔁':'')+(x.b.attendance==='attended'?' · '+ic('check'):x.b.attendance==='no_show'?' · '+ic('close'):x.b.attendance==='teacher_cancelled'?' · 🚫':'')+'</small></div>';
     });
     {const nm=tzMin(now,tz), dh=d.key<todayKey?px(to):d.key===todayKey?Math.max(0,Math.min(px(to),px(nm))):0; if(dh>0) h+='<div class="tt2-dim" aria-hidden="true" style="height:'+dh+'px"></div>';}
     if(d.key===todayKey&&tzMin(now,tz)>=from&&tzMin(now,tz)<to) h+='<div class="tt2-now" style="top:'+px(tzMin(now,tz))+'px"></div>';
@@ -1948,7 +1990,7 @@ function teacherCalendar(){
     return '<button class="chip'+(S.calMode===m?' on':'')+'" onclick="setCalMode(\''+m+'\')">'+label+'</button>';
   }).join('');
 
-  let h='<div class="card"><div class="calnav calhead"><h2>'+tr('calendarTitle')+'</h2><div class="row">'+modeBtns+'<button class="btn" style="width:auto" onclick="startTeacherBooking()">＋ '+tr('bookForStudent')+'</button></div></div>'+flashHtml()+'<p class="mut" style="margin-top:0">'+tr('calendarHint')+' (<b dir="ltr">'+esc(tz)+'</b>)</p>';
+  let h='<div class="card"><div class="calnav calhead"><h2>'+tr('calendarTitle')+'</h2><div class="row">'+modeBtns+'<button class="btn" style="width:auto" onclick="startTeacherBooking()">'+ic('plus')+' '+tr('bookForStudent')+'</button></div></div>'+flashHtml()+'<p class="mut" style="margin-top:0">'+tr('calendarHint')+' (<b dir="ltr">'+esc(tz)+'</b>)</p>';
 
   if(S.calMode==='day'){
     const d=new Date(); d.setDate(d.getDate()+S.dayOffset);
@@ -1965,9 +2007,10 @@ function teacherCalendar(){
     const days=[]; for(let i=0;i<7;i++){const d=new Date(base);d.setDate(base.getDate()+i);days.push({date:d,key:dayKey(d)});}
     h+='<div class="calnav calwk"><div class="row"><button type="button" class="chip" aria-label="'+tr('previousWeek')+'" onclick="S.calendarOffset--;render()">‹</button><button type="button" class="chip" onclick="S.calendarOffset=0;render()">'+tr('todayBtn')+'</button><button type="button" class="chip" aria-label="'+tr('nextWeek')+'" onclick="S.calendarOffset++;render()">›</button><input type="date" class="datejump" aria-label="'+tr('m_jump')+'" value="'+days[0].key+'" onchange="jumpToDate(this.value)"></div>'
       +'<b>'+days[0].date.toLocaleDateString(loc(),{month:'short',day:'numeric'})+' – '+days[6].date.toLocaleDateString(loc(),{month:'short',day:'numeric',year:'numeric'})+'</b></div>'
-      +'<div class="row" style="margin:6px 0"><input type="search" class="ttsearch" id="ttSearch" placeholder="🔍 '+tr('m_searchStudent')+'" aria-label="'+tr('m_searchStudent')+'" value="'+esc(S.ttQ||'')+'" oninput="setTtQ(this.value)"><span class="mut" id="ttCount" role="status"></span></div>';
+      +'<div class="row" style="margin:6px 0"><input type="search" class="ttsearch" id="ttSearch" placeholder="'+tr('m_searchStudent')+'" aria-label="'+tr('m_searchStudent')+'" value="'+esc(S.ttQ||'')+'" oninput="setTtQ(this.value)"><span class="mut" id="ttCount" role="status"></span></div>';
     h+=renderWeekTimetable(days,tz,dayKey,minBookAt);
   } else {
+    payLazy();
     if(!S.dBk.length){
       h+='<p class="mut">'+tr('noBk')+'</p>';
     } else {
@@ -1976,11 +2019,12 @@ function teacherCalendar(){
         const k=dayKey(new Date(b.starts_at)), st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
         if(k!==lastKey){
           lastKey=k;
-          h+='<h3 style="margin:16px 0 6px;padding-top:10px;border-top:1px solid var(--line)">📅 '+fD(k)+'</h3>';
+          h+='<h3 style="margin:16px 0 6px;padding-top:10px;border-top:1px solid var(--line)">'+ic('cal')+' '+fD(k)+'</h3>';
         }
         h+='<div class="bk"><div><b>'+fmtTime(b.starts_at)+' · '+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')
           +'<br><span class="mut">'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</span>'
           +(ph?' · <a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(b.contact_phone)+'</a>':'')
+          +payBadge(b)+'<br>'+bkLine(b)
           +'</div><div class="row">'
           +'<button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button>'
           +'<button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button>'
@@ -2124,29 +2168,31 @@ function adminDashboard(){
   let h='<div class="card"><h2>'+tr('adminStats')+'</h2><div class="g3">'+[[tr('totalTeachers'),st.total_teachers],[tr('activeTeachers'),st.active_teachers],[tr('totalBookings'),st.total_bookings],[tr('confirmedBookings'),st.confirmed_bookings],[tr('cancelledBookings'),st.cancelled_bookings],[tr('teacherCreated'),st.teacher_created_bookings],[tr('m_activeSeries'),st.active_series],[tr('m_endedSeries'),st.ended_series],[tr('m_next30'),st.bookings_next_30d]].map(([k,v])=>'<div class="feat"><b>'+esc(k)+'</b><strong style="font-size:25px">'+Number(v||0).toLocaleString()+'</strong></div>').join('')+'</div></div>';
   h+='<div class="card"><h2>'+tr('adminTeachers')+'</h2>';
   const ts=d.teachers||[];
-  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+' · ✔ '+(t.confirmed_bookings||0)+' · ✖ '+(t.cancelled_bookings||0)+' · 🔁 '+(t.active_series||0)+' · 👩‍🏫 '+(t.teacher_created||0)+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a><button type="button" class="chip" onclick="adminToggleTeacher(\''+t.id+'\','+!t.is_active+')">'+tr(t.is_active?'m_deactivate':'m_activate')+'</button><button type="button" class="chip danger" onclick="openDanger(\'admin\',\''+t.id+'\')">'+tr('m_delGo')+'</button></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
+  h+=ts.length?ts.map(t=>'<div class="bk"><div><b>'+esc(t.display_name||'')+'</b> '+(t.is_active?'<span class="badge">Active</span>':'<span class="badge">Inactive</span>')+'<br><span class="mut">'+esc(t.slug||'')+' · '+esc(t.timezone||'')+' · '+ic('check')+' '+(t.confirmed_bookings||0)+' · '+ic('close')+' '+(t.cancelled_bookings||0)+' · 🔁 '+(t.active_series||0)+' · 👩‍🏫 '+(t.teacher_created||0)+(t.created_at?' · '+tr('createdAt')+': '+new Date(t.created_at).toLocaleDateString(loc()):'')+'</span></div><div class="row"><a class="chip" target="_blank" rel="noopener" href="'+location.origin+'/?t='+encodeURIComponent(t.slug||'')+'">'+tr('publicPreview')+'</a><button type="button" class="chip" onclick="adminToggleTeacher(\''+t.id+'\','+!t.is_active+')">'+tr(t.is_active?'m_deactivate':'m_activate')+'</button><button type="button" class="chip danger" onclick="openDanger(\'admin\',\''+t.id+'\')">'+tr('m_delGo')+'</button></div></div>').join(''):'<p class="mut">'+tr('noTeachers')+'</p>';
   h+='</div><div class="card"><h2>'+tr('m_audit')+'</h2>'+((S.adminAudit||[]).length?(S.adminAudit||[]).map(a=>'<div class="bk"><div><b>'+esc(String(a.action).replace(/_/g,' '))+'</b> · '+esc(a.target_name||'')+'<br><span class="mut">'+new Date(a.created_at).toLocaleString(loc())+'</span></div></div>').join(''):'<p class="mut">'+tr('m_noAudit')+'</p>');
   return h+'</div>';
 }
 
 function viewDash(){
   const isT=!!S.me.teacher, isA=S.me.role==='admin';
-  let tabs=isT?['link','calendar','bk','history','stats','credits','income','hours','types','notif','me','rank','mine','prof']:[];
+  /* Bookings tab hidden by request: add 'bk' after 'calendar' (and to bt4) to bring it back */
+  let tabs=isT?['link','calendar','history','stats','credits','income','hours','types','notif','me','rank','mine','prof']:[];
   if(!isT&&!isA) tabs=['mine','sched','notif','me','acct'];
   if(isA) tabs=isT?tabs.concat(['inv','admin']):['admin','notif','me','mine','inv'];
-  if(isT){ payLazy(); if(!incHas()) tabs=tabs.filter(k=>k!=='income'); }
+  if(isT){ payLazy(); }
+  if(S.tab==='bk'&&isT&&!tabs.includes('bk')) S.tab='calendar';
   if(!tabs.includes(S.tab)) S.tab=tabs[0];
   const col=ls.get('navCollapsed')==='1', rtl=lang==='ar';
-  const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><div class="side-hd"><b>BookMyClass</b><button type="button" class="side-x" onclick="setNav(false)" aria-label="'+tr('nav_close')+'">✕</button></div><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
-    +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'<div class="side-ft"><p class="mut">'+tr('hi')+' '+esc(S.user.user_metadata?.full_name||S.user.email)+'</p><span class="seg" role="group" aria-label="Theme">'+[['system','🖥️','m_themeSys'],['light','☀️','m_themeLight'],['dark','🌙','m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+((ls.get('theme')||'system')===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span><button type="button" class="chip" onclick="toggleLang()">'+tr('lang')+'</button><button type="button" class="chip" onclick="signOut()">'+tr('out')+'</button></div></nav>';
-  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,bk:()=>markCard()+tabBookings(),notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,credits:tabCredits,income:tabIncome,history:tabHistory,stats:tabStats,sched:tabSched,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
-  const bt4=['calendar','bk','link','credits'], btm=(isT&&!isA)||(isT&&isA)?'<nav class="btm" aria-label="'+tr('nav_main')+'">'+bt4.map(k=>'<button type="button"'+(S.tab===k?' class="on" aria-current="page"':'')+' onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span>'+tr(k==='credits'?'nav_credits_s':NAV[k][1])+'</span></button>').join('')+'<button type="button"'+(bt4.includes(S.tab)?'':' class="on"')+' onclick="setNav(true)" aria-haspopup="true"><span class="ic" aria-hidden="true">☰</span><span>'+tr('nav_more')+'</span>'+(S.unread?'<span class="dot">'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button></nav>':(!isT&&!isA?stuBar():'');
+  const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><div class="side-hd"><b>BookMyClass</b><button type="button" class="side-x" onclick="setNav(false)" aria-label="'+tr('nav_close')+'">'+ic('close')+'</button></div><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
+    +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'<div class="side-ft"><p class="mut">'+tr('hi')+' '+esc(S.user.user_metadata?.full_name||S.user.email)+'</p><span class="seg" role="group" aria-label="Theme">'+[['system',ic('monitor'),'m_themeSys'],['light',ic('sun'),'m_themeLight'],['dark',ic('moon'),'m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+((ls.get('theme')||'system')===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span><button type="button" class="chip" onclick="toggleLang()">'+tr('lang')+'</button><button type="button" class="chip" onclick="signOut()">'+tr('out')+'</button></div></nav>';
+  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),bk:()=>markCard()+tabBookings(),hours:tabHours,types:tabTypes,notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,credits:tabCredits,income:tabIncome,history:tabHistory,stats:tabStats,sched:tabSched,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  const bt4=['calendar','link','credits'], btm=(isT&&!isA)||(isT&&isA)?'<nav class="btm" aria-label="'+tr('nav_main')+'">'+bt4.map(k=>'<button type="button"'+(S.tab===k?' class="on" aria-current="page"':'')+' onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span>'+tr(k==='credits'?'nav_credits_s':NAV[k][1])+'</span></button>').join('')+'<button type="button"'+(bt4.includes(S.tab)?'':' class="on"')+' onclick="setNav(true)" aria-haspopup="true"><span class="ic" aria-hidden="true">'+ic('menu')+'</span><span>'+tr('nav_more')+'</span>'+(S.unread?'<span class="dot">'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button></nav>':(!isT&&!isA?stuBar():'');
   return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="setNav(false)"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+(isT?whatsNew():'')+content+(btm?'<div class="btm-sp"></div>':'')+'</section>'+btm+'</div>';
 }
 function tabMine(){return flashHtml()+(S.mine.length?minesCard():'<div class="card"><h2>'+tr('mine')+'</h2><p class="mut">'+tr('noSessions')+'</p></div>')+pastCard(false)}
 function stuBar(){
-  const bs=[['mine','🎓','st_lessons'],['sched','🗓️','nav_sched'],['me','🏆','st_rew']];
-  return '<nav class="btm" aria-label="'+tr('nav_main')+'">'+bs.map(x=>'<button type="button"'+(S.tab===x[0]?' class="on" aria-current="page"':'')+' onclick="setTab(\''+x[0]+'\')"><span class="ic" aria-hidden="true">'+x[1]+'</span><span>'+tr(x[2])+'</span></button>').join('')+'<button type="button"'+(bs.some(x=>x[0]===S.tab)?'':' class="on"')+' onclick="setNav(true)" aria-haspopup="true"><span class="ic" aria-hidden="true">☰</span><span>'+tr('nav_more')+'</span>'+(S.unread?'<span class="dot">'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button></nav>';
+  const bs=[['mine',ic('cap'),'st_lessons'],['sched',ic('days'),'nav_sched'],['me',ic('trophy'),'st_rew']];
+  return '<nav class="btm" aria-label="'+tr('nav_main')+'">'+bs.map(x=>'<button type="button"'+(S.tab===x[0]?' class="on" aria-current="page"':'')+' onclick="setTab(\''+x[0]+'\')"><span class="ic" aria-hidden="true">'+x[1]+'</span><span>'+tr(x[2])+'</span></button>').join('')+'<button type="button"'+(bs.some(x=>x[0]===S.tab)?'':' class="on"')+' onclick="setNav(true)" aria-haspopup="true"><span class="ic" aria-hidden="true">'+ic('menu')+'</span><span>'+tr('nav_more')+'</span>'+(S.unread?'<span class="dot">'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button></nav>';
 }
 function stuWhen(ms){
   const tz=sdTz()||'UTC', k=tzKey(ms,tz), t0=Date.now(), kt=tzKey(t0,tz), kn=tzKey(t0+864e5,tz);
@@ -2165,7 +2211,7 @@ function stuNext(b){
 function stuRow(b){
   const st=b.session_types||{}, d=st.duration_min||0, ms=Date.parse(b.starts_at), open=S.sdMenu===b.id, soft=(S.crFlags||[]).includes(b.id), tz=sdTz()||undefined;
   const lab=new Date(ms).toLocaleDateString(loc(),{weekday:'short',day:'numeric',month:'short',timeZone:tz})+' · '+new Date(ms).toLocaleTimeString(loc(),{hour:'numeric',minute:'2-digit',timeZone:tz});
-  return '<div class="cu"><div><b>'+esc(lab)+'</b><span class="mut">'+esc(b.teachers?.display_name||'')+(d?' · '+d+' '+tr('min'):'')+'</span> '+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+(soft?sdPill('soft',tr('cr_stuSoft')):'')+'</div><button type="button" class="dots" aria-label="'+esc(tr('m_edit'))+'" aria-expanded="'+open+'" onclick="stuMenu(\''+b.id+'\')">⋯</button></div>'
+  return '<div class="cu"><div><b>'+esc(lab)+'</b><span class="mut">'+esc(b.teachers?.display_name||'')+(d?' · '+d+' '+tr('min'):'')+'</span> '+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+(soft?sdPill('soft',tr('cr_stuSoft')):'')+'</div><button type="button" class="dots" aria-label="'+esc(tr('m_edit'))+'" aria-expanded="'+open+'" onclick="stuMenu(\''+b.id+'\')">'+ic('more')+'</button></div>'
    +(open?'<div class="row cu-m"><button type="button" class="chip" onclick="openEdit(\''+b.id+'\',false)">'+tr('m_edit')+'</button><button type="button" class="chip" onclick="promptResched(\''+b.id+'\',false)">'+tr('resched')+'</button><button type="button" class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('cancel')+'</button></div>':'');
 }
 function tabStudent(){
@@ -2175,7 +2221,7 @@ function tabStudent(){
   else h+='<div class="card"><p class="mut" style="margin:0">'+tr('st_none')+'</p></div>';
   h+=slug?'<button type="button" class="wide-btn" onclick="nav(\''+esc(slug)+'\')">'+tr('st_book')+'</button>':'<div class="card ok"><h2 style="justify-content:center">'+tr('homeTitle')+'</h2><p class="mut" style="text-align:center">'+tr('homeHint')+'</p></div>';
   if(past.length||S.minePastErr){
-    h+=S.pastOpen?'<button type="button" class="pl" onclick="S.pastOpen=false;render()"><span>'+tr('st_past').replace('{n}',past.length)+'</span><span>⌃</span></button>'+pastCard(true)
+    h+=S.pastOpen?'<button type="button" class="pl" onclick="S.pastOpen=false;render()"><span>'+tr('st_past').replace('{n}',past.length)+'</span><span>'+ic('chev')+'</span></button>'+pastCard(true)
       :'<button type="button" class="pl" onclick="S.pastOpen=true;render()"><span>'+tr('st_past').replace('{n}',past.length)+'</span><span>'+(lang==='ar'?'‹':'›')+'</span></button>';
   }
   return h;
@@ -2197,7 +2243,7 @@ function tabSched(){
   const bks=sdAllConfirmed().map(b=>{const a=Date.parse(b.starts_at), dur=(b.session_types&&b.session_types.duration_min)||50; return {b,a,e:a+dur*6e4,key:tzKey(a,tz)}}).filter(x=>days.some(d=>d.key===x.key));
   let from=480,to=1200; if(bks.length){from=Math.min(from,Math.floor(Math.min(...bks.map(x=>tzMin(x.a,tz)))/60)*60); to=Math.min(1440,Math.max(to,Math.ceil(Math.max(...bks.map(x=>tzMin(x.a,tz)+(x.e-x.a)/6e4))/60)*60))}
   const px=m=>(m-from)/30*H, rng={month:'short',day:'numeric'};
-  let h=flashHtml()+'<div class="card"><h2>🗓️ '+tr('nav_sched')+'</h2><p class="mut sd-note" style="font-size:13px">'+tr('sd_tz').replace('{z}',esc(tz))+'</p>'
+  let h=flashHtml()+'<div class="card"><h2>'+ic('days')+' '+tr('nav_sched')+'</h2><p class="mut sd-note" style="font-size:13px">'+tr('sd_tz').replace('{z}',esc(tz))+'</p>'
    +'<div class="calnav"><div class="row"><button type="button" class="chip" aria-label="'+esc(tr('previousWeek'))+'" onclick="S.sdWeek=(S.sdWeek||0)-1;render()">'+(lang==='ar'?'›':'‹')+'</button><button type="button" class="chip" onclick="S.sdWeek=0;render()">'+tr('todayBtn')+'</button><button type="button" class="chip" aria-label="'+esc(tr('nextWeek'))+'" onclick="S.sdWeek=(S.sdWeek||0)+1;render()">'+(lang==='ar'?'‹':'›')+'</button></div>'
    +'<b>'+days[0].date.toLocaleDateString(loc(),rng)+' – '+days[6].date.toLocaleDateString(loc(),{month:'short',day:'numeric',year:'numeric'})+'</b></div>'
    +'<div class="tt2-wrap"><div class="tt2" style="grid-template-columns:54px repeat(7,minmax(98px,1fr))"><div class="tt2-h tt2-t"></div>';
@@ -2260,7 +2306,7 @@ function renderModal(){
   M._m=S.modal;
   const m=S.modal, b=m.booking, tz=S.me&&S.me.teacher?S.me.teacher.timezone:undefined;
   const fFt=ms=>new Date(ms).toLocaleString(loc(),{timeZone:tz,weekday:'long',day:'numeric',month:'long',hour:'numeric',minute:'2-digit'});
-  const wrap=(title,body)=>'<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'">'+'<h3>'+esc(title)+'</h3>'
+  const wrap=(title,body)=>'<div class="modal-bg" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-label="'+esc(title)+'">'+'<div class="infw"><div class="row" style="flex-wrap:nowrap;justify-content:space-between"><h3 style="margin:0">'+esc(title)+'</h3>'+(({credit:'ac',correct:'cb',linkemail:'ae'})[m.type]?info(({credit:'ac',correct:'cb',linkemail:'ae'})[m.type]):'')+'</div>'+(({credit:'ac',correct:'cb',linkemail:'ae'})[m.type]?infoNote(({credit:'ac',correct:'cb',linkemail:'ae'})[m.type]):'')+'</div>'
     +(m.refreshErr
       ?'<div class="err" role="alert">'+tr('m_refreshErr')+'</div><div class="stack">'+bt('btn','retryRefresh()',tr('m_retry'))+bt('chip','giveUpRefresh()',tr('m_continue'))+'</div>'
       :(m.err?'<div class="err" role="alert">'+esc(m.err)+'</div>':'')+body+(m.busy?'<p class="mut" role="status" style="margin:8px 0 0"><span class="mspin" aria-hidden="true"></span>'+tr('m_working')+'</p>':''))
@@ -2298,15 +2344,15 @@ function renderModal(){
     const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,''), p=b.profiles||{};
     const past=Date.parse(b.starts_at)<Date.now(), at=b.attendance||'';
     const sg=(k,ic,lab)=>'<button type="button" class="'+k+(at===({xa:'attended',xn:'no_show',xt:'teacher_cancelled'})[k]?' on':'')+'" aria-pressed="'+(at===({xa:'attended',xn:'no_show',xt:'teacher_cancelled'})[k])+'" onclick="markAttMenu(\''+b.id+'\',\''+({xa:'attended',xn:'no_show',xt:'teacher_cancelled'})[k]+'\')"><i aria-hidden="true">'+ic+'</i>'+lab+'</button>';
-    const pill=at?'<span class="mk-pill '+({attended:'xa',no_show:'xn',teacher_cancelled:'xt'})[at]+'">'+({attended:'✔ '+tr('r_attended'),no_show:'✖ '+tr('r_noShow'),teacher_cancelled:'🚫 '+tr('r_tCancelled')})[at]+'</span>':'<span class="mk-pill">'+tr('m_unmarked')+'</span>';
+    const pill=at?'<span class="mk-pill '+({attended:'xa',no_show:'xn',teacher_cancelled:'xt'})[at]+'">'+({attended:ic('check')+' '+tr('r_attended'),no_show:ic('close')+' '+tr('r_noShow'),teacher_cancelled:ic('block')+' '+tr('r_tCancelled')})[at]+'</span>':'<span class="mk-pill">'+tr('m_unmarked')+'</span>';
     h=wrap(tr('m_details'),'<div class="mk-top"><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'</div>'
       +'<p class="mut" style="margin:4px 0 0">'+fFt(Date.parse(b.starts_at))+'</p><p class="mut" style="margin:0">'+(st.duration_min||'')+' '+tr('min')+' · '+esc(tn(st))+'</p>'
-      +(past?'<div class="mk-st"><small>'+tr('m_status')+'</small>'+pill+'</div><div class="seg3'+(at?' has':'')+'" style="margin-top:8px">'+sg('xa','✔',tr('r_attended'))+sg('xn','✖',tr('r_noShow'))+sg('xt','🚫',tr('r_tCancelled'))+'</div>'
+      +(past?'<div class="mk-st"><small>'+tr('m_status')+'</small>'+pill+'</div><div class="seg3'+(at?' has':'')+'" style="margin-top:8px">'+sg('xa',ic('check'),tr('r_attended'))+sg('xn',ic('close'),tr('r_noShow'))+sg('xt',ic('block'),tr('r_tCancelled'))+'</div>'
         :'<div class="stack">'+bt('btn',"openEdit('"+b.id+"',true)",tr('m_edit'))+bt('btn g',"promptCancel('"+b.id+"')",tr('m_cancelOcc'))+(b.series_id?bt('btn g',"promptCancel('"+b.id+"')",tr('m_series')):'')+'</div>')
       +'<div class="mk-c">'+(ph?'<a target="_blank" rel="noopener" dir="ltr" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+'</div>'
       +(b.notes?'<p class="mut" style="margin:4px 0 0;font-size:13px">'+esc(b.notes)+'</p>':'')
       +leRow(b)+crPopLine(b)
-      +'<div class="mk-sec">'+bt('',"icsFor('"+b.id+"')",'📆 '+tr('m_ics'))+bt('','closeModal()',tr('back'))+'</div>');
+      +'<div class="mk-sec">'+bt('',"icsFor('"+b.id+"')",ic('calplus')+' '+tr('m_ics'))+bt('','closeModal()',tr('back'))+'</div>');
   } else if(m.type==='edit'){
     const v=m.vals||{n:b.student_name||'',p:b.contact_phone||'',t:b.notes||''};
     let tf='';
@@ -2396,12 +2442,12 @@ function render(){
   document.documentElement.lang=lang; document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   const A=$('#app');
   $('#who').textContent=S.user?(tr('hi')+' '+(S.user.user_metadata?.full_name||S.user.email)):'';
-  const th=ls.get('theme')||'system'; let b='<span class="seg" role="group" aria-label="Theme">'+[['system','🖥️','m_themeSys'],['light','☀️','m_themeLight'],['dark','🌙','m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+(th===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span> <button type="button" id="languageToggle">'+tr('lang')+'</button> ';
+  const th=ls.get('theme')||'system'; let b='<span class="seg" role="group" aria-label="Theme">'+[['system',ic('monitor'),'m_themeSys'],['light',ic('sun'),'m_themeLight'],['dark',ic('moon'),'m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+(th===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span> <button type="button" id="languageToggle">'+tr('lang')+'</button> ';
   if(S.user&&S.slug) b+='<button onclick="nav(null)">'+tr(S.me&&S.me.teacher?'goDash':'goHome')+'</button> ';
   b+='<button onclick="S.user?signOut():signIn()">'+tr(S.user?'out':'in')+'</button>';
   const slim=!!(S.user&&S.me&&!S.slug&&!S.reg); if(slim) b='<span class="hs row">'+b+'</span>';
-  if(S.user&&S.me){b='<button type="button" class="bell" aria-label="'+esc(S.unread?tr('nav_notifN').replace('{n}',S.unread):tr('nav_notif'))+'" onclick="toggleBell()" aria-expanded="'+!!S.bellOpen+'"><span aria-hidden="true">🔔</span><span class="dot" aria-hidden="true" id="bellDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span></button> '+b;}
-  if(S.user&&S.me&&!S.slug&&!S.reg&&S.me.role==='admin'&&!S.me.teacher) b='<button type="button" class="burger" aria-label="'+tr('nav_main')+'" aria-expanded="'+!!S.navOpen+'" onclick="setNav(!S.navOpen)">☰</button> '+b;
+  if(S.user&&S.me){b='<button type="button" class="bell" aria-label="'+esc(S.unread?tr('nav_notifN').replace('{n}',S.unread):tr('nav_notif'))+'" onclick="toggleBell()" aria-expanded="'+!!S.bellOpen+'"><span aria-hidden="true">'+ic('bell')+'</span><span class="dot" aria-hidden="true" id="bellDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span></button> '+b;}
+  if(S.user&&S.me&&!S.slug&&!S.reg&&S.me.role==='admin'&&!S.me.teacher) b='<button type="button" class="burger" aria-label="'+tr('nav_main')+'" aria-expanded="'+!!S.navOpen+'" onclick="setNav(!S.navOpen)">'+ic('menu')+'</button> '+b;
   $('#btns').innerHTML=b; const hero=document.querySelector('.hero'); if(hero) hero.classList.toggle('slim',slim);
   const languageToggle=$('#languageToggle'); if(languageToggle) languageToggle.addEventListener('click',()=>setLang(lang==='ar'?'en':'ar'));
   $('#footNote').textContent=tr('footNote');
@@ -2421,7 +2467,7 @@ function render(){
     : (dash||isStud) ? viewDash()
     : viewHome();
   openOnToday();
-  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh(); ovSync(); btmFx();
+  renderModal(); renderPanel(); updateBadges(); applyTtSearch(); payRefresh(); document.body.classList.toggle('nav-lock',!!S.navOpen); pwaRefresh(); if(S.infoOpen&&!document.querySelector('.inf.on')) S.infoOpen=null; ovSync(); btmFx();
   document.title=(S.slug&&S.t?tr('bookWith')+' '+S.t.display_name+' · ':(dash||isStud)&&NAV[S.tab]?tr(NAV[S.tab][1])+' · ':'')+'BookMyClass';
 }
 
@@ -2430,7 +2476,7 @@ const WN_VER='2026-11-25';
 function whatsNew(){
   if(ls.get('wnSeen')===WN_VER) return '';
   const it=[['📊',1],['🧾',2],['👥',3],['🔔',4]];
-  return '<div class="card wn" role="region" aria-label="'+tr('wn_title')+'"><button type="button" class="wn-x" aria-label="'+tr('wn_x')+'" onclick="wnDismiss()">✕</button><h2>✨ '+tr('wn_title')+'</h2><p class="mut" style="margin:0">'+tr('wn_sub')+'</p><ul>'+it.map(([i,n])=>'<li><span class="ic" aria-hidden="true">'+i+'</span><div><b>'+tr('wn_'+n)+'</b><span class="d">'+tr('wn_'+n+'d')+'</span></div></li>').join('')+'</ul><button type="button" class="btn" onclick="wnDismiss()">'+tr('wn_ok')+'</button></div>';
+  return '<div class="card wn" role="region" aria-label="'+tr('wn_title')+'"><button type="button" class="wn-x" aria-label="'+tr('wn_x')+'" onclick="wnDismiss()">'+ic('close')+'</button><h2>✨ '+tr('wn_title')+'</h2><p class="mut" style="margin:0">'+tr('wn_sub')+'</p><ul>'+it.map(([i,n])=>'<li><span class="ic" aria-hidden="true">'+i+'</span><div><b>'+tr('wn_'+n)+'</b><span class="d">'+tr('wn_'+n+'d')+'</span></div></li>').join('')+'</ul><button type="button" class="btn" onclick="wnDismiss()">'+tr('wn_ok')+'</button></div>';
 }
 function wnDismiss(){ls.set('wnSeen',WN_VER);render()}
 async function init(){
@@ -2446,7 +2492,7 @@ async function init(){
     if(S._ovSkip){ S._ovSkip=false; return; }
     if(S._ovPushed){
       if(S.modal&&S.modal.busy){ try{history.pushState({...appRouteState(),ov:1},'',location.href);}catch(e){} return; }
-      S._ovPushed=false; S.modal=null; S.navOpen=false; S.bellOpen=false; _refreshRetry=_refreshGiveUp=null; _mutBusy=false; render(); return;
+      S._ovPushed=false; S.modal=null; S.navOpen=false; S.bellOpen=false; S.infoOpen=null; _refreshRetry=_refreshGiveUp=null; _mutBusy=false; render(); return;
     }
     if(event.state&&event.state.ov){ history.back(); return; }
     if(event.state?.bmc){ await restoreAppRoute(event.state); }
