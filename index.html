@@ -837,7 +837,7 @@ function infoTog(b){
 }
 document.addEventListener('click',e=>{ if(S.infoOpen&&!e.target.closest('.inf,.infn')) infoClose(); },true);
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&S.infoOpen){ infoClose(); } });
-const NAV={income:[ic('income'),'nav_income'],link:[ic('link'),'nav_link'],calendar:[ic('cal'),'nav_schedule'],hours:[ic('clock'),'nav_avail'],types:[ic('cap'),'nav_types'],notif:[ic('bell'),'nav_notif'],me:[ic('trophy'),'nav_rewards'],mine:[ic('bag'),'nav_mylessons'],prof:[ic('gear'),'nav_settings'],admin:[ic('shield'),'nav_admin'],inv:[ic('key'),'nav_invites'],acct:[ic('gear'),'nav_settings'],rank:[ic('medal'),'nav_rank'],credits:[ic('ticket'),'nav_credits'],stats:[ic('chart'),'nav_stats'],history:[ic('book'),'nav_history'],sched:[ic('days'),'nav_sched']};
+const NAV={income:[ic('income'),'nav_income'],link:[ic('link'),'nav_link'],calendar:[ic('cal'),'nav_schedule'],bk:[ic('clip'),'nav_bookings'],hours:[ic('clock'),'nav_avail'],types:[ic('cap'),'nav_types'],notif:[ic('bell'),'nav_notif'],me:[ic('trophy'),'nav_rewards'],mine:[ic('bag'),'nav_mylessons'],prof:[ic('gear'),'nav_settings'],admin:[ic('shield'),'nav_admin'],inv:[ic('key'),'nav_invites'],acct:[ic('gear'),'nav_settings'],rank:[ic('medal'),'nav_rank'],credits:[ic('ticket'),'nav_credits'],stats:[ic('chart'),'nav_stats'],history:[ic('book'),'nav_history'],sched:[ic('days'),'nav_sched']};
 // ---- payments: per-student pay type, price per lesson (teacher-only; students never see any of it) ----
 async function loadPay(){
   if(!S.me||!S.me.teacher||S._payLoading) return; S._payLoading=true;
@@ -2034,6 +2034,16 @@ function teacherCalendar(){
   return h;
 }
 
+function tabBookings(){
+  payLazy();
+  return '<div class="card"><h2>'+tr('upcoming')+'</h2>'+flashHtml()+(S.dBk.length?S.dBk.map(b=>{
+    const st=b.session_types||{}, ph=(b.contact_phone||'').replace(/\D/g,'');
+    return '<div class="bk"><div><b>'+esc(b.student_name)+'</b>'+(b.series_id?'<span class="badge">'+tr('weeklyBadge')+'</span>':'')+'<br><span class="mut">'+fF(Date.parse(b.starts_at))+' · '+(st.duration_min||'')+' '+tr('min')+'</span>'
+      +(ph?'<br><a target="_blank" rel="noopener" href="https://wa.me/'+ph+'">'+esc(phoneWithFlag(b.contact_phone))+'</a>':'')+payBadge(b)+'<br>'+bkLine(b)+(b.notes?'<br><span class="mut">'+esc(b.notes)+'</span>':'')+'</div>'
+      +'<div class="row"><button class="chip" onclick="promptResched(\''+b.id+'\',true)">'+tr('resched')+'</button><button class="chip danger" onclick="promptCancel(\''+b.id+'\')">'+tr('removeBooking')+'</button></div></div>';
+  }).join(''):'<p class="mut">'+tr('noBk')+'</p>')+'</div>';
+}
+
 /* ---- Lesson history (teacher): past lessons, searchable and filterable ---- */
 async function loadHistory(force){
   if(S.histLoading||(S.hist&&!force)) return; S.histLoading=true;
@@ -2163,16 +2173,17 @@ function adminDashboard(){
 
 function viewDash(){
   const isT=!!S.me.teacher, isA=S.me.role==='admin';
+  /* Bookings tab hidden by request: add 'bk' after 'calendar' (and to bt4) to bring it back */
   let tabs=isT?['link','calendar','history','stats','credits','income','hours','types','notif','me','rank','mine','prof']:[];
   if(!isT&&!isA) tabs=['mine','sched','notif','me','acct'];
   if(isA) tabs=isT?tabs.concat(['inv','admin']):['admin','notif','me','mine','inv'];
   if(isT){ payLazy(); }
-  if(S.tab==='bk'&&isT) S.tab='calendar';
+  if(S.tab==='bk'&&isT&&!tabs.includes('bk')) S.tab='calendar';
   if(!tabs.includes(S.tab)) S.tab=tabs[0];
   const col=ls.get('navCollapsed')==='1', rtl=lang==='ar';
   const nav='<nav class="side'+(col?' col':'')+(S.navOpen?' open':'')+'" aria-label="'+tr('nav_main')+'"><div class="side-hd"><b>BookMyClass</b><button type="button" class="side-x" onclick="setNav(false)" aria-label="'+tr('nav_close')+'">'+ic('close')+'</button></div><button type="button" class="side-tg" onclick="toggleNav()" aria-expanded="'+(!col)+'" aria-label="'+tr(col?'nav_expand':'nav_collapse')+'" title="'+tr(col?'nav_expand':'nav_collapse')+'">'+((col!==rtl)?'›':'‹')+'</button>'
     +tabs.map(k=>'<button type="button" class="side-i'+(S.tab===k?' on':'')+'"'+(S.tab===k?' aria-current="page"':'')+' title="'+esc(tr(NAV[k][1]))+'" onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span class="lb">'+tr(NAV[k][1])+'</span>'+(k==='notif'?'<span class="dot" id="navDot"'+(S.unread?'':' hidden')+'>'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button>').join('')+'<div class="side-ft"><p class="mut">'+tr('hi')+' '+esc(S.user.user_metadata?.full_name||S.user.email)+'</p><span class="seg" role="group" aria-label="Theme">'+[['system',ic('monitor'),'m_themeSys'],['light',ic('sun'),'m_themeLight'],['dark',ic('moon'),'m_themeDark']].map(([k,i,l])=>'<button type="button" aria-pressed="'+((ls.get('theme')||'system')===k)+'" title="'+tr(l)+'" aria-label="'+tr(l)+'" onclick="setTheme(\''+k+'\')">'+i+'</button>').join('')+'</span><button type="button" class="chip" onclick="toggleLang()">'+tr('lang')+'</button><button type="button" class="chip" onclick="signOut()">'+tr('out')+'</button></div></nav>';
-  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),hours:tabHours,types:tabTypes,notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,credits:tabCredits,income:tabIncome,history:tabHistory,stats:tabStats,sched:tabSched,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
+  const content=({link:tabLink,calendar:()=>markCard()+teacherCalendar(),bk:()=>markCard()+tabBookings(),hours:tabHours,types:tabTypes,notif:tabNotif,me:(!isT&&!isA)?()=>flashHtml()+rewardsCard():tabMe,mine:(!isT&&!isA)?tabStudent:tabMine,prof:tabProfile,acct:tabAcct,rank:tabRank,credits:tabCredits,income:tabIncome,history:tabHistory,stats:tabStats,sched:tabSched,inv:()=>flashHtml()+invitesCard(),admin:adminDashboard}[S.tab]||tabLink)();
   const bt4=['calendar','link','credits'], btm=(isT&&!isA)||(isT&&isA)?'<nav class="btm" aria-label="'+tr('nav_main')+'">'+bt4.map(k=>'<button type="button"'+(S.tab===k?' class="on" aria-current="page"':'')+' onclick="setTab(\''+k+'\')"><span class="ic" aria-hidden="true">'+NAV[k][0]+'</span><span>'+tr(k==='credits'?'nav_credits_s':NAV[k][1])+'</span></button>').join('')+'<button type="button"'+(bt4.includes(S.tab)?'':' class="on"')+' onclick="setNav(true)" aria-haspopup="true"><span class="ic" aria-hidden="true">'+ic('menu')+'</span><span>'+tr('nav_more')+'</span>'+(S.unread?'<span class="dot">'+(S.unread>99?'99+':S.unread)+'</span>':'')+'</button></nav>':(!isT&&!isA?stuBar():'');
   return '<div class="shell">'+nav+'<div class="sidebk'+(S.navOpen?' show':'')+'" onclick="setNav(false)"></div><section class="main" aria-label="'+esc(tr(NAV[S.tab][1]))+'">'+(isT?whatsNew():'')+content+(btm?'<div class="btm-sp"></div>':'')+'</section>'+btm+'</div>';
 }
