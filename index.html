@@ -206,7 +206,7 @@ code{background:var(--bg);padding:2px 8px;border-radius:8px;font-size:15px;direc
 .btm button{flex:1;min-width:0;border:0;background:transparent;color:var(--mut);font:inherit;font-size:12px;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border-radius:12px;cursor:pointer;position:relative;box-shadow:none;transition:background .15s,color .15s}
 .btm button .ic{font-size:22px;line-height:1}.btm button.on{color:var(--pri);font-weight:700;background:rgba(91,91,240,.1)}.btm button:active{transform:scale(.96)}
 .btm .dot{position:absolute;top:4px;inset-inline-end:22%}
-@media(max-width:820px){.btm{display:flex}.btm-sp{display:block;height:84px}body:has(.btm) .pwa-bar{bottom:86px}}
+@media(max-width:820px){.btm{display:flex}.btm-sp{display:block;height:84px}body:has(.btm) .pwa-bar{bottom:86px}body:has(.btm) footer.site-footer{margin-bottom:calc(96px + env(safe-area-inset-bottom))}}
 @media(max-width:640px){.btn{padding:16px;font-size:17px;border-radius:16px}.chip{padding:12px 16px;font-size:15px;min-height:44px}.card{padding:20px}.card h2{font-size:19px}.fl{font-size:14px}select,input,textarea{padding:14px}.side-i{font-size:16px;min-height:48px}.bk{font-size:16px}.mut{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.btm button{transition:none}.btm button:active{transform:none}}
 @media print{.btm,.btm-sp,.bar,.side,.seg,.chip,.btn,.calnav,.ttsearch,.site-footer,#panelRoot,.tt2-legend{display:none!important}.tt2-wrap{max-height:none;overflow:visible}}
