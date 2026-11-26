@@ -265,6 +265,28 @@ html,body{max-width:100%;overflow-x:hidden}
 .ni-wrap{border-bottom:1px solid var(--line)}.ni-wrap .ni{border-bottom:0}.pay-ask{padding:0 12px 12px 30px;font-size:14px}[dir=rtl] .pay-ask{padding:0 30px 12px 12px}.nx{background:linear-gradient(135deg,#5b5bf0,#2fc4b2);color:#fff;border-radius:20px;padding:18px;margin-bottom:14px}.nx small{opacity:.9;font-weight:600}.nx .big{font-size:26px;font-weight:800;margin:4px 0}.nx p{margin:0 0 14px;opacity:.95}.nx .go{display:block;text-align:center;text-decoration:none;width:100%;background:#fff;color:#3b3bd0;border-radius:14px;line-height:50px;font-weight:800;font-size:17px}.nx .two{display:flex;gap:8px;margin-top:10px}.nx .two button{flex:1;background:rgba(255,255,255,.2);color:#fff;border:0;border-radius:12px;min-height:44px;font-weight:600;font-size:15px}.nx .nx-l{background:none;border:0;color:#fff;text-decoration:underline;margin-top:6px;min-height:40px;font-size:14px;width:100%}.cu{display:flex;justify-content:space-between;align-items:center;padding:12px 0;gap:10px}.cu b{display:block}.cu .dots{background:none;border:1px solid var(--line);border-radius:12px;width:44px;height:44px;font-size:20px;color:var(--ink);flex:none}.cu-m{padding:0 0 10px;gap:8px;flex-wrap:wrap}.wide-btn{display:block;width:100%;min-height:50px;border-radius:14px;border:1.5px dashed var(--pri);background:transparent;color:var(--pri);font-weight:700;font-size:16px;margin:14px 0}.pl{display:flex;justify-content:space-between;align-items:center;width:100%;padding:14px 16px;background:var(--card);border:0;border-radius:14px;color:var(--ink);font-weight:600;font-size:16px;min-height:50px;margin-bottom:12px}@media (prefers-reduced-motion:no-preference){.nx{animation:nxin .35s ease-out}@keyframes nxin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
 .pay-terms{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}.pay-sv{font-size:13px;font-weight:600;color:#1a8a5a;opacity:0;transition:opacity .2s}.pay-sv.on{opacity:1}.ap-btn{margin-top:8px;width:100%;min-height:44px}.ap-btn[hidden]{display:none}.ap-rows>div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)}.ap-toast{position:fixed;z-index:9999;left:12px;right:12px;bottom:84px;background:#1d2340;color:#fff;border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px}.ap-toast button{background:none;border:0;color:#9fb0ff;font-weight:700;font-size:15px;min-height:40px;padding:0 8px}@media (prefers-reduced-motion:reduce){.pay-sv{transition:none}}.pay-terms input{flex:1;min-width:92px;max-width:130px}.pay-terms select{width:auto}.pay-two{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.pay-two .chip{flex:1;min-height:44px}
 @media print{.btm,.btm-sp,.bar,.side,.seg,.chip,.btn,.calnav,.ttsearch,.site-footer,#panelRoot,.tt2-legend{display:none!important}.tt2-wrap{max-height:none;overflow:visible}}
+
+/* compact student rows: Material 3 two-line list item (72dp, 48dp targets) + Apple HIG 44pt minimum target; inset grouped list */
+.cr-list{padding:0;overflow:hidden}.cr-item+.cr-item{border-top:1px solid var(--line)}
+.cr-top{display:flex;align-items:center;gap:4px;padding-inline:4px 12px;min-height:72px}
+.cr-main{flex:1;min-width:0;display:flex;align-items:center;gap:12px;min-height:72px;padding:8px 8px 8px 12px;background:none;border:0;color:inherit;font:inherit;text-align:start;cursor:pointer;border-radius:12px;-webkit-tap-highlight-color:transparent}
+.cr-main:focus-visible,.cr-plus:focus-visible{outline:2px solid var(--pri);outline-offset:-2px}
+[dir=rtl] .cr-main{padding:8px 12px 8px 8px}
+.cr-item .cr-rg{width:44px;height:44px;flex:none}.cr-item .cr-num b{font-size:15px}.cr-item .cr-num small{display:none}.cr-few .cr-fg{stroke:#e0980f}.cr-fg.still{animation:none}
+.cr-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.cr-t b{font-size:16px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-s{font-size:13px;line-height:1.3;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cr-warnt{color:#8a5a00;font-weight:600}:root[data-theme=dark] .cr-warnt{color:#f3c36b}
+.cr-chev{flex:none;width:20px;height:20px;color:var(--mut);display:grid;place-items:center;transition:transform .2s}.cr-chev svg{width:18px;height:18px}.cr-chev{transform:rotate(180deg)}.cr-item.open .cr-chev{transform:none}.cr-t b,.cr-pn{text-align:match-parent}
+.cr-plus{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--pri);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}.cr-plus svg{width:22px;height:22px}
+.cr-more{display:grid;gap:10px;padding:2px 16px 16px}.cr-ct{font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.cr-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;text-align:center}.cr-stats div{background:var(--bg);border-radius:12px;padding:8px 2px;min-width:0}.cr-stats b{display:block;font-size:16px;line-height:1.2}.cr-stats small{display:block;font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-seg,.cr-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cr-seg .chip,.cr-acts .chip{min-height:44px;padding:0 8px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;justify-content:center;gap:6px}.cr-seg .chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.pay-terms.cr-price{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:8px;margin-top:0;position:relative}.cr-price input,.cr-price select{height:44px;min-height:44px;padding:0 12px;margin:0;width:100%;font-size:16px}.cr-price .pay-sv{position:absolute;inset-inline-end:108px;top:12px;font-size:12px}.cr-price .ap-btn{grid-column:1/-1;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-prow{padding:10px 0;border-top:1px solid var(--line);display:grid;gap:8px}.cr-pn{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.cr-head{padding:16px}.cr-hr{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap}.cr-hr h2{margin:0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cr-hr .btn{margin:0;width:auto;flex:none;min-height:44px;padding:0 14px;font-size:15px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;border-radius:14px}.cr-head p{margin:8px 0 0;font-size:13px}
+@media(max-width:359px){.cr-chev{display:none}.cr-main{gap:10px}.cr-seg .chip,.cr-acts .chip{font-size:13px;padding:0 4px;gap:4px}}
+.inc-per{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.inc-per .chip{min-height:44px;padding:0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.inc-per .chip{font-size:13px}.cr-hr h2{font-size:18px}
 </style>
 <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 <script>(function(){function show(m){if(!document.body){document.addEventListener('DOMContentLoaded',function(){show(m)});return}var d=document.getElementById('bmcFatal');if(!d){d=document.createElement('div');d.id='bmcFatal';d.setAttribute('role','alert');d.style.cssText='position:fixed;z-index:99999;left:8px;right:8px;bottom:8px;background:#fff;color:#7a0010;border:2px solid #b00020;border-radius:12px;padding:12px;font:13px/1.45 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3);max-height:50vh;overflow:auto;direction:ltr;text-align:left';document.body.appendChild(d)}d.innerHTML='<b>Something went wrong.</b> Please reload. If it keeps happening, send a screenshot of this box.<br><code style="white-space:pre-wrap;word-break:break-all"></code><br><button type="button" onclick="location.reload()" style="margin-top:6px;padding:6px 12px">Reload</button>';d.querySelector('code').textContent=m}window.__bmcFatal=show;window.addEventListener('error',function(e){show((e.message||'error')+'  @ '+String(e.filename||'').split('/').pop()+':'+e.lineno+':'+e.colno)})})();</script>
@@ -613,10 +635,11 @@ function crPopLine(b){
   const unc=S.crUnc&&S.crUnc.has(b.id);
   return '<p class="cr-note'+(unc?' warn':'')+'">'+(unc?tr('cr_popNote'):tr('cr_popLeft').replace('{n}',st.remaining))+'</p>';
 }
-function crRing(st){
-  const C=150.8, f=st.total>0?Math.max(0,Math.min(1,st.remaining/st.total)):0;
-  return '<svg class="cr-ring" width="64" height="64" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="24" fill="none" stroke="var(--line)" stroke-width="6"/><circle class="cr-fg" cx="28" cy="28" r="24" fill="none" stroke="var(--pri)" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+C+'" style="--o:'+(C*(1-f)).toFixed(1)+'" transform="rotate(-90 28 28)"/></svg>';
+function crRing(st,sz,anim){
+  const C=150.8, f=st.total>0?Math.max(0,Math.min(1,st.remaining/st.total)):0, z=sz||64;
+  return '<svg class="cr-ring" width="'+z+'" height="'+z+'" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="24" fill="none" stroke="var(--line)" stroke-width="6"/><circle class="cr-fg'+(anim===false?' still':'')+'" cx="28" cy="28" r="24" fill="none" stroke="var(--pri)" stroke-width="6" stroke-linecap="round" stroke-dasharray="'+C+'" style="--o:'+(C*(1-f)).toFixed(1)+'" transform="rotate(-90 28 28)"/></svg>';
 }
+function crToggle(k){ S.crOpen=S.crOpen||{}; S.crOpen[k]=!S.crOpen[k]; render() }
 function crTick(){
   S._crShown=S._crShown||{}; const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
   document.querySelectorAll('.cr-n[data-n]').forEach(el=>{
@@ -627,26 +650,33 @@ function crTick(){
   });
 }
 function tabCredits(){
-  const head='<div class="card"><div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">'+tr('cr_title')+'</h2><button type="button" class="btn" style="margin:0;width:auto" onclick="openCredit()">'+ic('plus')+' '+tr('cr_add')+'</button></div><p class="mut" style="margin:8px 0 0">'+tr('cr_hint')+'</p></div>';
+  const head='<div class="card cr-head"><div class="cr-hr"><h2>'+tr('cr_title')+'</h2><button type="button" class="btn" onclick="openCredit()" aria-label="'+esc(tr('cr_add'))+'">'+ic('plus')+' '+tr('cr_addS')+'</button></div><p class="mut">'+tr('cr_hint')+'</p></div>';
   if(S.crErr) return flashHtml()+head+'<div class="card"><p class="err">'+tr('cr_err')+'</p><button type="button" class="chip" onclick="S.crErr=false;loadCredits()">'+tr('cr_retry')+'</button></div>';
   if(!S.cr){ if(!S.crLoading) setTimeout(()=>loadCredits(),0); return flashHtml()+head+'<div class="card mut" role="status">'+tr('cr_loading')+'</div>'; }
   const L=S.cr.students;
   setTimeout(crTick,30);
   if(!L.length) return flashHtml()+head+'<div class="card mut">'+tr('cr_none')+'</div>';
-  return flashHtml()+head+L.map(st=>{
-    const few=st.remaining<=2;
-    return '<div class="card cr-row"><div class="cr-rg">'+crRing(st)+'<div class="cr-num"><b class="cr-n" data-k="'+esc(st.key)+'" data-n="'+Math.max(0,st.remaining)+'">'+Math.max(0,st.remaining)+'</b><small>'+tr('cr_left')+'</small></div></div>'
-      +'<div class="cr-mid"><b>'+esc(st.name)+'</b>'+((st.email||st.phone)?'<br><span class="mut" dir="ltr" style="font-size:13px">'+esc(st.email||st.phone)+'</span>':'')
-      +'<div class="cr-chips"><span class="sd-st mu">'+tr('cr_of').replace('{t}',st.total)+'</span><span class="sd-st mu">'+tr('cr_used').replace('{n}',st.used)+'</span>'+(st.pending?'<span class="sd-st mu">'+tr('cr_booked').replace('{n}',st.pending)+'</span>':'')+(st.free>0?'<span class="sd-st ok">'+tr('cr_free').replace('{n}',st.free)+'</span>':'')+(few?'<span class="sd-st soft">'+tr('cr_few')+'</span>':'')+'</div>'
-      +payStudentRow(st)+(st.uncovered>0?'<p class="cr-note warn" style="margin:8px 0 0">'+tr('cr_over').replace('{n}',st.uncovered)+'</p>':'')+'</div>'
-      +'<div class="cr-act"><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredit(this.dataset.k)">'+ic('plus')+' '+tr('cr_add')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCredLog(this.dataset.k)">'+tr('cr_log')+'</button><button type="button" class="chip" data-k="'+esc(st.key)+'" onclick="openCorrect(this.dataset.k)">'+ic('edit')+' '+tr('cc_btn')+'</button></div></div>';
-  }).join('');
+  return flashHtml()+head+'<div class="card cr-list">'+L.map(st=>{
+    const few=st.remaining<=2, open=!!(S.crOpen&&S.crOpen[st.key]), rem=Math.max(0,st.remaining), kk=esc(st.key), seen=!!(S._crShown&&S._crShown[st.key]!==undefined);
+    const sub=rem+' '+tr('cr_left')+' · '+(st.uncovered>0?'<span class="cr-warnt">'+tr('cr_overS').replace('{n}',st.uncovered)+'</span>':tr('cr_used').replace('{n}',st.used));
+    const stat=(n,l)=>'<div><b>'+n+'</b><small>'+tr(l)+'</small></div>';
+    return '<div class="cr-item'+(open?' open':'')+'"><div class="cr-top"><button type="button" class="cr-main" aria-expanded="'+open+'" data-k="'+kk+'" onclick="crToggle(this.dataset.k)"><span class="cr-rg'+(few?' cr-few':'')+'">'+crRing(st,44,!seen)+'<span class="cr-num"><b class="cr-n" data-k="'+kk+'" data-n="'+rem+'">'+rem+'</b></span></span>'
+      +'<span class="cr-t"><b dir="auto">'+esc(st.name)+'</b><span class="cr-s">'+sub+'</span></span><span class="cr-chev" aria-hidden="true">'+ic('chev')+'</span></button>'
+      +'<button type="button" class="cr-plus" data-k="'+kk+'" aria-label="'+esc(tr('cr_add')+': '+st.name)+'" onclick="openCredit(this.dataset.k)">'+ic('plus')+'</button></div>'
+      +(open?'<div class="cr-more">'+((st.email||st.phone)?'<span class="cr-ct" dir="ltr">'+esc(st.email||st.phone)+'</span>':'')
+        +'<div class="cr-stats">'+stat(st.total,'cr_sTotal')+stat(st.used,'cr_sTaught')+stat(st.pending||0,'cr_sBooked')+stat(st.free>0?st.free:0,'cr_sFree')+'</div>'
+        +payStudentRow(st)
+        +'<div class="cr-acts"><button type="button" class="chip" data-k="'+kk+'" onclick="openCredLog(this.dataset.k)">'+tr('cr_log')+'</button><button type="button" class="chip" data-k="'+kk+'" onclick="openCorrect(this.dataset.k)">'+ic('edit')+' '+tr('cc_btn')+'</button></div></div>':'')+'</div>';
+  }).join('')+'</div>';
 }
 function payStudentRow(st){
   payLazy(); if(!S.pay) return '';
-  const m=S.pay.modes[st.key]||(st.total>0?'before':'after');
-  return '<div class="infw"><div class="pay-two" style="margin-top:8px" role="group" aria-label="'+esc(tr('pay_card'))+'">'+['after','before'].map(k=>'<button type="button" class="chip'+(m===k?' on':'')+'" aria-pressed="'+(m===k)+'" data-k="'+esc(st.key)+'" onclick="payStudent(this.dataset.k,\''+k+'\')">'+tr(k==='after'?'pay_after':'pay_before')+'</button>').join('')+info('mode',st.key)+'</div>'+infoNote('mode',st.key)+'</div>'
-    +(()=>{const t=payTerms(st.key); return '<div class="infw"><div class="pay-terms" data-k="'+esc(st.key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select><span class="pay-sv" role="status" aria-live="polite"></span>'+info('price',st.key)+'</div>'+infoNote('price',st.key)+'</div><button type="button" class="chip ap-btn" data-k="'+esc(st.key)+'"'+(t.price==null?' hidden':'')+' onclick="openApplyPast(this.dataset.k)">'+tr('ap_btn')+'</button>'})();
+  const m=S.pay.modes[st.key]||(st.total>0?'before':'after'), t=payTerms(st.key);
+  return '<div class="infw"><div class="cr-seg" role="group" aria-label="'+esc(tr('pay_card'))+'">'+['after','before'].map(k=>'<button type="button" class="chip'+(m===k?' on':'')+'" aria-pressed="'+(m===k)+'" data-k="'+esc(st.key)+'" onclick="payStudent(this.dataset.k,\''+k+'\')">'+tr(k==='after'?'pay_aS':'pay_bS')+'</button>').join('')+'</div>'+infoNote('mode',st.key)+'</div>'
+    +'<div class="infw">'+priceRowHtml(st.key,t)+infoNote('price',st.key)+'</div>';
+}
+function priceRowHtml(key,t){
+  return '<div class="pay-terms cr-price" data-k="'+esc(key)+'"><input type="number" inputmode="decimal" min="0" max="100000" step="0.01" dir="ltr" aria-label="'+esc(tr('pay_stPrice'))+'" placeholder="'+esc(tr('pay_stPrice'))+'" value="'+(t.price==null?'':esc(String(t.price)))+'" onchange="payTermsSave(this)"><select aria-label="'+esc(tr('pay_cur'))+'" onchange="payTermsSave(this)">'+curOpts(t.cur)+'</select><span class="pay-sv" role="status" aria-live="polite"></span><button type="button" class="chip ap-btn" data-k="'+esc(key)+'"'+(t.price==null?' hidden':'')+' onclick="openApplyPast(this.dataset.k)">'+tr('ap_short')+'</button></div>';
 }
 function crCorrText(n){const m=/^Correction: (\d+) → (\d+)(?: · (.*))?$/.exec(n||''); return m?tr('cc_hist').replace('{a}',m[1]).replace('{b}',m[2])+(m[3]?' · '+m[3]:''):(n||tr('cr_adj'));}
 function ccChange(cur,v){const n=parseInt(v,10); if(v===''||!Number.isInteger(n)) return ''; const d=n-cur; return tr('cc_chg').replace('{a}',cur).replace('{b}',n).replace('{d}',(d>0?'+':d<0?'−':'±')+Math.abs(d));}
@@ -792,6 +822,10 @@ Object.assign(T.en,{pay_title:'Payments',pay_price:'Default price per lesson',pa
 Object.assign(T.ar,{pay_title:'المدفوعات',pay_price:'السعر الافتراضي للحصة',pay_cur:'العملة',pay_priceHint:'يُستخدم للطلاب الجدد. يمكن لكل طالب أن يكون له سعر وعملة خاصان. لا يراها الطلاب.',pay_stPrice:'السعر',pay_termsSaved:'تم الحفظ',pay_saved:'تم حفظ إعدادات الدفع',pay_err:'أدخل سعراً بين 0 و 100000',pay_label:'الدفع',pay_after:'بعد الحصة',pay_before:'قبل (رصيد حصص)',pay_remembered:'محفوظ لهذا الطالب. يمكنك تغييره في أي وقت.',pay_ask:'كيف يتم الدفع لدى {s}؟',pay_set:'تم الحفظ: {m}',pay_tA:'يدفع بعد',pay_tB:'دفع مسبق',cr_amount:'المبلغ المدفوع (اختياري)',pay_card:'طريقة دفع هذا الطالب'});
 Object.assign(T.en,{nav_income:'Income',inc_title:'Income',inc_hint:'Only you can see this. Each currency is shown on its own and nothing is converted.',inc_earned:'Earned',inc_received:'Received',inc_due:'To collect',inc_markPaid:'Mark paid',inc_undo:'Undo',inc_fromBal:'From balance',inc_paid:'Paid',inc_ns:'No-show',inc_none:'No lessons with a price in this period.',inc_marked:'Marked as paid',inc_list:'Lessons',inc_dueNone:'Nothing to collect.',inc_nopr:'No price set',pay_ns:'Charge for no-shows',pay_nsHint:'When on, a student who does not show up counts as a taught lesson: it is earned and uses one lesson from a prepaid balance. Off by default.',st_tgHrs:'Hours',st_weeksE:'Earned per week',st_tgEarn:'Earned',st_earnedIn:'Earned in this period'});
 Object.assign(T.ar,{nav_income:'الدخل',inc_title:'الدخل',inc_hint:'لا يراه غيرك. كل عملة تظهر على حدة ولا يتم أي تحويل.',inc_earned:'المكتسب',inc_received:'المستلم',inc_due:'للتحصيل',inc_markPaid:'تم الدفع',inc_undo:'تراجع',inc_fromBal:'من الرصيد',inc_paid:'مدفوع',inc_ns:'لم يحضر',inc_none:'لا توجد حصص بسعر في هذه الفترة.',inc_marked:'تم تسجيل الدفع',inc_list:'الحصص',inc_dueNone:'لا شيء للتحصيل.',inc_nopr:'بدون سعر',pay_ns:'احتساب الغياب',pay_nsHint:'عند التفعيل تُحتسب حصة الطالب الغائب كحصة مُدرَّسة: تُحسب ضمن المكتسب وتخصم حصة من الرصيد المدفوع مسبقًا. معطّل افتراضيًا.',st_tgHrs:'الساعات',st_weeksE:'المكتسب أسبوعيًا',st_tgEarn:'المكتسب',st_earnedIn:'المكتسب في هذه الفترة'});
+Object.assign(T.en,{inc_pTitle:'Student prices',inc_pHint:'Set what each student pays per lesson. Then tap "Apply to past lessons" so lessons already booked start counting.',inc_pNone:'No students yet. Students appear here once they have a booking.'});
+Object.assign(T.ar,{inc_pTitle:'أسعار الطلاب',inc_pHint:'حدّد ما يدفعه كل طالب عن الحصة. ثم اضغط «تطبيق على الحصص السابقة» لتبدأ الحصص المحجوزة بالاحتساب.',inc_pNone:'لا يوجد طلاب بعد. يظهر الطلاب هنا عندما يكون لديهم حجز.'});
+Object.assign(T.en,{pay_aS:'After the lesson',pay_bS:'Before (balance)',ap_short:'Apply to past lessons',cr_overS:'{n} over',cr_addS:'Add',cr_sTotal:'Total',cr_sTaught:'Taught',cr_sBooked:'Booked',cr_sFree:'Free'});
+Object.assign(T.ar,{pay_aS:'بعد الحصة',pay_bS:'قبل (رصيد)',ap_short:'تطبيق على الحصص السابقة',cr_overS:'{n} زائدة',cr_addS:'إضافة',cr_sTotal:'الإجمالي',cr_sTaught:'تمت',cr_sBooked:'محجوزة',cr_sFree:'متاحة'});
 Object.assign(T.en,{ap_btn:'Apply this price to past lessons',ap_title:'Apply {p} to past lessons?',ap_body:'{s} has lessons marked attended that have no price yet.',ap_cnt:'Lessons',ap_tot:'Total',ap_from:'From',ap_to:'To',ap_note:'Only lessons without a price are changed. Lessons that already have a price stay as they are. You can undo this right after.',ap_ok:'Apply',ap_none:'No past lessons without a price.',ap_done:'Applied to {n} lessons ({t}).',ap_undone:'Undone',ap_saved:'Saved',ap_nothing:'Nothing to apply',ap_nothingB:'All of {s}\'s taught lessons already have a price, so there is nothing to add.',ap_close:'Close'});
 Object.assign(T.ar,{ap_btn:'تطبيق هذا السعر على الحصص السابقة',ap_title:'تطبيق {p} على الحصص السابقة؟',ap_body:'لدى {s} حصص حضرها بدون سعر بعد.',ap_cnt:'الحصص',ap_tot:'الإجمالي',ap_from:'من',ap_to:'إلى',ap_note:'تتغير فقط الحصص التي بلا سعر. الحصص التي لها سعر تبقى كما هي. يمكنك التراجع مباشرة بعد ذلك.',ap_ok:'تطبيق',ap_none:'لا توجد حصص سابقة بلا سعر.',ap_done:'تم التطبيق على {n} حصص ({t}).',ap_undone:'تم التراجع',ap_saved:'تم الحفظ',ap_nothing:'لا شيء لتطبيقه',ap_nothingB:'كل الحصص التي أعطيتها لـ {s} لها سعر بالفعل، فلا يوجد ما يُضاف.',ap_close:'إغلاق'});
 Object.assign(T.en,{m_status:'Status',m_unmarked:'Not marked yet',r_markedNone:'Back to not marked yet.'});
@@ -802,7 +836,7 @@ Object.assign(T.en,{bw_you:'Booked by you',bw_stu:'Booked by student',bw_lbl:'Bo
 Object.assign(T.ar,{bw_you:'حجزتَه أنت',bw_stu:'حجزه الطالب',bw_lbl:'الحجز',sg_t:'حساب محتمل (مجرد اقتراح، لا يتم ربط شيء)',sg_b:'حجز حصصًا باسم «{n}». نفس الاسم الأول فقط. أنت من يقرر إن كان نفس الطالب.',sg_use:'استخدم هذا البريد',sg_no:'ليس هو'});
 Object.assign(T.en,{st_hi:'Hi {n}',st_nextL:'Your next lesson',st_today:'Today',st_tmrw:'Tomorrow',st_join:'Join lesson',st_cu:'Coming up',st_book:'＋ Book another lesson',st_past:'Past lessons ({n})',st_lessons:'Lessons',st_rew:'Rewards',st_none:'No upcoming lessons yet.'});
 Object.assign(T.ar,{st_hi:'مرحبًا {n}',st_nextL:'حصتك القادمة',st_today:'اليوم',st_tmrw:'غدًا',st_join:'انضم للحصة',st_cu:'القادمة',st_book:'＋ احجز حصة أخرى',st_past:'الحصص السابقة ({n})',st_lessons:'الحصص',st_rew:'المكافآت',st_none:'لا توجد حصص قادمة بعد.'});
-Object.assign(T.en,{i_label:'More info',inc_empty:'Set a price per lesson to see your income.',inc_s1:'Set a price for each student, or one default price',inc_s2:'Mark lessons as Attended',inc_s3:'Tap Mark paid when you get paid',inc_setp:'Set price',
+Object.assign(T.en,{i_label:'More info',inc_empty:'Set a price per lesson to see your income.',inc_s1:'Set a price for each student below (or one default price in Settings)',inc_s2:'Mark lessons as Attended',inc_s3:'Tap Mark paid when you get paid',inc_setp:'Set price',
 i_inc:'Earned: attended lessons × price. Received: what you marked paid. To collect: attended, not paid yet. Only you see this.',
 i_mode:'After the lesson: each time you mark Attended you earn the price, then tap Mark paid in Income. Before: the student prepays lessons, and each attended lesson uses one.',
 i_price:'Price for this student. It replaces your default. Students never see it.',
@@ -851,7 +885,7 @@ function curOpts(sel){ const l=PAY_CUR.slice(); if(sel&&!l.includes(sel)) l.push
 function payTerms(key){ const t=S.pay&&S.pay.terms&&S.pay.terms[key]; return {price:(t&&t.price!=null)?t.price:(S.pay?S.pay.price:null), cur:(t&&t.currency)||(S.pay&&S.pay.currency)||'SAR', own:!!(t&&(t.price!=null||t.currency))} }
 function payKeyByName(name){ const n=String(name||'').trim().toLowerCase(); if(!n||!S.pay) return null; const x=S.pay.names.find(b=>String(b.name||'').trim().toLowerCase()===n); return x?x.key:null }
 async function openApplyPast(key){
-  const all=S.cr?S.cr.students.concat(S.cr.known):[], st=all.find(x=>x.key===key);
+  const all=S.cr?S.cr.students.concat(S.cr.known):[], st=all.find(x=>x.key===key)||(S.pay&&S.pay.names.find(x=>x.key===key));
   S.modal={type:'applypast',key,name:st?st.name:'',pv:null,from:'',to:'',busy:false}; render();
   apPreview(true);
 }
@@ -949,10 +983,18 @@ function incRow(l){
   const btn=st==='due'?'<button type="button" class="chip" onclick="markPaid(\''+esc(l.id)+'\',true)">'+tr('inc_markPaid')+'</button>':st==='paid'?'<button type="button" class="chip" onclick="markPaid(\''+esc(l.id)+'\',false)">'+tr('inc_undo')+'</button>':'';
   return '<div class="bk"><div><b>'+esc(l.name||'')+'</b> <span class="badge">'+tr(l.mode==='before'?'pay_tB':'pay_tA')+'</span>'+(l.att==='no_show'?' <span class="badge">'+tr('inc_ns')+'</span>':'')+'<br><span class="mut" dir="auto">'+d+(l.price!=null?' · <span dir="ltr">'+esc(fmtMoney(l.price,l.cur))+'</span>':'')+'</span> '+pill+'</div><div class="row">'+btn+'</div></div>';
 }
+function incPriceCard(){
+  if(!S.pay) return '';
+  const seen=new Set(), L=[];
+  S.pay.names.forEach(b=>{ if(b&&b.key&&!seen.has(b.key)){seen.add(b.key); L.push({key:b.key,name:b.name||''})} });
+  L.sort((a,b)=>a.name.localeCompare(b.name));
+  const rows=L.map(st=>'<div class="cr-prow"><b class="cr-pn" dir="auto">'+esc(st.name)+'</b>'+priceRowHtml(st.key,payTerms(st.key))+'</div>').join('');
+  return '<div class="card" id="incPrices"><h2>'+tr('inc_pTitle')+'</h2><p class="mut" style="margin:6px 0 4px">'+tr('inc_pHint')+'</p>'+(rows||'<p class="mut">'+tr('inc_pNone')+'</p>')+'</div>';
+}
 function tabIncome(){
   const head='<div class="card infw"><div class="row" style="flex-wrap:nowrap;justify-content:space-between"><h2 style="margin:0">'+tr('inc_title')+'</h2>'+info('inc')+'</div>'+infoNote('inc')+'<p class="mut" style="margin:8px 0 0">'+tr('inc_hint')+'</p></div>';
   payLazy();
-  if(S.pay&&!incHas()) return flashHtml()+head+'<div class="card"><p style="margin:0;font-weight:600">'+tr('inc_empty')+'</p><ol class="inc-steps"><li>'+tr('inc_s1')+'</li><li>'+tr('inc_s2')+'</li><li>'+tr('inc_s3')+'</li></ol><button type="button" class="btn" style="margin:0" onclick="incSetPrice()">'+tr('inc_setp')+'</button></div>';
+  if(S.pay&&!incHas()) return flashHtml()+head+'<div class="card"><p style="margin:0;font-weight:600">'+tr('inc_empty')+'</p><ol class="inc-steps"><li>'+tr('inc_s1')+'</li><li>'+tr('inc_s2')+'</li><li>'+tr('inc_s3')+'</li></ol><button type="button" class="btn" style="margin:0" onclick="incSetPrice()">'+tr('inc_setp')+'</button></div>'+incPriceCard();
   if(S.incErr) return flashHtml()+head+'<div class="card"><p class="err">'+tr('h_err')+'</p><button type="button" class="chip" onclick="S.incErr=false;loadInc()">'+tr('cr_retry')+'</button></div>';
   if(!S.inc){ incLazy(); return flashHtml()+head+'<div class="card mut" role="status">'+tr('h_loading')+'</div>'; }
   const p=S.ip||'30', from=p==='all'?0:Date.now()-(+p)*86400000, LL=S.inc.lessons, T={};
@@ -966,8 +1008,9 @@ function tabIncome(){
   const pc=[['30',tr('h_30')],['90',tr('h_90')],['all',tr('h_alltime')]];
   const due=LL.filter(l=>incStatus(l)==='due').reverse();
   return flashHtml()+head
-    +'<div class="card"><div class="row" style="flex-wrap:wrap;gap:6px">'+pc.map(x=>chip(p===x[0],"S.ip='"+x[0]+"';render()",x[1])).join('')+'</div></div>'
+    +'<div class="card"><div class="inc-per">'+pc.map(x=>chip(p===x[0],"S.ip='"+x[0]+"';render()",x[1])).join('')+'</div></div>'
     +(cs.length?cs.map(c=>'<div class="card"><h2>'+esc(c)+'</h2><div class="rw-stats">'+[[T[c].earned,'inc_earned'],[T[c].received,'inc_received'],[T[c].due,'inc_due']].map(x=>'<div><b dir="ltr">'+esc(fmtMoney(x[0],c))+'</b><small>'+tr(x[1])+'</small></div>').join('')+'</div></div>').join(''):'<div class="card"><p class="mut">'+tr('inc_none')+'</p></div>')
+    +incPriceCard()
     +'<div class="card"><h2>'+tr('inc_due')+'</h2>'+(due.length?due.slice(0,30).map(incRow).join(''):'<p class="mut">'+tr('inc_dueNone')+'</p>')+'</div>'
     +'<div class="card"><h2>'+tr('inc_list')+'</h2>'+(inP.length?inP.slice(0,40).map(incRow).join(''):'<p class="mut">'+tr('inc_none')+'</p>')+'</div>';
 }
@@ -1037,7 +1080,11 @@ async function markAllRead(){
 }
 async function openNotif(id){
   const n=S.notifs.find(x=>x.id===id); if(!n) return;
-  if(!n.read_at){n.read_at=new Date().toISOString(); S.unread=Math.max(0,S.unread-1); sb.rpc('mark_notifications_read',{p_ids:[id]}); S._nk=null;}
+  if(!n.read_at){
+    n.read_at=new Date().toISOString(); S.unread=Math.max(0,S.unread-1); S._nk=null;
+    // the request only runs when awaited; if it fails, show the notification as unread again
+    sb.rpc('mark_notifications_read',{p_ids:[id]}).then(r=>{ if(r&&r.error){ n.read_at=null; S.unread++; S._nk=null; if(S.bellOpen||S.tab==='notif') render(); else updateBadges(); } },()=>{ n.read_at=null; S.unread++; S._nk=null; updateBadges(); });
+  }
   S.bellOpen=false; if(S.slug) {nav(null)}
   if(S.me&&S.me.teacher){S.tab=(n.data&&n.data.actor_is_teacher)?'mine':'calendar'; ls.set('x','')} 
   render();
